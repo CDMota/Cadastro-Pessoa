@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Sistema</title>
+    <title>Cadastro - Completo</title>
     <style>
         body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
         .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 12px; color: #666; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 5px; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tres-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
         #preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid #007bff; background: #eee; }
         
-        /* BOTÕES */
         .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 15px; text-align: center; text-decoration: none; display: block; }
         .btn-salvar { background: #007bff; color: white; }
-        .btn-foto { background: #f39c12; color: white; display: none; } /* Laranja para destaque */
+        .btn-foto { background: #f39c12; color: white; display: none; }
         .btn-whats { background: #25d366; color: white; display: none; }
         .btn-tele { background: #0088cc; color: white; display: none; }
-        .btn-del { background: #dc3545; color: white; display: none; border-top: 2px solid #eee; margin-top: 30px; }
+        .btn-del { background: #dc3545; color: white; display: none; margin-top: 30px; }
         .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; font-size: 14px; }
-        
         .secao-compartilhar { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc; }
     </style>
 </head>
@@ -31,37 +30,40 @@
     <img id="preview" src="https://via.placeholder.com/120">
     
     <form id="formFinal">
-        <label>Foto de Perfil</label>
-        <input type="file" id="foto" accept="image/*">
+        <label>Foto (Tirar agora ou Galeria)</label>
+        <input type="file" id="foto" accept="image/*" capture="environment">
         
-        <label>Nome Completo</label>
-        <input type="text" id="nome" required>
+        <div class="duas-col">
+            <div><label>Nome Completo</label><input type="text" id="nome" required></div>
+            <div><label>Apelido</label><input type="text" id="apelido"></div>
+        </div>
         
         <div class="duas-col">
             <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
-            <div><label>Nascimento</label><input type="tel" id="data" maxlength="10" required></div>
+            <div><label>Nascimento</label><input type="tel" id="data" maxlength="10"></div>
         </div>
-        
-        <div class="duas-col">
-            <div><label>Cidade</label><input type="text" id="cidade"></div>
-            <div><label>UF</label><input type="text" id="uf" maxlength="2"></div>
+
+        <label>Endereço</label>
+        <div class="tres-col">
+            <input type="text" id="rua" placeholder="Rua / Logradouro">
+            <input type="text" id="numero" placeholder="Nº">
+            <input type="text" id="uf" maxlength="2" placeholder="UF">
         </div>
+        <input type="text" id="cidade" placeholder="Cidade" style="margin-top: 5px;">
         
         <label>Observações</label>
-        <textarea id="obs" rows="3"></textarea>
+        <textarea id="obs" rows="2"></textarea>
 
         <button type="submit" id="btnAcao" class="btn btn-salvar">💾 SALVAR NO SISTEMA</button>
         
         <div class="secao-compartilhar">
-            <p style="font-size: 11px; color: #888; text-align: center; margin-bottom: 5px;">COMPARTILHAMENTO EXTERNO</p>
-            <button type="button" id="btnFoto" class="btn btn-foto" onclick="baixarFoto()">1º 📸 SALVAR FOTO NO CELULAR</button>
-            <button type="button" id="btnTele" class="btn btn-tele" onclick="compartilharApp('telegram')">2º 🔵 ENVIAR DADOS (TELEGRAM)</button>
-            <button type="button" id="btnWhats" class="btn btn-whats" onclick="compartilharApp('whatsapp')">2º 🟢 ENVIAR DADOS (WHATSAPP)</button>
+            <button type="button" id="btnFoto" class="btn btn-foto" onclick="baixarFoto()">1º 📸 SALVAR FOTO</button>
+            <button type="button" id="btnTele" class="btn btn-tele" onclick="compartilharApp('telegram')">2º 🔵 ENVIAR (TELEGRAM)</button>
+            <button type="button" id="btnWhats" class="btn btn-whats" onclick="compartilharApp('whatsapp')">2º 🟢 ENVIAR (WHATSAPP)</button>
         </div>
         
-        <button type="button" id="btnDel" class="btn btn-del" onclick="excluir()">🗑️ APAGAR CADASTRO</button>
-        
-        <a href="index.html" class="btn-voltar">⬅️ VOLTAR PARA LISTA</a>
+        <button type="button" id="btnDel" class="btn btn-del" onclick="excluir()">🗑️ APAGAR</button>
+        <a href="index.html" class="btn-voltar">⬅️ VOLTAR</a>
     </form>
 </div>
 
@@ -70,15 +72,10 @@
     const id = urlParams.get('edit');
     let fotoBase64 = "";
 
-    // MÁSCARAS AUTOMÁTICAS
+    // MÁSCARAS
     document.getElementById('cpf').oninput = e => {
         let v = e.target.value.replace(/\D/g, '');
         v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        e.target.value = v;
-    };
-    document.getElementById('data').oninput = e => {
-        let v = e.target.value.replace(/\D/g, '');
-        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
         e.target.value = v;
     };
 
@@ -91,9 +88,13 @@
                 document.getElementById('btnTele').style.display = "block";
                 document.getElementById('btnWhats').style.display = "block";
                 document.getElementById('btnDel').style.display = "block";
+                
                 document.getElementById('nome').value = d.nome || '';
+                document.getElementById('apelido').value = d.apelido || '';
                 document.getElementById('cpf').value = d.cpf || '';
                 document.getElementById('data').value = d.data || '';
+                document.getElementById('rua').value = d.rua || '';
+                document.getElementById('numero').value = d.numero || '';
                 document.getElementById('cidade').value = d.cidade || '';
                 document.getElementById('uf').value = d.uf || '';
                 document.getElementById('obs').value = d.obs || '';
@@ -102,37 +103,30 @@
         }
     };
 
-    // PASSO 1: BAIXAR A FOTO
     function baixarFoto() {
-        if (!fotoBase64) { alert("Sem foto!"); return; }
         const link = document.createElement('a');
-        const nomeCli = document.getElementById('nome').value.replace(/\s+/g, '_') || 'cliente';
         link.href = fotoBase64;
-        link.download = `CADASTRO_${nomeCli}.jpg`;
-        document.body.appendChild(link);
+        link.download = `FOTO_${document.getElementById('nome').value}.jpg`;
         link.click();
-        document.body.removeChild(link);
-        alert("Foto salva! Agora envie os dados e anexe esta imagem no chat.");
     }
 
-    // PASSO 2: ENVIAR TEXTO
     function compartilharApp(plataforma) {
         const n = document.getElementById('nome').value;
-        const c = document.getElementById('cpf').value;
-        const d = document.getElementById('data').value;
-        const l = (document.getElementById('cidade').value || '') + " - " + (document.getElementById('uf').value || '');
-        const o = document.getElementById('obs').value || 'Sem observações.';
+        const ape = document.getElementById('apelido').value || '---';
+        const end = `${document.getElementById('rua').value}, ${document.getElementById('numero').value}`;
+        const cid = `${document.getElementById('cidade').value}-${document.getElementById('uf').value}`;
 
-        const texto = `*FICHA DE CADASTRO*%0A%0A*Nome:* ${n}%0A*CPF:* ${c}%0A*Nasc:* ${d}%0A*Local:* ${l}%0A*Obs:* ${o}`;
+        const texto = `*FICHA DE CADASTRO*%0A%0A` +
+                      `*Nome:* ${n}%0A` +
+                      `*Apelido:* ${ape}%0A` +
+                      `*CPF:* ${document.getElementById('cpf').value}%0A` +
+                      `*Endereço:* ${end}%0A` +
+                      `*Cidade:* ${cid}%0A` +
+                      `*Obs:* ${document.getElementById('obs').value}`;
 
-        if (plataforma === 'whatsapp') {
-            window.location.href = `whatsapp://send?text=${texto}`;
-        } else {
-            window.location.href = `tg://msg?text=${texto}`;
-        }
+        window.location.href = plataforma === 'whatsapp' ? `whatsapp://send?text=${texto}` : `tg://msg?text=${texto}`;
     }
 
-    // TRATAR UPLOAD DE FOTO
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -140,7 +134,7 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 400; cv.height = 400; // Tamanho ideal para visualização
+                cv.width = 400; cv.height = 400;
                 cv.getContext('2d').drawImage(img, 0, 0, 400, 400);
                 fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
                 document.getElementById('preview').src = fotoBase64;
@@ -149,14 +143,16 @@
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    // SALVAR NO BANCO LOCAL
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
         const dados = {
             nome: document.getElementById('nome').value,
+            apelido: document.getElementById('apelido').value,
             cpf: document.getElementById('cpf').value,
             data: document.getElementById('data').value,
+            rua: document.getElementById('rua').value,
+            numero: document.getElementById('numero').value,
             cidade: document.getElementById('cidade').value,
             uf: document.getElementById('uf').value,
             obs: document.getElementById('obs').value,
@@ -165,12 +161,11 @@
         if (id !== null) lista[id] = dados;
         else lista.push(dados);
         localStorage.setItem('banco_final', JSON.stringify(lista));
-        alert("Dados salvos com sucesso!");
         window.location.href = "index.html";
     };
 
     function excluir() {
-        if(confirm("Deseja apagar este cadastro para sempre?")) {
+        if(confirm("Excluir?")) {
             let lista = JSON.parse(localStorage.getItem('banco_final'));
             lista.splice(id, 1);
             localStorage.setItem('banco_final', JSON.stringify(lista));

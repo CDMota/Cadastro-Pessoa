@@ -5,8 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - Completo</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
-        .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* ASSINATURA DISCRETA */
+        .assinatura { 
+            position: absolute; 
+            top: 5px; 
+            left: 10px; 
+            font-size: 9px; 
+            color: #bbb; 
+            font-family: sans-serif;
+        }
+
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; position: relative; }
+        .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; }
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 12px; color: #666; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 5px; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -24,6 +34,8 @@
     </style>
 </head>
 <body>
+
+<div class="assinatura">by CDMota</div>
 
 <div class="caixa">
     <h3 id="txtTitulo" style="text-align:center; color:#007bff; margin-top:0">FICHA DE DADOS</h3>
@@ -72,7 +84,7 @@
     const id = urlParams.get('edit');
     let fotoBase64 = "";
 
-    // MÁSCARAS
+    // MÁSCARA CPF
     document.getElementById('cpf').oninput = e => {
         let v = e.target.value.replace(/\D/g, '');
         v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -104,6 +116,7 @@
     };
 
     function baixarFoto() {
+        if (!fotoBase64) return;
         const link = document.createElement('a');
         link.href = fotoBase64;
         link.download = `FOTO_${document.getElementById('nome').value}.jpg`;
@@ -161,11 +174,12 @@
         if (id !== null) lista[id] = dados;
         else lista.push(dados);
         localStorage.setItem('banco_final', JSON.stringify(lista));
+        alert("Salvo com sucesso!");
         window.location.href = "index.html";
     };
 
     function excluir() {
-        if(confirm("Excluir?")) {
+        if(confirm("Deseja apagar este cadastro?")) {
             let lista = JSON.parse(localStorage.getItem('banco_final'));
             lista.splice(id, 1);
             localStorage.setItem('banco_final', JSON.stringify(lista));

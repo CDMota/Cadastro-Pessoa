@@ -12,11 +12,16 @@
         .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #666; }
-        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; margin-top: 5px; text-transform: uppercase; }
+        input, textarea, select { width: 100%; padding: 12px 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-top: 5px; text-transform: uppercase; }
         
+        /* AJUSTE DE COLUNAS: CPF MENOR, DATA MAIOR */
+        .linha-cpf-data { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 10px; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .tres-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
-        .data-tripla { display: grid; grid-template-columns: 1fr 1.2fr 1.5fr; gap: 5px; }
+        
+        /* DATA TRIPLA AJUSTADA */
+        .data-tripla { display: grid; grid-template-columns: 1fr 1.1fr 1.4fr; gap: 4px; }
+        .data-tripla select { padding: 12px 2px; font-size: 13px; text-align: center; }
         
         #preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid var(--cor-primaria); background: #eee; }
         
@@ -47,15 +52,15 @@
             <div><label>APELIDO</label><input type="text" id="apelido" oninput="this.value = this.value.toUpperCase()"></div>
         </div>
         
-        <div class="duas-col">
+        <div class="linha-cpf-data">
             <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
             <div>
                 <label>NASCIMENTO</label>
                 <div class="data-tripla">
-                    <select id="dia"><option value="">DIA</option></select>
+                    <select id="dia"><option value="">DI</option></select>
                     <select id="mes">
                         <option value="">MÊS</option>
-                        <option value="01">JAN</option><option value="02">FEV</option><option value="03">MAR</option><option value="04">ABR</option><option value="05">MAI</option><option value="06">JUN</option><option value="07">JUL</option><option value="08">AGO</option><option value="09">SET</option><option value="10">OUT</option><option value="11">NOV</option><option value="12">DEZ</option>
+                        <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
                     </select>
                     <select id="ano"><option value="">ANO</option></select>
                 </div>
@@ -93,7 +98,6 @@
     const id = urlParams.get('edit');
     let fotoBase64 = "";
 
-    // GERAÇÃO AUTOMÁTICA DE DIAS E ANOS (ATUALIZÁVEL)
     const selDia = document.getElementById('dia');
     for(let i=1; i<=31; i++) {
         let opt = document.createElement('option');
@@ -102,7 +106,7 @@
     }
 
     const selAno = document.getElementById('ano');
-    const anoAtual = new Date().getFullYear(); // PEGA O ANO DO CELULAR AUTOMATICAMENTE
+    const anoAtual = new Date().getFullYear();
     for(let i = anoAtual; i >= 1920; i--) {
         let opt = document.createElement('option');
         opt.value = i; opt.text = i;

@@ -6,25 +6,36 @@
     <title>Cadastro - CDMota</title>
     <style>
         :root { --cor-primaria: #007bff; --cor-sucesso: #25d366; --cor-telegram: #0088cc; --cor-alerta: #f39c12; --cor-perigo: #dc3545; }
+        
         .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; text-transform: none; }
         
         body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; position: relative; text-transform: uppercase; }
         .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
+        /* FOTO QUADRADA SEM DEFORMAR */
+        #preview { 
+            width: 180px; 
+            height: 180px; 
+            border-radius: 15px; 
+            object-fit: cover; 
+            display: block; 
+            margin: 10px auto; 
+            border: 4px solid var(--cor-primaria); 
+            background: #eee; 
+        }
+
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #666; }
-        input, textarea, select { width: 100%; padding: 12px 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-top: 5px; text-transform: uppercase; }
-        
-        /* AJUSTE DE COLUNAS: CPF MENOR, DATA MAIOR */
-        .linha-cpf-data { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 10px; }
+        input, textarea, select { width: 100%; padding: 12px 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-top: 5px; text-transform: uppercase; outline: none; }
+        input:focus { border-color: var(--cor-primaria); }
+
+        /* AJUSTE DE COLUNAS */
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .linha-cpf-data { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 10px; }
         .tres-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
-        
-        /* DATA TRIPLA AJUSTADA */
         .data-tripla { display: grid; grid-template-columns: 1fr 1.1fr 1.4fr; gap: 4px; }
         .data-tripla select { padding: 12px 2px; font-size: 13px; text-align: center; }
         
-        #preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid var(--cor-primaria); background: #eee; }
-        
+        /* BOTÕES */
         .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; text-align: center; text-decoration: none; display: block; color: white; }
         .btn-salvar { background: var(--cor-primaria); }
         .btn-foto { background: var(--cor-alerta); display: none; }
@@ -41,7 +52,8 @@
 
 <div class="caixa">
     <h3 style="text-align:center; color:var(--cor-primaria); margin-top:0">FICHA DE DADOS</h3>
-    <img id="preview" src="https://via.placeholder.com/120">
+    
+    <img id="preview" src="https://via.placeholder.com/180?text=FOTO">
     
     <form id="formFinal">
         <label>FOTO (TIRAR OU GALERIA)</label>
@@ -98,21 +110,22 @@
     const id = urlParams.get('edit');
     let fotoBase64 = "";
 
+    // GERA DIAS E ANOS
     const selDia = document.getElementById('dia');
     for(let i=1; i<=31; i++) {
         let opt = document.createElement('option');
         opt.value = i.toString().padStart(2,'0'); opt.text = opt.value;
         selDia.add(opt);
     }
-
     const selAno = document.getElementById('ano');
     const anoAtual = new Date().getFullYear();
-    for(let i = anoAtual; i >= 1920; i--) {
+    for(let i=anoAtual; i>=1920; i--) {
         let opt = document.createElement('option');
         opt.value = i; opt.text = i;
         selAno.add(opt);
     }
 
+    // MÁSCARA CPF
     document.getElementById('cpf').oninput = e => {
         let v = e.target.value.replace(/\D/g, '');
         v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -158,20 +171,8 @@
     function compartilharApp(plataforma) {
         const n = document.getElementById('nome').value;
         const ape = document.getElementById('apelido').value || '---';
-        const d = document.getElementById('dia').value;
-        const m = document.getElementById('mes').value;
-        const a = document.getElementById('ano').value;
-        const dataF = (d && m && a) ? `${d}/${m}/${a}` : '---';
-
-        const texto = `*FICHA DE CADASTRO*%0A%0A` +
-                      `*NOME:* ${n}%0A` +
-                      `*APELIDO:* ${ape}%0A` +
-                      `*CPF:* ${document.getElementById('cpf').value}%0A` +
-                      `*NASC:* ${dataF}%0A` +
-                      `*END:* ${document.getElementById('rua').value}, ${document.getElementById('numero').value}%0A` +
-                      `*CIDADE:* ${document.getElementById('cidade').value}-${document.getElementById('uf').value}%0A` +
-                      `*OBS:* ${document.getElementById('obs').value}`;
-
+        const dataF = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
+        const texto = `*FICHA DE CADASTRO*%0A%0A*NOME:* ${n}%0A*APELIDO:* ${ape}%0A*CPF:* ${document.getElementById('cpf').value}%0A*NASC:* ${dataF}%0A*END:* ${document.getElementById('rua').value}, ${document.getElementById('numero').value}%0A*CIDADE:* ${document.getElementById('cidade').value}-${document.getElementById('uf').value}%0A*OBS:* ${document.getElementById('obs').value}`;
         window.location.href = plataforma === 'whatsapp' ? `whatsapp://send?text=${texto}` : `tg://msg?text=${texto}`;
     }
 
@@ -179,49 +180,3 @@
         const reader = new FileReader();
         reader.onload = ev => {
             const img = new Image();
-            img.src = ev.target.result;
-            img.onload = () => {
-                const cv = document.createElement('canvas');
-                cv.width = 500; cv.height = 500;
-                cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
-                fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
-                document.getElementById('preview').src = fotoBase64;
-            };
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    document.getElementById('formFinal').onsubmit = e => {
-        e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-        const dataFinal = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
-        const dados = {
-            nome: document.getElementById('nome').value,
-            apelido: document.getElementById('apelido').value,
-            cpf: document.getElementById('cpf').value,
-            data: dataFinal,
-            rua: document.getElementById('rua').value,
-            numero: document.getElementById('numero').value,
-            cidade: document.getElementById('cidade').value,
-            uf: document.getElementById('uf').value,
-            obs: document.getElementById('obs').value,
-            foto: fotoBase64
-        };
-        if (id !== null) lista[id] = dados;
-        else lista.push(dados);
-        localStorage.setItem('banco_final', JSON.stringify(lista));
-        alert("CADASTRO SALVO!");
-        window.location.href = "index.html";
-    };
-
-    function excluir() {
-        if(confirm("EXCLUIR REGISTRO?")) {
-            let lista = JSON.parse(localStorage.getItem('banco_final'));
-            lista.splice(id, 1);
-            localStorage.setItem('banco_final', JSON.stringify(lista));
-            window.location.href = "index.html";
-        }
-    }
-</script>
-</body>
-</html>

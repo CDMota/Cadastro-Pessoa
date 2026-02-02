@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - CDMota</title>
     <style>
-        /* ASSINATURA E CORES PADRONIZADAS */
         :root { --cor-primaria: #007bff; --cor-sucesso: #25d366; --cor-telegram: #0088cc; --cor-alerta: #f39c12; --cor-perigo: #dc3545; }
-        .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; }
+        .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; text-transform: none; }
         
         body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; position: relative; text-transform: uppercase; }
         .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -15,9 +14,10 @@
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #666; }
         input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; margin-top: 5px; text-transform: uppercase; }
         
-        /* LAYOUT */
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .tres-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+        .data-tripla { display: grid; grid-template-columns: 1fr 1.2fr 1.5fr; gap: 5px; }
+        
         #preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid var(--cor-primaria); background: #eee; }
         
         .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; text-align: center; text-decoration: none; display: block; color: white; }
@@ -49,7 +49,17 @@
         
         <div class="duas-col">
             <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
-            <div><label>DATA NASCIMENTO</label><input type="date" id="data"></div>
+            <div>
+                <label>NASCIMENTO</label>
+                <div class="data-tripla">
+                    <select id="dia"><option value="">DIA</option></select>
+                    <select id="mes">
+                        <option value="">MÊS</option>
+                        <option value="01">JAN</option><option value="02">FEV</option><option value="03">MAR</option><option value="04">ABR</option><option value="05">MAI</option><option value="06">JUN</option><option value="07">JUL</option><option value="08">AGO</option><option value="09">SET</option><option value="10">OUT</option><option value="11">NOV</option><option value="12">DEZ</option>
+                    </select>
+                    <select id="ano"><option value="">ANO</option></select>
+                </div>
+            </div>
         </div>
 
         <label>ENDEREÇO</label>
@@ -83,7 +93,22 @@
     const id = urlParams.get('edit');
     let fotoBase64 = "";
 
-    // MÁSCARA CPF
+    // GERAÇÃO AUTOMÁTICA DE DIAS E ANOS (ATUALIZÁVEL)
+    const selDia = document.getElementById('dia');
+    for(let i=1; i<=31; i++) {
+        let opt = document.createElement('option');
+        opt.value = i.toString().padStart(2,'0'); opt.text = opt.value;
+        selDia.add(opt);
+    }
+
+    const selAno = document.getElementById('ano');
+    const anoAtual = new Date().getFullYear(); // PEGA O ANO DO CELULAR AUTOMATICAMENTE
+    for(let i = anoAtual; i >= 1920; i--) {
+        let opt = document.createElement('option');
+        opt.value = i; opt.text = i;
+        selAno.add(opt);
+    }
+
     document.getElementById('cpf').oninput = e => {
         let v = e.target.value.replace(/\D/g, '');
         v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -99,16 +124,20 @@
                 document.getElementById('btnTele').style.display = "block";
                 document.getElementById('btnWhats').style.display = "block";
                 document.getElementById('btnDel').style.display = "block";
-                
                 document.getElementById('nome').value = d.nome || '';
                 document.getElementById('apelido').value = d.apelido || '';
                 document.getElementById('cpf').value = d.cpf || '';
-                document.getElementById('data').value = d.data || '';
                 document.getElementById('rua').value = d.rua || '';
                 document.getElementById('numero').value = d.numero || '';
                 document.getElementById('cidade').value = d.cidade || '';
                 document.getElementById('uf').value = d.uf || '';
                 document.getElementById('obs').value = d.obs || '';
+                if(d.data && d.data.includes('/')) {
+                    const partes = d.data.split('/');
+                    document.getElementById('dia').value = partes[0];
+                    document.getElementById('mes').value = partes[1];
+                    document.getElementById('ano').value = partes[2];
+                }
                 if(d.foto) { document.getElementById('preview').src = d.foto; fotoBase64 = d.foto; }
             }
         }
@@ -125,12 +154,16 @@
     function compartilharApp(plataforma) {
         const n = document.getElementById('nome').value;
         const ape = document.getElementById('apelido').value || '---';
-        const dataNasc = document.getElementById('data').value.split('-').reverse().join('/');
+        const d = document.getElementById('dia').value;
+        const m = document.getElementById('mes').value;
+        const a = document.getElementById('ano').value;
+        const dataF = (d && m && a) ? `${d}/${m}/${a}` : '---';
+
         const texto = `*FICHA DE CADASTRO*%0A%0A` +
                       `*NOME:* ${n}%0A` +
                       `*APELIDO:* ${ape}%0A` +
                       `*CPF:* ${document.getElementById('cpf').value}%0A` +
-                      `*NASC:* ${dataNasc}%0A` +
+                      `*NASC:* ${dataF}%0A` +
                       `*END:* ${document.getElementById('rua').value}, ${document.getElementById('numero').value}%0A` +
                       `*CIDADE:* ${document.getElementById('cidade').value}-${document.getElementById('uf').value}%0A` +
                       `*OBS:* ${document.getElementById('obs').value}`;
@@ -157,11 +190,12 @@
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+        const dataFinal = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
         const dados = {
             nome: document.getElementById('nome').value,
             apelido: document.getElementById('apelido').value,
             cpf: document.getElementById('cpf').value,
-            data: document.getElementById('data').value,
+            data: dataFinal,
             rua: document.getElementById('rua').value,
             numero: document.getElementById('numero').value,
             cidade: document.getElementById('cidade').value,

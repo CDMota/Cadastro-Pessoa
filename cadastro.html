@@ -3,33 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Completo</title>
+    <title>Cadastro - CDMota</title>
     <style>
-        /* ASSINATURA DISCRETA */
-        .assinatura { 
-            position: absolute; 
-            top: 5px; 
-            left: 10px; 
-            font-size: 9px; 
-            color: #bbb; 
-            font-family: sans-serif;
-        }
-
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; position: relative; }
-        .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; }
-        label { display: block; margin-top: 10px; font-weight: bold; font-size: 12px; color: #666; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 5px; }
+        /* ASSINATURA E CORES PADRONIZADAS */
+        :root { --cor-primaria: #007bff; --cor-sucesso: #25d366; --cor-telegram: #0088cc; --cor-alerta: #f39c12; --cor-perigo: #dc3545; }
+        .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; }
+        
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; position: relative; text-transform: uppercase; }
+        .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #666; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; margin-top: 5px; text-transform: uppercase; }
+        
+        /* LAYOUT */
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .tres-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
-        #preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid #007bff; background: #eee; }
+        #preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid var(--cor-primaria); background: #eee; }
         
-        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 15px; text-align: center; text-decoration: none; display: block; }
-        .btn-salvar { background: #007bff; color: white; }
-        .btn-foto { background: #f39c12; color: white; display: none; }
-        .btn-whats { background: #25d366; color: white; display: none; }
-        .btn-tele { background: #0088cc; color: white; display: none; }
-        .btn-del { background: #dc3545; color: white; display: none; margin-top: 30px; }
-        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; font-size: 14px; }
+        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; text-align: center; text-decoration: none; display: block; color: white; }
+        .btn-salvar { background: var(--cor-primaria); }
+        .btn-foto { background: var(--cor-alerta); display: none; }
+        .btn-whats { background: var(--cor-sucesso); display: none; }
+        .btn-tele { background: var(--cor-telegram); display: none; }
+        .btn-del { background: var(--cor-perigo); display: none; margin-top: 30px; }
+        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; font-size: 12px; }
         .secao-compartilhar { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc; }
     </style>
 </head>
@@ -38,33 +35,35 @@
 <div class="assinatura">by CDMota</div>
 
 <div class="caixa">
-    <h3 id="txtTitulo" style="text-align:center; color:#007bff; margin-top:0">FICHA DE DADOS</h3>
+    <h3 style="text-align:center; color:var(--cor-primaria); margin-top:0">FICHA DE DADOS</h3>
     <img id="preview" src="https://via.placeholder.com/120">
     
     <form id="formFinal">
-        <label>Foto (Tirar agora ou Galeria)</label>
+        <label>FOTO (TIRAR OU GALERIA)</label>
         <input type="file" id="foto" accept="image/*" capture="environment">
         
         <div class="duas-col">
-            <div><label>Nome Completo</label><input type="text" id="nome" required></div>
-            <div><label>Apelido</label><input type="text" id="apelido"></div>
+            <div><label>NOME COMPLETO</label><input type="text" id="nome" required oninput="this.value = this.value.toUpperCase()"></div>
+            <div><label>APELIDO</label><input type="text" id="apelido" oninput="this.value = this.value.toUpperCase()"></div>
         </div>
         
         <div class="duas-col">
             <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
-            <div><label>Nascimento</label><input type="tel" id="data" maxlength="10"></div>
+            <div><label>DATA NASCIMENTO</label><input type="date" id="data"></div>
         </div>
 
-        <label>Endereço</label>
+        <label>ENDEREÇO</label>
         <div class="tres-col">
-            <input type="text" id="rua" placeholder="Rua / Logradouro">
+            <input type="text" id="rua" placeholder="RUA" oninput="this.value = this.value.toUpperCase()">
             <input type="text" id="numero" placeholder="Nº">
-            <input type="text" id="uf" maxlength="2" placeholder="UF">
+            <select id="uf">
+                <option value="">UF</option><option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+            </select>
         </div>
-        <input type="text" id="cidade" placeholder="Cidade" style="margin-top: 5px;">
+        <input type="text" id="cidade" placeholder="CIDADE" style="margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
         
-        <label>Observações</label>
-        <textarea id="obs" rows="2"></textarea>
+        <label>OBSERVAÇÕES</label>
+        <textarea id="obs" rows="2" oninput="this.value = this.value.toUpperCase()"></textarea>
 
         <button type="submit" id="btnAcao" class="btn btn-salvar">💾 SALVAR NO SISTEMA</button>
         
@@ -126,16 +125,15 @@
     function compartilharApp(plataforma) {
         const n = document.getElementById('nome').value;
         const ape = document.getElementById('apelido').value || '---';
-        const end = `${document.getElementById('rua').value}, ${document.getElementById('numero').value}`;
-        const cid = `${document.getElementById('cidade').value}-${document.getElementById('uf').value}`;
-
+        const dataNasc = document.getElementById('data').value.split('-').reverse().join('/');
         const texto = `*FICHA DE CADASTRO*%0A%0A` +
-                      `*Nome:* ${n}%0A` +
-                      `*Apelido:* ${ape}%0A` +
+                      `*NOME:* ${n}%0A` +
+                      `*APELIDO:* ${ape}%0A` +
                       `*CPF:* ${document.getElementById('cpf').value}%0A` +
-                      `*Endereço:* ${end}%0A` +
-                      `*Cidade:* ${cid}%0A` +
-                      `*Obs:* ${document.getElementById('obs').value}`;
+                      `*NASC:* ${dataNasc}%0A` +
+                      `*END:* ${document.getElementById('rua').value}, ${document.getElementById('numero').value}%0A` +
+                      `*CIDADE:* ${document.getElementById('cidade').value}-${document.getElementById('uf').value}%0A` +
+                      `*OBS:* ${document.getElementById('obs').value}`;
 
         window.location.href = plataforma === 'whatsapp' ? `whatsapp://send?text=${texto}` : `tg://msg?text=${texto}`;
     }
@@ -147,8 +145,8 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 400; cv.height = 400;
-                cv.getContext('2d').drawImage(img, 0, 0, 400, 400);
+                cv.width = 500; cv.height = 500;
+                cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
                 fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
                 document.getElementById('preview').src = fotoBase64;
             };
@@ -174,12 +172,12 @@
         if (id !== null) lista[id] = dados;
         else lista.push(dados);
         localStorage.setItem('banco_final', JSON.stringify(lista));
-        alert("Salvo com sucesso!");
+        alert("CADASTRO SALVO!");
         window.location.href = "index.html";
     };
 
     function excluir() {
-        if(confirm("Deseja apagar este cadastro?")) {
+        if(confirm("EXCLUIR REGISTRO?")) {
             let lista = JSON.parse(localStorage.getItem('banco_final'));
             lista.splice(id, 1);
             localStorage.setItem('banco_final', JSON.stringify(lista));

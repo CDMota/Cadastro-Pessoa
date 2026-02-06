@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CADASTRO OPERACIONAL</title>
+    <title>FICHA OPERACIONAL</title>
     <style>
         body { font-family: sans-serif; background: #0a0a0a; color: #ddd; padding: 10px; text-transform: uppercase; }
         .caixa { background: #151515; padding: 15px; border-radius: 10px; max-width: 500px; margin: auto; border: 1px solid #333; }
@@ -47,7 +47,7 @@
         </div>
 
         <label>NATUREZA DA OCORRÊNCIA</label>
-        <select id="natureza" onchange="verificarNatureza()">
+        <select id="natureza" onchange="verificarAbordado()">
             <option value="">SELECIONE...</option>
             <option value="ABORDADO">ABORDADO</option>
             <option value="PRISÃO">PRISÃO</option>
@@ -67,14 +67,14 @@
             </div>
         </div>
 
-        <label>LOCAL (GPS)</label>
+        <label>GPS (LOCAL)</label>
         <div style="display:flex; gap:5px;">
             <input type="text" id="gps" readonly placeholder="COORDENADAS">
             <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
         </div>
 
         <label>ENDEREÇO</label>
-        <input type="text" id="rua" placeholder="RUA / NÚMERO">
+        <input type="text" id="rua" placeholder="RUA E Nº">
         <div class="duas-col">
             <div><input type="text" id="bairro" placeholder="BAIRRO"></div>
             <div><input type="text" id="cidade" placeholder="CIDADE"></div>
@@ -88,30 +88,32 @@
         <label>OBSERVAÇÕES</label>
         <textarea id="obs" rows="3"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR</button>
-        <button type="button" id="btnZap" class="btn btn-whats" style="display:none;" onclick="compartilhar()">🟢 COMPARTILHAR DADOS</button>
-        <button type="button" id="btnDel" class="btn btn-del" style="display:none;" onclick="excluir()">🗑️ EXCLUIR</button>
+        <button type="submit" class="btn btn-salvar">💾 SALVAR NO CELULAR</button>
+        
+        <div id="areaAcao" style="display:none;">
+            <button type="button" class="btn btn-whats" onclick="compartilhar()">🟢 ENVIAR WHATSAPP</button>
+            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ EXCLUIR REGISTRO</button>
+        </div>
+        
         <a href="index.html" class="btn" style="background:#444;">VOLTAR</a>
     </form>
 </div>
 
 <script>
-    const DB_KEY = 'SISTEMA_TATICO_V4';
+    const CHAVE_BANCO = 'DB_POLICIAL_FINAL';
     const params = new URLSearchParams(window.location.search);
-    const id = params.get('edit');
+    const idEdicao = params.get('edit');
     let fotoBase64 = "";
 
-    // Máscara Data Nasc
+    // Máscara Data
     document.getElementById('dataNasc').oninput = e => {
         let v = e.target.value.replace(/\D/g, '');
         v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
         e.target.value = v;
     };
 
-    // Data automática APENAS se escolher ABORDADO
-    function verificarNatureza() {
-        const nat = document.getElementById('natureza').value;
-        if (nat === "ABORDADO") {
+    function verificarAbordado() {
+        if (document.getElementById('natureza').value === "ABORDADO") {
             document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase();
         }
     }
@@ -119,18 +121,16 @@
     function pegarGPS() {
         navigator.geolocation.getCurrentPosition(pos => {
             document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
-        });
+        }, () => alert("LIGUE O GPS!"));
     }
 
-    // CARREGAR DADOS AO CLICAR EM "VER"
+    // CARREGAR DADOS SE FOR EDIÇÃO
     window.onload = () => {
-        if (id !== null) {
-            const lista = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-            const p = lista[id];
+        if (idEdicao !== null) {
+            const lista = JSON.parse(localStorage.getItem(CHAVE_BANCO) || '[]');
+            const p = lista[idEdicao];
             if (p) {
-                document.getElementById('btnZap').style.display = "block";
-                document.getElementById('btnDel').style.display = "block";
-                // Preenche campos
+                document.getElementById('areaAcao').style.display = "block";
                 Object.keys(p).forEach(key => {
                     const el = document.getElementById(key);
                     if (el) el.value = p[key];
@@ -143,26 +143,36 @@
         }
     };
 
+    // SALVAR
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+        let lista = JSON.parse(localStorage.getItem(CHAVE_BANCO) || '[]');
+        
         const dados = {};
         document.querySelectorAll('input, select, textarea').forEach(i => {
             if(i.id) dados[i.id] = i.value.toUpperCase();
         });
         dados.foto = fotoBase64;
 
-        if (id !== null) lista[id] = dados; else lista.push(dados);
-        localStorage.setItem(DB_KEY, JSON.stringify(lista));
-        alert("SALVO!");
+        if (idEdicao !== null) {
+            lista[idEdicao] = dados;
+        } else {
+            lista.push(dados);
+        }
+
+        localStorage.setItem(CHAVE_BANCO, JSON.stringify(lista));
+        alert("REGISTRO SALVO!");
         window.location.href = "index.html";
     };
 
     function compartilhar() {
-        const txt = `*RELATÓRIO TÁTICO*\n*NOME:* ${document.getElementById('nome').value}\n*VULGO:* ${document.getElementById('vulgo').value}\n*MÃE:* ${document.getElementById('mae').value}\n*STATUS:* ${document.getElementById('status').value}\n*LOCAL:* https://www.google.com/maps?q=${document.getElementById('gps').value}`;
-        window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(txt);
+        const nome = document.getElementById('nome').value;
+        const gps = document.getElementById('gps').value;
+        const msg = `*RELATÓRIO TÁTICO*\n*NOME:* ${nome}\n*STATUS:* ${document.getElementById('status').value}\n*LOCAL:* https://www.google.com/maps?q=${gps}`;
+        window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
     }
 
+    // Processar Foto
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -181,9 +191,9 @@
 
     function excluir() {
         if(confirm("EXCLUIR REGISTRO?")) {
-            let lista = JSON.parse(localStorage.getItem(DB_KEY));
-            lista.splice(id, 1);
-            localStorage.setItem(DB_KEY, JSON.stringify(lista));
+            let lista = JSON.parse(localStorage.getItem(CHAVE_BANCO));
+            lista.splice(idEdicao, 1);
+            localStorage.setItem(CHAVE_BANCO, JSON.stringify(lista));
             window.location.href = "index.html";
         }
     }

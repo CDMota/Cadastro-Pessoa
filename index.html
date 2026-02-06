@@ -8,51 +8,46 @@
         body { font-family: sans-serif; background: #0a0a0a; color: white; padding: 15px; margin: 0; }
         .topo { background: #1a1a1a; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d32f2f; }
         #busca { width: 100%; padding: 15px; border: none; border-radius: 8px; margin: 15px 0; font-size: 16px; background: #222; color: white; text-transform: uppercase; box-sizing: border-box; border: 1px solid #333; }
-        #busca:focus { border-color: #d32f2f; outline: none; }
-        .cartao { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 5px solid #d32f2f; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .foto-lista { width: 65px; height: 65px; border-radius: 5px; object-fit: cover; margin-right: 15px; border: 1px solid #333; background: #222; }
-        .info { flex-grow: 1; overflow: hidden; }
-        .info h4 { margin: 0; color: #fff; text-transform: uppercase; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cartao { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 5px solid #d32f2f; }
+        .foto-lista { width: 65px; height: 65px; border-radius: 5px; object-fit: cover; margin-right: 15px; border: 1px solid #333; background: #333; }
+        .info { flex-grow: 1; }
+        .info h4 { margin: 0; color: #fff; text-transform: uppercase; font-size: 14px; }
         .info p { margin: 2px 0; font-size: 11px; color: #aaa; text-transform: uppercase; }
-        .btn-ver { background: #d32f2f; color: white; padding: 10px 18px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; transition: 0.2s; }
-        .btn-ver:active { background: #b71c1c; transform: scale(0.95); }
-        .vazio { text-align: center; color: #666; margin-top: 50px; text-transform: uppercase; font-size: 12px; }
+        .btn-ver { background: #d32f2f; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        .vazio { text-align: center; color: #666; margin-top: 50px; }
     </style>
 </head>
 <body>
     <div class="topo">
         <h3 style="margin:0">SISTEMA TÁTICO</h3>
-        <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold; font-size: 12px;">+ NOVO</a>
+        <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
     
     <input type="text" id="busca" placeholder="🔍 BUSCAR NOME, VULGO OU CPF..." oninput="filtrar()">
-    
     <div id="listaContainer"></div>
 
     <script>
-        // NOME DA CHAVE DEVE SER IDÊNTICO AO DO CADASTRO.HTML
-        const NOME_BANCO = 'banco_tatico_v3';
+        const DB_KEY = 'SISTEMA_TATICO_V4';
 
         function carregar() {
-            const listaRaw = localStorage.getItem(NOME_BANCO);
-            const lista = JSON.parse(listaRaw || '[]');
+            const lista = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
             const container = document.getElementById('listaContainer');
+            container.innerHTML = "";
             
             if (lista.length === 0) {
-                container.innerHTML = '<div class="vazio">Nenhum cadastro encontrado.</div>';
+                container.innerHTML = '<div class="vazio">NENHUM REGISTRO SALVO.</div>';
                 return;
             }
 
-            container.innerHTML = "";
             lista.forEach((p, index) => {
                 const item = document.createElement('div');
                 item.className = 'cartao';
                 item.innerHTML = `
-                    <img src="${p.foto || 'https://via.placeholder.com/65x65?text=FOTO'}" class="foto-lista">
+                    <img src="${p.foto || ''}" class="foto-lista">
                     <div class="info">
-                        <h4>${p.nome || 'SEM NOME'} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
-                        <p><b>STATUS:</b> ${p.status || 'N/I'}</p>
-                        <p><b>CPF:</b> ${p.cpf || 'N/I'}</p>
+                        <h4>${p.nome} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
+                        <p>STATUS: ${p.status}</p>
+                        <p>MÃE: ${p.mae || 'N/I'}</p>
                     </div>
                     <a href="cadastro.html?edit=${index}" class="btn-ver">VER</a>
                 `;
@@ -63,18 +58,10 @@
         function filtrar() {
             const termo = document.getElementById('busca').value.toUpperCase();
             const cartoes = document.getElementsByClassName('cartao');
-            
-            Array.from(cartoes).forEach(cartao => {
-                const texto = cartao.innerText.toUpperCase();
-                if (texto.indexOf(termo) > -1) {
-                    cartao.style.display = "flex";
-                } else {
-                    cartao.style.display = "none";
-                }
-            });
+            for (let c of cartoes) {
+                c.style.display = c.innerText.toUpperCase().includes(termo) ? "flex" : "none";
+            }
         }
-
-        // Carrega a lista ao abrir a página
         window.onload = carregar;
     </script>
 </body>

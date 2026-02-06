@@ -10,20 +10,20 @@
         label { display: block; margin-top: 10px; font-size: 10px; color: #888; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 5px; background: #222; color: white; font-size: 14px; text-transform: uppercase; box-sizing: border-box; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        #preview { width: 140px; height: 140px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 10px; border: 2px solid #d32f2f; background: #222; }
+        #preview { width: 150px; height: 150px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 10px; border: 2px solid #d32f2f; background: #222; }
         .btn { border: none; padding: 15px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; text-align: center; color: white; text-decoration: none; display: block; font-size: 12px; }
         .btn-salvar { background: #2e7d32; }
         .btn-whats { background: #25d366; color: black; }
         .btn-tele { background: #0088cc; }
         .btn-gps { background: #6a1b9a; width: 60px; }
-        .btn-del { background: #b71c1c; margin-top: 30px; }
+        .btn-del { background: #b71c1c; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="caixa">
-    <img id="preview" src="https://via.placeholder.com/140/222/555?text=FOTO">
-    <input type="file" id="foto" accept="image/*" style="font-size:10px; background:none; border:none;">
+    <img id="preview" src="">
+    <input type="file" id="foto" accept="image/*">
 
     <form id="formFinal">
         <label>NOME COMPLETO</label>
@@ -38,7 +38,7 @@
         </div>
 
         <div class="duas-col">
-            <div><label>DATA NASCIMENTO</label><input type="tel" id="dataNasc" placeholder="00/00/0000" maxlength="10"></div>
+            <div><label>NASCIMENTO</label><input type="tel" id="dataNasc"></div>
             <div><label>SEXO</label>
                 <select id="sexo">
                     <option value="MASCULINO">MASCULINO</option>
@@ -48,15 +48,14 @@
         </div>
 
         <label>NATUREZA</label>
-        <select id="natureza" onchange="verificarAbordagem()">
+        <select id="natureza" onchange="verificarAbordado()">
             <option value="">SELECIONE...</option>
-            <option value="ABORDAGEM">ABORDAGEM</option>
+            <option value="ABORDADO">ABORDADO</option>
             <option value="PRISÃO">PRISÃO</option>
-            <option value="AVERIGUAÇÃO">AVERIGUAÇÃO</option>
         </select>
 
         <div class="duas-col">
-            <div><label>DATA/HORA OCORRÊNCIA</label><input type="text" id="dataOcorrencia"></div>
+            <div><label>DATA/HORA</label><input type="text" id="dataOcorrencia"></div>
             <div><label>STATUS</label>
                 <select id="status">
                     <option value="ABORDADO">ABORDADO</option>
@@ -68,49 +67,38 @@
             </div>
         </div>
 
-        <label>LOCALIZAÇÃO GPS</label>
+        <label>GPS</label>
         <div style="display:flex; gap:5px;">
-            <input type="text" id="gps" readonly placeholder="CLIQUE NO ÍCONE">
+            <input type="text" id="gps" readonly>
             <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
         </div>
 
-        <label>ENDEREÇO (RUA/Nº)</label>
-        <input type="text" id="rua">
-        <div class="duas-col">
-            <div><label>BAIRRO</label><input type="text" id="bairro"></div>
-            <div><label>CIDADE</label><input type="text" id="cidade"></div>
-        </div>
+        <label>ENDEREÇO (RUA/Nº/BAIRRO/CIDADE)</label>
+        <textarea id="enderecoCompleto" rows="2"></textarea>
 
         <label>BO Nº / OBSERVAÇÕES</label>
         <textarea id="obs" rows="3"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR REGISTRO</button>
+        <button type="submit" class="btn btn-salvar">💾 SALVAR E BAIXAR FOTO</button>
         
-        <div id="divAcoes" style="display:none;">
-            <button type="button" class="btn btn-whats" onclick="compartilhar('WA')">🟢 COMPARTILHAR WHATSAPP</button>
-            <button type="button" class="btn btn-tele" onclick="compartilhar('TG')">🔵 COMPARTILHAR TELEGRAM</button>
-            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ EXCLUIR REGISTRO</button>
+        <div id="areaAcao" style="display:none;">
+            <button type="button" class="btn btn-whats" onclick="enviar('WA')">🟢 WHATSAPP COMPLETO</button>
+            <button type="button" class="btn btn-tele" onclick="enviar('TG')">🔵 TELEGRAM COMPLETO</button>
+            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ EXCLUIR</button>
         </div>
         
-        <a href="index.html" class="btn" style="background:#444;">VOLTAR À LISTA</a>
+        <a href="index.html" class="btn" style="background:#444;">VOLTAR</a>
     </form>
 </div>
 
 <script>
-    const CHAVE_SISTEMA = 'SISTEMA_OPERACIONAL_V6';
+    const CHAVE = 'SISTEMA_V7_FINAL';
     const params = new URLSearchParams(window.location.search);
-    const indexEdicao = params.get('edit');
-    let fotoGlobal = "";
+    const id = params.get('edit');
+    let fotoBase64 = "";
 
-    // Máscara de Data
-    document.getElementById('dataNasc').oninput = e => {
-        let v = e.target.value.replace(/\D/g, '');
-        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
-        e.target.value = v;
-    };
-
-    function verificarAbordagem() {
-        if (document.getElementById('natureza').value === "ABORDAGEM") {
+    function verificarAbordado() {
+        if(document.getElementById('natureza').value === "ABORDADO") {
             document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase();
         }
     }
@@ -118,85 +106,72 @@
     function pegarGPS() {
         navigator.geolocation.getCurrentPosition(pos => {
             document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
-        }, () => alert("ERRO AO PEGAR GPS. ATIVE-O!"));
+        });
     }
 
-    // --- CARREGAR DADOS ---
     window.onload = () => {
-        if (indexEdicao !== null) {
-            const lista = JSON.parse(localStorage.getItem(CHAVE_SISTEMA) || '[]');
-            const p = lista[indexEdicao];
+        if (id !== null) {
+            const lista = JSON.parse(localStorage.getItem(CHAVE) || '[]');
+            const p = lista[id];
             if (p) {
-                document.getElementById('divAcoes').style.display = "block";
-                // Preencher campos manualmente para evitar erros
-                document.getElementById('nome').value = p.nome || "";
-                document.getElementById('mae').value = p.mae || "";
-                document.getElementById('vulgo').value = p.vulgo || "";
-                document.getElementById('cpf').value = p.cpf || "";
-                document.getElementById('dataNasc').value = p.dataNasc || "";
-                document.getElementById('sexo').value = p.sexo || "MASCULINO";
-                document.getElementById('natureza').value = p.natureza || "";
-                document.getElementById('dataOcorrencia').value = p.dataOcorrencia || "";
-                document.getElementById('status').value = p.status || "ABORDADO";
-                document.getElementById('gps').value = p.gps || "";
-                document.getElementById('rua').value = p.rua || "";
-                document.getElementById('bairro').value = p.bairro || "";
-                document.getElementById('cidade').value = p.cidade || "";
-                document.getElementById('obs').value = p.obs || "";
-                
+                document.getElementById('areaAcao').style.display = "block";
+                Object.keys(p).forEach(key => {
+                    const el = document.getElementById(key);
+                    if (el) el.value = p[key];
+                });
                 if (p.foto) {
                     document.getElementById('preview').src = p.foto;
-                    fotoGlobal = p.foto;
+                    fotoBase64 = p.foto;
                 }
             }
         }
     };
 
-    // --- SALVAR ---
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem(CHAVE_SISTEMA) || '[]');
-        
-        const registro = {
-            nome: document.getElementById('nome').value.toUpperCase(),
-            mae: document.getElementById('mae').value.toUpperCase(),
-            vulgo: document.getElementById('vulgo').value.toUpperCase(),
-            cpf: document.getElementById('cpf').value,
-            dataNasc: document.getElementById('dataNasc').value,
-            sexo: document.getElementById('sexo').value,
-            natureza: document.getElementById('natureza').value,
-            dataOcorrencia: document.getElementById('dataOcorrencia').value,
-            status: document.getElementById('status').value,
-            gps: document.getElementById('gps').value,
-            rua: document.getElementById('rua').value.toUpperCase(),
-            bairro: document.getElementById('bairro').value.toUpperCase(),
-            cidade: document.getElementById('cidade').value.toUpperCase(),
-            obs: document.getElementById('obs').value.toUpperCase(),
-            foto: fotoGlobal
-        };
+        let lista = JSON.parse(localStorage.getItem(CHAVE) || '[]');
+        const dados = {};
+        document.querySelectorAll('input, select, textarea').forEach(i => {
+            if(i.id) dados[i.id] = i.value.toUpperCase();
+        });
+        dados.foto = fotoBase64;
 
-        if (indexEdicao !== null) {
-            lista[indexEdicao] = registro;
-        } else {
-            lista.push(registro);
+        if (id !== null) lista[id] = dados; else lista.push(dados);
+        localStorage.setItem(CHAVE, JSON.stringify(lista));
+
+        // --- SALVAR NA GALERIA (DOWNLOAD) ---
+        if(fotoBase64) {
+            const link = document.createElement('a');
+            link.href = fotoBase64;
+            link.download = `FOTO_${dados.nome}.jpg`;
+            link.click();
         }
 
-        localStorage.setItem(CHAVE_SISTEMA, JSON.stringify(lista));
-        alert("REGISTRO SALVO COM SUCESSO!");
+        alert("DADOS SALVOS E FOTO ENVIADA PARA GALERIA!");
         window.location.href = "index.html";
     };
 
-    function compartilhar(rede) {
-        const n = document.getElementById('nome').value;
-        const s = document.getElementById('status').value;
-        const g = document.getElementById('gps').value;
-        const msg = `*FICHA OPERACIONAL*\n*NOME:* ${n}\n*STATUS:* ${s}\n*LOCAL:* https://www.google.com/maps?q=${g}`;
-        
-        if (rede === 'WA') window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-        if (rede === 'TG') window.location.href = `https://t.me/share/url?url=${encodeURIComponent(msg)}`;
+    function enviar(tipo) {
+        const d = (id) => document.getElementById(id).value;
+        const msg = `*RELATÓRIO OPERACIONAL*\n` +
+                    `*NOME:* ${d('nome')}\n` +
+                    `*VULGO:* ${d('vulgo')}\n` +
+                    `*MÃE:* ${d('mae')}\n` +
+                    `*CPF:* ${d('cpf')}\n` +
+                    `*NASC:* ${d('dataNasc')}\n` +
+                    `*STATUS:* ${d('status')}\n` +
+                    `*NATUREZA:* ${d('natureza')}\n` +
+                    `*DATA/HORA:* ${d('dataOcorrencia')}\n` +
+                    `*END:* ${d('enderecoCompleto')}\n` +
+                    `*OBS:* ${d('obs')}\n` +
+                    `*MAPA:* http://maps.google.com/maps?q=${d('gps')}`;
+
+        const url = tipo === 'WA' 
+            ? `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`
+            : `https://t.me/share/url?url=${encodeURIComponent(msg)}`;
+        window.location.href = url;
     }
 
-    // Converter Foto
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -204,20 +179,20 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 300; cv.height = 300;
-                cv.getContext('2d').drawImage(img, 0, 0, 300, 300);
-                fotoGlobal = cv.toDataURL('image/jpeg', 0.8);
-                document.getElementById('preview').src = fotoGlobal;
+                cv.width = 500; cv.height = 500;
+                cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.9);
+                document.getElementById('preview').src = fotoBase64;
             };
         };
         reader.readAsDataURL(e.target.files[0]);
     };
 
     function excluir() {
-        if(confirm("EXCLUIR DEFINITIVAMENTE?")) {
-            let lista = JSON.parse(localStorage.getItem(CHAVE_SISTEMA));
-            lista.splice(indexEdicao, 1);
-            localStorage.setItem(CHAVE_SISTEMA, JSON.stringify(lista));
+        if(confirm("EXCLUIR REGISTRO?")) {
+            let lista = JSON.parse(localStorage.getItem(CHAVE));
+            lista.splice(id, 1);
+            localStorage.setItem(CHAVE, JSON.stringify(lista));
             window.location.href = "index.html";
         }
     }

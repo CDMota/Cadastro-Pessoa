@@ -21,42 +21,35 @@
         <h3 style="margin:0">SISTEMA TÁTICO</h3>
         <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
-    
-    <input type="text" id="busca" placeholder="🔍 BUSCAR NOME OU VULGO..." oninput="filtrar()">
+    <input type="text" id="busca" placeholder="🔍 BUSCAR..." oninput="filtrar()">
     <div id="listaContainer"></div>
 
     <script>
-        const CHAVE_SISTEMA = 'SISTEMA_OPERACIONAL_V6';
-
+        const CHAVE = 'SISTEMA_V7_FINAL';
         function carregar() {
             const container = document.getElementById('listaContainer');
-            const lista = JSON.parse(localStorage.getItem(CHAVE_SISTEMA) || '[]');
-            
-            container.innerHTML = lista.length === 0 ? '<p style="text-align:center;color:#666;margin-top:30px;">NENHUM REGISTRO</p>' : "";
-            
+            const lista = JSON.parse(localStorage.getItem(CHAVE) || '[]');
+            container.innerHTML = "";
             lista.forEach((p, index) => {
                 const item = document.createElement('div');
                 item.className = 'cartao';
                 item.innerHTML = `
-                    <img src="${p.foto || ''}" class="foto-lista" onerror="this.src='https://via.placeholder.com/60/333/fff?text=?'">
+                    <img src="${p.foto || ''}" class="foto-lista">
                     <div class="info">
                         <h4>${p.nome}</h4>
-                        <p>VULGO: ${p.vulgo || 'N/I'} | STATUS: ${p.status}</p>
+                        <p>${p.vulgo || 'S/V'} - ${p.status}</p>
                     </div>
                     <a href="cadastro.html?edit=${index}" class="btn-ver">ABRIR</a>
                 `;
                 container.appendChild(item);
             });
         }
-
         function filtrar() {
             const t = document.getElementById('busca').value.toUpperCase();
-            const cards = document.getElementsByClassName('cartao');
-            for (let c of cards) {
+            for (let c of document.getElementsByClassName('cartao')) {
                 c.style.display = c.innerText.toUpperCase().includes(t) ? "flex" : "none";
             }
         }
-
         window.onload = carregar;
     </script>
 </body>

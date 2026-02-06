@@ -37,7 +37,7 @@
         </div>
 
         <div class="duas-col">
-            <div><label>DATA NASC. (DD/MM/AAAA)</label><input type="tel" id="dataNasc" maxlength="10" placeholder="00/00/0000"></div>
+            <div><label>DATA NASCIMENTO</label><input type="tel" id="dataNasc" maxlength="10" placeholder="00/00/0000"></div>
             <div><label>SEXO</label>
                 <select id="sexo">
                     <option value="MASCULINO">MASCULINO</option>
@@ -52,11 +52,10 @@
             <option value="ABORDADO">ABORDADO</option>
             <option value="PRISÃO">PRISÃO</option>
             <option value="AVERIGUAÇÃO">AVERIGUAÇÃO</option>
-            <option value="OUTROS">OUTROS</option>
         </select>
 
         <div class="duas-col">
-            <div><label>DATA/HORA OCORRÊNCIA</label><input type="text" id="dataOcorrencia" placeholder="AUTOMÁTICO P/ ABORDADO"></div>
+            <div><label>DATA/HORA</label><input type="text" id="dataOcorrencia"></div>
             <div><label>STATUS</label>
                 <select id="status">
                     <option value="ABORDADO">ABORDADO</option>
@@ -68,13 +67,13 @@
             </div>
         </div>
 
-        <label>LOCAL DA OCORRÊNCIA (GPS)</label>
+        <label>LOCAL (GPS)</label>
         <div style="display:flex; gap:5px;">
             <input type="text" id="gps" readonly placeholder="COORDENADAS">
             <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
         </div>
 
-        <label>ENDEREÇO DE RESIDÊNCIA</label>
+        <label>ENDEREÇO</label>
         <input type="text" id="rua" placeholder="RUA / NÚMERO">
         <div class="duas-col">
             <div><input type="text" id="bairro" placeholder="BAIRRO"></div>
@@ -89,80 +88,79 @@
         <label>OBSERVAÇÕES</label>
         <textarea id="obs" rows="3"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR NO DISPOSITIVO</button>
-        <button type="button" id="btnZap" class="btn btn-whats" style="display:none;" onclick="compartilhar()">🟢 ENVIAR RELATÓRIO WHATSAPP</button>
+        <button type="submit" class="btn btn-salvar">💾 SALVAR</button>
+        <button type="button" id="btnZap" class="btn btn-whats" style="display:none;" onclick="compartilhar()">🟢 COMPARTILHAR DADOS</button>
         <button type="button" id="btnDel" class="btn btn-del" style="display:none;" onclick="excluir()">🗑️ EXCLUIR</button>
         <a href="index.html" class="btn" style="background:#444;">VOLTAR</a>
     </form>
 </div>
 
 <script>
+    const DB_KEY = 'SISTEMA_TATICO_V4';
     const params = new URLSearchParams(window.location.search);
     const id = params.get('edit');
     let fotoBase64 = "";
 
-    // Máscara de Data
+    // Máscara Data Nasc
     document.getElementById('dataNasc').oninput = e => {
         let v = e.target.value.replace(/\D/g, '');
         v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
         e.target.value = v;
     };
 
-    // LÓGICA PEDIDA: SÓ CAPTURA DATA SE FOR "ABORDADO"
+    // Data automática APENAS se escolher ABORDADO
     function verificarNatureza() {
-        const natureza = document.getElementById('natureza').value;
-        const campoData = document.getElementById('dataOcorrencia');
-        
-        if (natureza === "ABORDADO") {
-            campoData.value = new Date().toLocaleString('pt-BR').toUpperCase();
-        } else {
-            campoData.value = ""; // Limpa se escolher outro, permitindo digitar se quiser
+        const nat = document.getElementById('natureza').value;
+        if (nat === "ABORDADO") {
+            document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase();
         }
     }
 
     function pegarGPS() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
-            }, () => alert("ATIVAR GPS!"));
-        }
+        navigator.geolocation.getCurrentPosition(pos => {
+            document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
+        });
     }
 
+    // CARREGAR DADOS AO CLICAR EM "VER"
     window.onload = () => {
         if (id !== null) {
-            const lista = JSON.parse(localStorage.getItem('banco_tatico_v3') || '[]');
+            const lista = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
             const p = lista[id];
             if (p) {
                 document.getElementById('btnZap').style.display = "block";
                 document.getElementById('btnDel').style.display = "block";
+                // Preenche campos
                 Object.keys(p).forEach(key => {
                     const el = document.getElementById(key);
-                    if(el) el.value = p[key];
+                    if (el) el.value = p[key];
                 });
-                if(p.foto) { document.getElementById('preview').src = p.foto; fotoBase64 = p.foto; }
+                if (p.foto) {
+                    document.getElementById('preview').src = p.foto;
+                    fotoBase64 = p.foto;
+                }
             }
         }
     };
 
-    function compartilhar() {
-        const nome = document.getElementById('nome').value;
-        const gps = document.getElementById('gps').value;
-        const linkMapa = gps ? `https://www.google.com/maps?q=${gps}` : "NÃO INFORMADO";
-        
-        const texto = `*RELATÓRIO TÁTICO OPERACIONAL*\n\n` +
-                      `*NOME:* ${nome}\n` +
-                      `*VULGO:* ${document.getElementById('vulgo').value || 'N/I'}\n` +
-                      `*MÃE:* ${document.getElementById('mae').value || 'N/I'}\n` +
-                      `*DATA NASC:* ${document.getElementById('dataNasc').value || 'N/I'}\n` +
-                      `*STATUS:* ${document.getElementById('status').value}\n` +
-                      `*NATUREZA:* ${document.getElementById('natureza').value}\n` +
-                      `*DATA/HORA:* ${document.getElementById('dataOcorrencia').value}\n` +
-                      `*GPS:* ${linkMapa}\n` +
-                      `*ENDEREÇO:* ${document.getElementById('rua').value}, ${document.getElementById('bairro').value} - ${document.getElementById('cidade').value}\n` +
-                      `*BO Nº:* ${document.getElementById('bo').value || 'N/I'}\n` +
-                      `*OBS:* ${document.getElementById('obs').value || 'SEM OBS'}`;
+    document.getElementById('formFinal').onsubmit = e => {
+        e.preventDefault();
+        let lista = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+        const dados = {};
+        document.querySelectorAll('input, select, textarea').forEach(i => {
+            if(i.id) dados[i.id] = i.value.toUpperCase();
+        });
+        dados.foto = fotoBase64;
 
-        window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
+        if (id !== null) lista[id] = dados; else lista.push(dados);
+        localStorage.setItem(DB_KEY, JSON.stringify(lista));
+        alert("SALVO!");
+        window.location.href = "index.html";
+    };
+
+    function compartilhar() {
+        const txt = `*RELATÓRIO TÁTICO*\n*NOME:* ${document.getElementById('nome').value}\n*VULGO:* ${document.getElementById('vulgo').value}\n*MÃE:* ${document.getElementById('mae').value}\n*STATUS:* ${document.getElementById('status').value}\n*LOCAL:* https://www.google.com/maps?q=${document.getElementById('gps').value}`;
+        window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(txt);
     }
 
     document.getElementById('foto').onchange = e => {
@@ -174,32 +172,18 @@
                 const cv = document.createElement('canvas');
                 cv.width = 400; cv.height = 400;
                 cv.getContext('2d').drawImage(img, 0, 0, 400, 400);
-                fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.7);
                 document.getElementById('preview').src = fotoBase64;
             };
         };
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    document.getElementById('formFinal').onsubmit = e => {
-        e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem('banco_tatico_v3') || '[]');
-        const dados = {};
-        const inputs = document.querySelectorAll('input, select, textarea');
-        inputs.forEach(i => dados[i.id] = i.value.toUpperCase());
-        dados.foto = fotoBase64;
-
-        if (id !== null) lista[id] = dados; else lista.push(dados);
-        localStorage.setItem('banco_tatico_v3', JSON.stringify(lista));
-        alert("CADASTRO SALVO!");
-        window.location.href = "index.html";
-    };
-
     function excluir() {
-        if(confirm("DESEJA REALMENTE EXCLUIR?")) {
-            let lista = JSON.parse(localStorage.getItem('banco_tatico_v3'));
+        if(confirm("EXCLUIR REGISTRO?")) {
+            let lista = JSON.parse(localStorage.getItem(DB_KEY));
             lista.splice(id, 1);
-            localStorage.setItem('banco_tatico_v3', JSON.stringify(lista));
+            localStorage.setItem(DB_KEY, JSON.stringify(lista));
             window.location.href = "index.html";
         }
     }

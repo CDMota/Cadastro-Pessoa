@@ -5,58 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista Operacional</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 15px; margin: 0; }
-        .topo { background: #0d47a1; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        #busca { width: 100%; padding: 12px; border: none; border-radius: 8px; margin-bottom: 15px; font-size: 16px; }
-        .cartao { background: #2c2c2c; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 6px solid #ffeb3b; }
-        .foto { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 2px solid #555; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
+        .topo { background: #075e54; color: white; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        #busca { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; font-size: 16px; box-sizing: border-box; }
+        .cartao { background: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid #075e54; }
+        .foto-lista { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 15px; background: #ddd; }
         .info { flex-grow: 1; }
-        .info h4 { margin: 0; color: #ffeb3b; text-transform: uppercase; font-size: 14px; }
-        .info p { margin: 2px 0; font-size: 12px; color: #bbb; }
-        .status-tag { font-size: 10px; padding: 3px 8px; border-radius: 10px; background: #444; color: #fff; font-weight: bold; }
-        .btn-ver { background: #ffeb3b; color: #000; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        .info h4 { margin: 0; color: #333; text-transform: uppercase; font-size: 14px; }
+        .info p { margin: 2px 0; font-size: 12px; color: #666; }
+        .btn-ver { background: #075e54; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 12px; font-weight: bold; }
+        .status-badge { font-size: 10px; background: #eee; padding: 2px 5px; border-radius: 4px; font-weight: bold; color: #d32f2f; }
     </style>
 </head>
 <body>
-    <div class="topo">
-        <h3 style="margin:0">SISTEMA TÁTICO</h3>
-        <a href="cadastro.html" style="background:#4caf50; color:white; padding:8px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
-    </div>
-    <input type="text" id="busca" placeholder="🔍 Buscar por Nome, Vulgo ou CPF..." onkeyup="filtrar()">
-    <div id="listaContainer"></div>
 
-    <script>
-        function carregar() {
-            const lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
-            const container = document.getElementById('listaContainer');
-            container.innerHTML = "";
+<div class="topo">
+    <h3 style="margin:0">SISTEMA TÁTICO</h3>
+    <a href="cadastro.html" style="color: white; text-decoration: none; font-weight: bold; background: #25d366; padding: 8px 12px; border-radius: 5px;">+ NOVO</a>
+</div>
 
-            lista.forEach((p, index) => {
-                const item = document.createElement('div');
-                item.className = 'cartao';
-                // Cor do alerta baseada na periculosidade
-                if(p.perigo === 'Alta') item.style.borderLeftColor = '#f44336';
-                
-                item.innerHTML = `
-                    <img src="${p.foto || 'https://via.placeholder.com/100'}" class="foto">
-                    <div class="info">
-                        <h4>${p.nome} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
-                        <p><b>Status:</b> <span class="status-tag">${p.status}</span></p>
-                        <p><b>BO:</b> ${p.bo || 'N/A'}</p>
-                    </div>
-                    <a href="cadastro.html?edit=${index}" class="btn-ver">DETALHES</a>
-                `;
-                container.appendChild(item);
-            });
+<input type="text" id="busca" placeholder="🔍 Buscar Nome, Vulgo ou CPF..." onkeyup="filtrar()">
+
+<div id="listaContainer"></div>
+
+<script>
+    function carregarLista() {
+        const lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
+        const container = document.getElementById('listaContainer');
+        container.innerHTML = "";
+
+        lista.forEach((p, index) => {
+            const div = document.createElement('div');
+            div.className = 'cartao';
+            div.innerHTML = `
+                <img src="${p.foto || 'https://via.placeholder.com/60'}" class="foto-lista">
+                <div class="info">
+                    <h4>${p.nome} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
+                    <p><b>Status:</b> <span class="status-badge">${p.status}</span></p>
+                    <p><b>Natureza:</b> ${p.natureza}</p>
+                </div>
+                <a href="cadastro.html?edit=${index}" class="btn-ver">VER</a>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function filtrar() {
+        let termo = document.getElementById('busca').value.toLowerCase();
+        let cartoes = document.getElementsByClassName('cartao');
+        for (let c of cartoes) {
+            c.style.display = c.innerText.toLowerCase().includes(termo) ? "flex" : "none";
         }
-        function filtrar() {
-            let termo = document.getElementById('busca').value.toLowerCase();
-            let cartoes = document.getElementsByClassName('cartao');
-            for (let c of cartoes) {
-                c.style.display = c.innerText.toLowerCase().includes(termo) ? "flex" : "none";
-            }
-        }
-        window.onload = carregar;
-    </script>
+    }
+
+    window.onload = carregarLista;
+</script>
 </body>
 </html>

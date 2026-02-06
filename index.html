@@ -9,11 +9,11 @@
         .topo { background: #1a1a1a; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d32f2f; }
         #busca { width: 100%; padding: 15px; border: none; border-radius: 8px; margin: 15px 0; font-size: 16px; background: #222; color: white; text-transform: uppercase; box-sizing: border-box; border: 1px solid #333; }
         .cartao { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 5px solid #d32f2f; }
-        .foto-lista { width: 65px; height: 65px; border-radius: 5px; object-fit: cover; margin-right: 15px; border: 1px solid #333; background: #333; }
+        .foto-lista { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 15px; border: 1px solid #333; background: #333; }
         .info { flex-grow: 1; }
-        .info h4 { margin: 0; color: #fff; text-transform: uppercase; font-size: 14px; }
-        .info p { margin: 2px 0; font-size: 11px; color: #aaa; text-transform: uppercase; }
-        .btn-ver { background: #d32f2f; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        .info h4 { margin: 0; color: #fff; text-transform: uppercase; font-size: 13px; }
+        .info p { margin: 2px 0; font-size: 10px; color: #aaa; text-transform: uppercase; }
+        .btn-ver { background: #d32f2f; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -21,35 +21,42 @@
         <h3 style="margin:0">SISTEMA TÁTICO</h3>
         <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
-    <input type="text" id="busca" placeholder="🔍 BUSCAR..." oninput="filtrar()">
+    
+    <input type="text" id="busca" placeholder="🔍 BUSCAR NOME OU VULGO..." oninput="filtrar()">
     <div id="listaContainer"></div>
 
     <script>
-        const DB_KEY = 'DB_POLICIAL_V5';
+        const CHAVE_SISTEMA = 'SISTEMA_OPERACIONAL_V6';
+
         function carregar() {
-            const lista = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
             const container = document.getElementById('listaContainer');
-            container.innerHTML = lista.length === 0 ? '<p style="text-align:center; color:#666; margin-top:50px;">VAZIO</p>' : "";
+            const lista = JSON.parse(localStorage.getItem(CHAVE_SISTEMA) || '[]');
+            
+            container.innerHTML = lista.length === 0 ? '<p style="text-align:center;color:#666;margin-top:30px;">NENHUM REGISTRO</p>' : "";
+            
             lista.forEach((p, index) => {
                 const item = document.createElement('div');
                 item.className = 'cartao';
                 item.innerHTML = `
-                    <img src="${p.foto || ''}" class="foto-lista">
+                    <img src="${p.foto || ''}" class="foto-lista" onerror="this.src='https://via.placeholder.com/60/333/fff?text=?'">
                     <div class="info">
-                        <h4>${p.nome} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
-                        <p>STATUS: ${p.status}</p>
+                        <h4>${p.nome}</h4>
+                        <p>VULGO: ${p.vulgo || 'N/I'} | STATUS: ${p.status}</p>
                     </div>
-                    <a href="cadastro.html?edit=${index}" class="btn-ver">VER</a>
+                    <a href="cadastro.html?edit=${index}" class="btn-ver">ABRIR</a>
                 `;
                 container.appendChild(item);
             });
         }
+
         function filtrar() {
             const t = document.getElementById('busca').value.toUpperCase();
-            for (let c of document.getElementsByClassName('cartao')) {
+            const cards = document.getElementsByClassName('cartao');
+            for (let c of cards) {
                 c.style.display = c.innerText.toUpperCase().includes(t) ? "flex" : "none";
             }
         }
+
         window.onload = carregar;
     </script>
 </body>

@@ -14,7 +14,7 @@
         .info h4 { margin: 0; color: #fff; text-transform: uppercase; font-size: 14px; }
         .info p { margin: 2px 0; font-size: 11px; color: #aaa; text-transform: uppercase; }
         .btn-ver { background: #d32f2f; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
-        .vazio { text-align: center; color: #666; margin-top: 50px; }
+        .vazio { text-align: center; color: #666; margin-top: 50px; text-transform: uppercase; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -27,15 +27,24 @@
     <div id="listaContainer"></div>
 
     <script>
-        const DB_KEY = 'SISTEMA_TATICO_V4';
+        // ESTA CHAVE DEVE SER EXATAMENTE IGUAL NO CADASTRO.HTML
+        const CHAVE_BANCO = 'DB_POLICIAL_FINAL';
 
-        function carregar() {
-            const lista = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
+        function carregarRegistros() {
             const container = document.getElementById('listaContainer');
+            const dadosSalvos = localStorage.getItem(CHAVE_BANCO);
+            let lista = [];
+
+            try {
+                lista = JSON.parse(dadosSalvos) || [];
+            } catch (e) {
+                lista = [];
+            }
+
             container.innerHTML = "";
             
             if (lista.length === 0) {
-                container.innerHTML = '<div class="vazio">NENHUM REGISTRO SALVO.</div>';
+                container.innerHTML = '<div class="vazio">NENHUM REGISTRO ENCONTRADO.</div>';
                 return;
             }
 
@@ -45,9 +54,9 @@
                 item.innerHTML = `
                     <img src="${p.foto || ''}" class="foto-lista">
                     <div class="info">
-                        <h4>${p.nome} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
-                        <p>STATUS: ${p.status}</p>
-                        <p>MÃE: ${p.mae || 'N/I'}</p>
+                        <h4>${p.nome || 'SEM NOME'}</h4>
+                        <p>VULGO: ${p.vulgo || '---'}</p>
+                        <p>STATUS: ${p.status || '---'}</p>
                     </div>
                     <a href="cadastro.html?edit=${index}" class="btn-ver">VER</a>
                 `;
@@ -62,7 +71,8 @@
                 c.style.display = c.innerText.toUpperCase().includes(termo) ? "flex" : "none";
             }
         }
-        window.onload = carregar;
+
+        window.onload = carregarRegistros;
     </script>
 </body>
 </html>

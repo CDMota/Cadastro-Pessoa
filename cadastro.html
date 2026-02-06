@@ -3,97 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro Operacional</title>
+    <title>CADASTRO OPERACIONAL</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
-        .caixa { background: white; padding: 15px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .secao-titulo { background: #075e54; color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; margin-top: 15px; }
-        label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #555; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; margin-top: 4px; }
-        .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        #preview { width: 110px; height: 110px; border-radius: 10px; object-fit: cover; display: block; margin: 0 auto 10px; border: 2px solid #075e54; }
-        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; text-align: center; text-decoration: none; display: block; }
-        .btn-salvar { background: #075e54; color: white; }
-        .btn-whats { background: #25d366; color: white; }
-        .btn-tele { background: #0088cc; color: white; }
-        .btn-gps { background: #673ab7; color: white; width: 50px; margin-top: 4px; }
-        .btn-del { background: #d32f2f; color: white; }
-        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; }
+        body { font-family: sans-serif; background: #0a0a0a; color: #ddd; padding: 10px; text-transform: uppercase; }
+        .caixa { background: #151515; padding: 15px; border-radius: 10px; max-width: 500px; margin: auto; border: 1px solid #333; }
+        label { display: block; margin-top: 10px; font-size: 10px; color: #888; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 5px; background: #222; color: white; font-size: 14px; text-transform: uppercase; box-sizing: border-box; }
+        .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        #preview { width: 130px; height: 130px; border-radius: 5px; object-fit: cover; display: block; margin: 0 auto 10px; border: 2px solid #d32f2f; background: #222; }
+        .btn { border: none; padding: 15px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; text-align: center; color: white; text-decoration: none; display: block; }
+        .btn-salvar { background: #2e7d32; }
+        .btn-whats { background: #25d366; }
+        .btn-gps { background: #6a1b9a; width: 50px; }
+        .btn-del { background: #b71c1c; }
     </style>
 </head>
 <body>
 
 <div class="caixa">
-    <img id="preview" src="https://via.placeholder.com/110">
-    <input type="file" id="foto" accept="image/*" style="font-size:11px;">
+    <img id="preview" src="">
+    <input type="file" id="foto" accept="image/*" style="font-size:10px;">
 
-    <form id="formOperacional">
-        <div class="secao-titulo">DADOS DO ABORDADO</div>
-        <label>Nome Completo</label>
+    <form id="formFinal">
+        <label>NOME COMPLETO</label>
         <input type="text" id="nome" required>
         
+        <label>NOME DA MÃE</label>
+        <input type="text" id="mae">
+
         <div class="duas-col">
-            <div><label>Vulgo/Apelido</label><input type="text" id="vulgo"></div>
-            <div><label>CPF</label><input type="tel" id="cpf"></div>
+            <div><label>VULGO</label><input type="text" id="vulgo"></div>
+            <div><label>CPF</label><input type="tel" id="cpf" maxlength="14"></div>
         </div>
 
         <div class="duas-col">
-            <div><label>Status</label>
+            <div><label>DATA NASC. (DD/MM/AAAA)</label><input type="tel" id="dataNasc" maxlength="10" placeholder="00/00/0000"></div>
+            <div><label>SEXO</label>
+                <select id="sexo">
+                    <option value="MASCULINO">MASCULINO</option>
+                    <option value="FEMININO">FEMININO</option>
+                </select>
+            </div>
+        </div>
+
+        <label>NATUREZA DA OCORRÊNCIA</label>
+        <select id="natureza" onchange="verificarNatureza()">
+            <option value="">SELECIONE...</option>
+            <option value="ABORDADO">ABORDADO</option>
+            <option value="PRISÃO">PRISÃO</option>
+            <option value="AVERIGUAÇÃO">AVERIGUAÇÃO</option>
+            <option value="OUTROS">OUTROS</option>
+        </select>
+
+        <div class="duas-col">
+            <div><label>DATA/HORA OCORRÊNCIA</label><input type="text" id="dataOcorrencia" placeholder="AUTOMÁTICO P/ ABORDADO"></div>
+            <div><label>STATUS</label>
                 <select id="status">
-                    <option value="Abordado">Abordado</option>
-                    <option value="Preso">Preso</option>
-                    <option value="Foragido">Foragido</option>
-                </select>
-            </div>
-            <div><label>Natureza</label>
-                <select id="natureza">
-                    <option value="Averiguação">Averiguação</option>
-                    <option value="Tráfico">Tráfico</option>
-                    <option value="Roubo">Roubo</option>
-                    <option value="Mandado">Mandado</option>
+                    <option value="ABORDADO">ABORDADO</option>
+                    <option value="PRESO">PRESO</option>
+                    <option value="FORAGIDO">FORAGIDO</option>
+                    <option value="TORNOZELEIRA">TORNOZELEIRA</option>
+                    <option value="FALECIDO">FALECIDO</option>
                 </select>
             </div>
         </div>
 
-        <div class="secao-titulo">INTELIGÊNCIA E LOCAL</div>
-        <div class="duas-col">
-            <div><label>Facção</label><input type="text" id="faccao"></div>
-            <div><label>Periculosidade</label>
-                <select id="perigo">
-                    <option value="Baixa">Baixa</option>
-                    <option value="Média">Média</option>
-                    <option value="Alta">Alta</option>
-                </select>
-            </div>
-        </div>
-
-        <label>Local da Abordagem (GPS)</label>
+        <label>LOCAL DA OCORRÊNCIA (GPS)</label>
         <div style="display:flex; gap:5px;">
-            <input type="text" id="gps" readonly placeholder="Capturar Coordenadas">
+            <input type="text" id="gps" readonly placeholder="COORDENADAS">
             <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
         </div>
 
-        <label>Endereço de Residência / Referência</label>
-        <input type="text" id="residencia">
-
-        <label>Data/Hora da Abordagem</label>
-        <input type="text" id="dataAbordagem" readonly style="background:#eee;">
-
-        <label>Nº do BO</label>
-        <input type="text" id="bo">
-
-        <label>Observações Adicionais</label>
-        <textarea id="obs" rows="3"></textarea>
-
-        <button type="submit" class="btn btn-salvar">💾 SALVAR NO CELULAR</button>
-        
-        <div id="areaCompartilhar" style="display:none;">
-            <button type="button" class="btn btn-whats" onclick="compartilhar('whats')">🟢 ENVIAR WHATSAPP</button>
-            <button type="button" class="btn btn-tele" onclick="compartilhar('tele')">🔵 ENVIAR TELEGRAM</button>
-            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ EXCLUIR CADASTRO</button>
+        <label>ENDEREÇO DE RESIDÊNCIA</label>
+        <input type="text" id="rua" placeholder="RUA / NÚMERO">
+        <div class="duas-col">
+            <div><input type="text" id="bairro" placeholder="BAIRRO"></div>
+            <div><input type="text" id="cidade" placeholder="CIDADE"></div>
         </div>
 
-        <a href="index.html" class="btn-voltar">VOLTAR PARA LISTA</a>
+        <div class="duas-col">
+            <div><label>FACÇÃO</label><input type="text" id="faccao"></div>
+            <div><label>BO Nº</label><input type="text" id="bo"></div>
+        </div>
+
+        <label>OBSERVAÇÕES</label>
+        <textarea id="obs" rows="3"></textarea>
+
+        <button type="submit" class="btn btn-salvar">💾 SALVAR NO DISPOSITIVO</button>
+        <button type="button" id="btnZap" class="btn btn-whats" style="display:none;" onclick="compartilhar()">🟢 ENVIAR RELATÓRIO WHATSAPP</button>
+        <button type="button" id="btnDel" class="btn btn-del" style="display:none;" onclick="excluir()">🗑️ EXCLUIR</button>
+        <a href="index.html" class="btn" style="background:#444;">VOLTAR</a>
     </form>
 </div>
 
@@ -102,73 +101,68 @@
     const id = params.get('edit');
     let fotoBase64 = "";
 
-    // Inicia Data Automática se for novo
-    if (id === null) {
-        document.getElementById('dataAbordagem').value = new Date().toLocaleString('pt-BR');
+    // Máscara de Data
+    document.getElementById('dataNasc').oninput = e => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
+        e.target.value = v;
+    };
+
+    // LÓGICA PEDIDA: SÓ CAPTURA DATA SE FOR "ABORDADO"
+    function verificarNatureza() {
+        const natureza = document.getElementById('natureza').value;
+        const campoData = document.getElementById('dataOcorrencia');
+        
+        if (natureza === "ABORDADO") {
+            campoData.value = new Date().toLocaleString('pt-BR').toUpperCase();
+        } else {
+            campoData.value = ""; // Limpa se escolher outro, permitindo digitar se quiser
+        }
     }
 
     function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
-                document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
-            }, () => alert("Ative o GPS!"));
+                document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
+            }, () => alert("ATIVAR GPS!"));
         }
     }
 
     window.onload = () => {
         if (id !== null) {
-            const lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
+            const lista = JSON.parse(localStorage.getItem('banco_tatico_v3') || '[]');
             const p = lista[id];
             if (p) {
-                document.getElementById('areaCompartilhar').style.display = "block";
-                document.getElementById('nome').value = p.nome;
-                document.getElementById('vulgo').value = p.vulgo;
-                document.getElementById('cpf').value = p.cpf;
-                document.getElementById('status').value = p.status;
-                document.getElementById('natureza').value = p.natureza;
-                document.getElementById('faccao').value = p.faccao;
-                document.getElementById('perigo').value = p.perigo;
-                document.getElementById('gps').value = p.gps;
-                document.getElementById('residencia').value = p.residencia;
-                document.getElementById('dataAbordagem').value = p.dataAbordagem;
-                document.getElementById('bo').value = p.bo;
-                document.getElementById('obs').value = p.obs;
+                document.getElementById('btnZap').style.display = "block";
+                document.getElementById('btnDel').style.display = "block";
+                Object.keys(p).forEach(key => {
+                    const el = document.getElementById(key);
+                    if(el) el.value = p[key];
+                });
                 if(p.foto) { document.getElementById('preview').src = p.foto; fotoBase64 = p.foto; }
             }
         }
     };
 
-    function compartilhar(plataforma) {
+    function compartilhar() {
         const nome = document.getElementById('nome').value;
-        const vulgo = document.getElementById('vulgo').value;
         const gps = document.getElementById('gps').value;
-        const foto = document.getElementById('preview').src;
+        const linkMapa = gps ? `https://www.google.com/maps?q=${gps}` : "NÃO INFORMADO";
         
-        // Esta função cria a Ficha Visual com Foto para o Policial printar ou compartilhar a página
-        const fichaHTML = `
-            <html>
-            <body style="font-family:sans-serif; text-align:center; padding:20px;">
-                <div style="border:3px solid #075e54; border-radius:15px; padding:15px; max-width:400px; margin:auto;">
-                    <h2 style="color:#075e54; margin:0;">FICHA DE ABORDAGEM</h2>
-                    <img src="${foto}" style="width:150px; height:150px; object-fit:cover; border-radius:10px; margin:15px 0; border:2px solid #000;">
-                    <div style="text-align:left; font-size:14px; line-height:1.6;">
-                        <p><b>NOME:</b> ${nome} (${vulgo})</p>
-                        <p><b>STATUS:</b> ${document.getElementById('status').value}</p>
-                        <p><b>NATUREZA:</b> ${document.getElementById('natureza').value}</p>
-                        <p><b>FACÇÃO:</b> ${document.getElementById('faccao').value}</p>
-                        <p><b>GPS:</b> ${gps}</p>
-                        <p><b>BO:</b> ${document.getElementById('bo').value}</p>
-                        <p><b>DATA:</b> ${document.getElementById('dataAbordagem').value}</p>
-                    </div>
-                </div>
-                <p>Toque nos 3 pontos do navegador para <b>Compartilhar</b> esta ficha.</p>
-            </body>
-            </html>
-        `;
+        const texto = `*RELATÓRIO TÁTICO OPERACIONAL*\n\n` +
+                      `*NOME:* ${nome}\n` +
+                      `*VULGO:* ${document.getElementById('vulgo').value || 'N/I'}\n` +
+                      `*MÃE:* ${document.getElementById('mae').value || 'N/I'}\n` +
+                      `*DATA NASC:* ${document.getElementById('dataNasc').value || 'N/I'}\n` +
+                      `*STATUS:* ${document.getElementById('status').value}\n` +
+                      `*NATUREZA:* ${document.getElementById('natureza').value}\n` +
+                      `*DATA/HORA:* ${document.getElementById('dataOcorrencia').value}\n` +
+                      `*GPS:* ${linkMapa}\n` +
+                      `*ENDEREÇO:* ${document.getElementById('rua').value}, ${document.getElementById('bairro').value} - ${document.getElementById('cidade').value}\n` +
+                      `*BO Nº:* ${document.getElementById('bo').value || 'N/I'}\n` +
+                      `*OBS:* ${document.getElementById('obs').value || 'SEM OBS'}`;
 
-        const win = window.open('', '_blank');
-        win.document.write(fichaHTML);
-        win.document.close();
+        window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
     }
 
     document.getElementById('foto').onchange = e => {
@@ -178,44 +172,34 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 300; cv.height = 300;
-                cv.getContext('2d').drawImage(img, 0, 0, 300, 300);
-                fotoBase64 = cv.toDataURL('image/jpeg', 0.7);
+                cv.width = 400; cv.height = 400;
+                cv.getContext('2d').drawImage(img, 0, 0, 400, 400);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
                 document.getElementById('preview').src = fotoBase64;
             };
         };
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    document.getElementById('formOperacional').onsubmit = e => {
+    document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
-        const dados = {
-            nome: document.getElementById('nome').value,
-            vulgo: document.getElementById('vulgo').value,
-            cpf: document.getElementById('cpf').value,
-            status: document.getElementById('status').value,
-            natureza: document.getElementById('natureza').value,
-            faccao: document.getElementById('faccao').value,
-            perigo: document.getElementById('perigo').value,
-            gps: document.getElementById('gps').value,
-            residencia: document.getElementById('residencia').value,
-            dataAbordagem: document.getElementById('dataAbordagem').value,
-            bo: document.getElementById('bo').value,
-            obs: document.getElementById('obs').value,
-            foto: fotoBase64
-        };
+        let lista = JSON.parse(localStorage.getItem('banco_tatico_v3') || '[]');
+        const dados = {};
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(i => dados[i.id] = i.value.toUpperCase());
+        dados.foto = fotoBase64;
+
         if (id !== null) lista[id] = dados; else lista.push(dados);
-        localStorage.setItem('banco_operacional', JSON.stringify(lista));
-        alert("Salvo!");
+        localStorage.setItem('banco_tatico_v3', JSON.stringify(lista));
+        alert("CADASTRO SALVO!");
         window.location.href = "index.html";
     };
 
     function excluir() {
-        if(confirm("Excluir?")) {
-            let lista = JSON.parse(localStorage.getItem('banco_operacional'));
+        if(confirm("DESEJA REALMENTE EXCLUIR?")) {
+            let lista = JSON.parse(localStorage.getItem('banco_tatico_v3'));
             lista.splice(id, 1);
-            localStorage.setItem('banco_operacional', JSON.stringify(lista));
+            localStorage.setItem('banco_tatico_v3', JSON.stringify(lista));
             window.location.href = "index.html";
         }
     }

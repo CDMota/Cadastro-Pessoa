@@ -3,142 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ficha Operacional</title>
+    <title>Cadastro Operacional</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: #e0e0e0; padding: 15px; margin: 0; }
-        .caixa { background: #1e1e1e; padding: 20px; border-radius: 15px; max-width: 600px; margin: auto; border: 1px solid #333; }
-        .secao { background: #252525; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #0d47a1; }
-        h4 { margin: 0 0 10px 0; color: #0d47a1; font-size: 13px; text-transform: uppercase; }
-        label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #999; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; font-size: 15px; background: #2c2c2c; color: white; margin-top: 4px; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
+        .caixa { background: white; padding: 15px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .secao-titulo { background: #075e54; color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; margin-top: 15px; }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #555; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; margin-top: 4px; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        #preview { width: 120px; height: 120px; border-radius: 10px; object-fit: cover; display: block; margin: 0 auto 15px; border: 2px solid #0d47a1; }
-        .btn { border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; text-decoration: none; display: block; text-align: center; }
-        .btn-gps { background: #6a1b9a; color: white; }
-        .btn-salvar { background: #0d47a1; color: white; }
+        #preview { width: 110px; height: 110px; border-radius: 10px; object-fit: cover; display: block; margin: 0 auto 10px; border: 2px solid #075e54; }
+        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; text-align: center; text-decoration: none; display: block; }
+        .btn-salvar { background: #075e54; color: white; }
         .btn-whats { background: #25d366; color: white; }
-        .btn-del { background: #b71c1c; color: white; margin-top: 25px; }
+        .btn-tele { background: #0088cc; color: white; }
+        .btn-gps { background: #673ab7; color: white; width: 50px; margin-top: 4px; }
+        .btn-del { background: #d32f2f; color: white; }
+        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; }
     </style>
 </head>
 <body>
 
 <div class="caixa">
-    <img id="preview" src="https://via.placeholder.com/150">
-    <input type="file" id="foto" accept="image/*" style="margin-bottom:20px; font-size:12px;">
+    <img id="preview" src="https://via.placeholder.com/110">
+    <input type="file" id="foto" accept="image/*" style="font-size:11px;">
 
     <form id="formOperacional">
-        <div class="secao">
-            <h4>1. Identificação do Indivíduo</h4>
-            <label>Nome Completo</label>
-            <input type="text" id="nome" required>
-            <div class="duas-col">
-                <div><label>Vulgo/Apelido</label><input type="text" id="vulgo"></div>
-                <div><label>CPF</label><input type="tel" id="cpf" maxlength="14"></div>
+        <div class="secao-titulo">DADOS DO ABORDADO</div>
+        <label>Nome Completo</label>
+        <input type="text" id="nome" required>
+        
+        <div class="duas-col">
+            <div><label>Vulgo/Apelido</label><input type="text" id="vulgo"></div>
+            <div><label>CPF</label><input type="tel" id="cpf"></div>
+        </div>
+
+        <div class="duas-col">
+            <div><label>Status</label>
+                <select id="status">
+                    <option value="Abordado">Abordado</option>
+                    <option value="Preso">Preso</option>
+                    <option value="Foragido">Foragido</option>
+                </select>
             </div>
-            <div class="duas-col">
-                <div><label>Data Nasc.</label><input type="tel" id="dataNasc" maxlength="10"></div>
-                <div><label>Status Atual</label>
-                    <select id="status">
-                        <option value="Abordado">Abordado</option>
-                        <option value="Preso">Preso (Flagrante)</option>
-                        <option value="Detido">Detido (Averiguação)</option>
-                        <option value="Foragido">Foragido / Mandado</option>
-                    </select>
-                </div>
+            <div><label>Natureza</label>
+                <select id="natureza">
+                    <option value="Averiguação">Averiguação</option>
+                    <option value="Tráfico">Tráfico</option>
+                    <option value="Roubo">Roubo</option>
+                    <option value="Mandado">Mandado</option>
+                </select>
             </div>
         </div>
 
-        <div class="secao">
-            <h4>2. Inteligência Criminal</h4>
-            <div class="duas-col">
-                <div><label>Facção</label><input type="text" id="faccao" placeholder="Nenhuma"></div>
-                <div><label>Periculosidade</label>
-                    <select id="perigo">
-                        <option value="Baixa">Baixa</option>
-                        <option value="Média">Média</option>
-                        <option value="Alta">Alta (Risco à Vida)</option>
-                    </select>
-                </div>
+        <div class="secao-titulo">INTELIGÊNCIA E LOCAL</div>
+        <div class="duas-col">
+            <div><label>Facção</label><input type="text" id="faccao"></div>
+            <div><label>Periculosidade</label>
+                <select id="perigo">
+                    <option value="Baixa">Baixa</option>
+                    <option value="Média">Média</option>
+                    <option value="Alta">Alta</option>
+                </select>
             </div>
-            <label>Natureza da Ocorrência</label>
-            <select id="natureza">
-                <option value="Averiguação">Averiguação / Atitude Suspeita</option>
-                <option value="Tráfico">Tráfico de Drogas</option>
-                <option value="Roubo/Furto">Roubo / Furto</option>
-                <option value="Mandado">Cumprimento de Mandado</option>
-                <option value="Violência">Violência Doméstica</option>
-                <option value="Outros">Outros</option>
-            </select>
         </div>
 
-        <div class="secao">
-            <h4>3. Localização da Abordagem</h4>
-            <label>Data/Hora da Abordagem</label>
-            <input type="text" id="dataAbordagem" readonly style="background:#1a1a1a;">
-            
-            <label>Coordenadas GPS (Onde foi abordado)</label>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="gps" readonly placeholder="Clique no botão ao lado">
-                <button type="button" class="btn-gps" style="width:50px; border-radius:6px;" onclick="pegarLocalizacao()">📍</button>
-            </div>
-            
-            <label>Endereço de Residência (Onde mora)</label>
-            <input type="text" id="residencia" placeholder="Cidade - UF / Bairro">
-            
-            <label>Número do BO</label>
-            <input type="text" id="bo" placeholder="Ex: 12345/2026">
+        <label>Local da Abordagem (GPS)</label>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="gps" readonly placeholder="Capturar Coordenadas">
+            <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
         </div>
 
-        <label>Relato da Abordagem / Observações</label>
-        <textarea id="obs" rows="4"></textarea>
+        <label>Endereço de Residência / Referência</label>
+        <input type="text" id="residencia">
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR NO DISPOSITIVO</button>
-        <button type="button" id="btnZap" class="btn btn-whats" style="display:none;" onclick="enviarZap()">🟢 COMPARTILHAR VIA WHATSAPP</button>
-        <button type="button" id="btnDel" class="btn btn-del" style="display:none;" onclick="excluir()">🗑️ EXCLUIR REGISTRO</button>
-        <a href="index.html" class="btn" style="color:#999;">CANCELAR</a>
+        <label>Data/Hora da Abordagem</label>
+        <input type="text" id="dataAbordagem" readonly style="background:#eee;">
+
+        <label>Nº do BO</label>
+        <input type="text" id="bo">
+
+        <label>Observações Adicionais</label>
+        <textarea id="obs" rows="3"></textarea>
+
+        <button type="submit" class="btn btn-salvar">💾 SALVAR NO CELULAR</button>
+        
+        <div id="areaCompartilhar" style="display:none;">
+            <button type="button" class="btn btn-whats" onclick="compartilhar('whats')">🟢 ENVIAR WHATSAPP</button>
+            <button type="button" class="btn btn-tele" onclick="compartilhar('tele')">🔵 ENVIAR TELEGRAM</button>
+            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ EXCLUIR CADASTRO</button>
+        </div>
+
+        <a href="index.html" class="btn-voltar">VOLTAR PARA LISTA</a>
     </form>
 </div>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const index = urlParams.get('edit');
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('edit');
     let fotoBase64 = "";
 
-    // Data Automática se for novo
-    if (index === null) {
+    // Inicia Data Automática se for novo
+    if (id === null) {
         document.getElementById('dataAbordagem').value = new Date().toLocaleString('pt-BR');
     }
 
-    function pegarLocalizacao() {
+    function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
-                const lat = pos.coords.latitude.toFixed(6);
-                const lon = pos.coords.longitude.toFixed(6);
-                document.getElementById('gps').value = `${lat}, ${lon}`;
-                alert("Localização capturada!");
-            }, () => alert("Ligue o GPS do celular!"));
+                document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+            }, () => alert("Ative o GPS!"));
         }
     }
 
-    // Carregar dados para edição
     window.onload = () => {
-        if (index !== null) {
+        if (id !== null) {
             const lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
-            const p = lista[index];
+            const p = lista[id];
             if (p) {
-                document.getElementById('btnZap').style.display = "block";
-                document.getElementById('btnDel').style.display = "block";
+                document.getElementById('areaCompartilhar').style.display = "block";
                 document.getElementById('nome').value = p.nome;
                 document.getElementById('vulgo').value = p.vulgo;
                 document.getElementById('cpf').value = p.cpf;
-                document.getElementById('dataNasc').value = p.dataNasc;
                 document.getElementById('status').value = p.status;
+                document.getElementById('natureza').value = p.natureza;
                 document.getElementById('faccao').value = p.faccao;
                 document.getElementById('perigo').value = p.perigo;
-                document.getElementById('natureza').value = p.natureza;
-                document.getElementById('dataAbordagem').value = p.dataAbordagem;
                 document.getElementById('gps').value = p.gps;
                 document.getElementById('residencia').value = p.residencia;
+                document.getElementById('dataAbordagem').value = p.dataAbordagem;
                 document.getElementById('bo').value = p.bo;
                 document.getElementById('obs').value = p.obs;
                 if(p.foto) { document.getElementById('preview').src = p.foto; fotoBase64 = p.foto; }
@@ -146,25 +138,39 @@
         }
     };
 
-    function enviarZap() {
-        const n = document.getElementById('nome').value;
-        const v = document.getElementById('vulgo').value;
+    function compartilhar(plataforma) {
+        const nome = document.getElementById('nome').value;
+        const vulgo = document.getElementById('vulgo').value;
         const gps = document.getElementById('gps').value;
-        const mapsUrl = gps ? `\n📍 *Mapa:* https://www.google.com/maps?q=${gps}` : "";
+        const foto = document.getElementById('preview').src;
         
-        const texto = `*RELATÓRIO DE ABORDAGEM*\n` +
-                      `*Nome:* ${n}\n*Vulgo:* ${v}\n` +
-                      `*Status:* ${document.getElementById('status').value}\n` +
-                      `*Natureza:* ${document.getElementById('natureza').value}\n` +
-                      `*BO:* ${document.getElementById('bo').value}\n` +
-                      `*Residência:* ${document.getElementById('residencia').value}\n` +
-                      `*Data/Hora:* ${document.getElementById('dataAbordagem').value}` +
-                      mapsUrl;
+        // Esta função cria a Ficha Visual com Foto para o Policial printar ou compartilhar a página
+        const fichaHTML = `
+            <html>
+            <body style="font-family:sans-serif; text-align:center; padding:20px;">
+                <div style="border:3px solid #075e54; border-radius:15px; padding:15px; max-width:400px; margin:auto;">
+                    <h2 style="color:#075e54; margin:0;">FICHA DE ABORDAGEM</h2>
+                    <img src="${foto}" style="width:150px; height:150px; object-fit:cover; border-radius:10px; margin:15px 0; border:2px solid #000;">
+                    <div style="text-align:left; font-size:14px; line-height:1.6;">
+                        <p><b>NOME:</b> ${nome} (${vulgo})</p>
+                        <p><b>STATUS:</b> ${document.getElementById('status').value}</p>
+                        <p><b>NATUREZA:</b> ${document.getElementById('natureza').value}</p>
+                        <p><b>FACÇÃO:</b> ${document.getElementById('faccao').value}</p>
+                        <p><b>GPS:</b> ${gps}</p>
+                        <p><b>BO:</b> ${document.getElementById('bo').value}</p>
+                        <p><b>DATA:</b> ${document.getElementById('dataAbordagem').value}</p>
+                    </div>
+                </div>
+                <p>Toque nos 3 pontos do navegador para <b>Compartilhar</b> esta ficha.</p>
+            </body>
+            </html>
+        `;
 
-        window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
+        const win = window.open('', '_blank');
+        win.document.write(fichaHTML);
+        win.document.close();
     }
 
-    // Processar foto
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -188,29 +194,27 @@
             nome: document.getElementById('nome').value,
             vulgo: document.getElementById('vulgo').value,
             cpf: document.getElementById('cpf').value,
-            dataNasc: document.getElementById('dataNasc').value,
             status: document.getElementById('status').value,
+            natureza: document.getElementById('natureza').value,
             faccao: document.getElementById('faccao').value,
             perigo: document.getElementById('perigo').value,
-            natureza: document.getElementById('natureza').value,
-            dataAbordagem: document.getElementById('dataAbordagem').value,
             gps: document.getElementById('gps').value,
             residencia: document.getElementById('residencia').value,
+            dataAbordagem: document.getElementById('dataAbordagem').value,
             bo: document.getElementById('bo').value,
             obs: document.getElementById('obs').value,
             foto: fotoBase64
         };
-        if (index !== null) lista[index] = dados;
-        else lista.push(dados);
+        if (id !== null) lista[id] = dados; else lista.push(dados);
         localStorage.setItem('banco_operacional', JSON.stringify(lista));
-        alert("Registro Salvo!");
+        alert("Salvo!");
         window.location.href = "index.html";
     };
 
     function excluir() {
-        if(confirm("Excluir registro?")) {
+        if(confirm("Excluir?")) {
             let lista = JSON.parse(localStorage.getItem('banco_operacional'));
-            lista.splice(index, 1);
+            lista.splice(id, 1);
             localStorage.setItem('banco_operacional', JSON.stringify(lista));
             window.location.href = "index.html";
         }

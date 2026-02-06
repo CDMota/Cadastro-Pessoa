@@ -14,7 +14,6 @@
         .info h4 { margin: 0; color: #fff; text-transform: uppercase; font-size: 14px; }
         .info p { margin: 2px 0; font-size: 11px; color: #aaa; text-transform: uppercase; }
         .btn-ver { background: #d32f2f; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
-        .vazio { text-align: center; color: #666; margin-top: 50px; text-transform: uppercase; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -22,57 +21,36 @@
         <h3 style="margin:0">SISTEMA TÁTICO</h3>
         <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
-    
-    <input type="text" id="busca" placeholder="🔍 BUSCAR NOME, VULGO OU CPF..." oninput="filtrar()">
+    <input type="text" id="busca" placeholder="🔍 BUSCAR..." oninput="filtrar()">
     <div id="listaContainer"></div>
 
     <script>
-        // ESTA CHAVE DEVE SER EXATAMENTE IGUAL NO CADASTRO.HTML
-        const CHAVE_BANCO = 'DB_POLICIAL_FINAL';
-
-        function carregarRegistros() {
+        const DB_KEY = 'DB_POLICIAL_V5';
+        function carregar() {
+            const lista = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
             const container = document.getElementById('listaContainer');
-            const dadosSalvos = localStorage.getItem(CHAVE_BANCO);
-            let lista = [];
-
-            try {
-                lista = JSON.parse(dadosSalvos) || [];
-            } catch (e) {
-                lista = [];
-            }
-
-            container.innerHTML = "";
-            
-            if (lista.length === 0) {
-                container.innerHTML = '<div class="vazio">NENHUM REGISTRO ENCONTRADO.</div>';
-                return;
-            }
-
+            container.innerHTML = lista.length === 0 ? '<p style="text-align:center; color:#666; margin-top:50px;">VAZIO</p>' : "";
             lista.forEach((p, index) => {
                 const item = document.createElement('div');
                 item.className = 'cartao';
                 item.innerHTML = `
                     <img src="${p.foto || ''}" class="foto-lista">
                     <div class="info">
-                        <h4>${p.nome || 'SEM NOME'}</h4>
-                        <p>VULGO: ${p.vulgo || '---'}</p>
-                        <p>STATUS: ${p.status || '---'}</p>
+                        <h4>${p.nome} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
+                        <p>STATUS: ${p.status}</p>
                     </div>
                     <a href="cadastro.html?edit=${index}" class="btn-ver">VER</a>
                 `;
                 container.appendChild(item);
             });
         }
-
         function filtrar() {
-            const termo = document.getElementById('busca').value.toUpperCase();
-            const cartoes = document.getElementsByClassName('cartao');
-            for (let c of cartoes) {
-                c.style.display = c.innerText.toUpperCase().includes(termo) ? "flex" : "none";
+            const t = document.getElementById('busca').value.toUpperCase();
+            for (let c of document.getElementsByClassName('cartao')) {
+                c.style.display = c.innerText.toUpperCase().includes(t) ? "flex" : "none";
             }
         }
-
-        window.onload = carregarRegistros;
+        window.onload = carregar;
     </script>
 </body>
 </html>

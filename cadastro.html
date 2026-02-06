@@ -3,127 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - CDMota</title>
+    <title>Ficha Operacional</title>
     <style>
-        :root { --cor-primaria: #007bff; --cor-sucesso: #25d366; --cor-telegram: #0088cc; --cor-alerta: #f39c12; --cor-perigo: #dc3545; }
-        .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; text-transform: none; }
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; text-transform: uppercase; }
-        .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
-        #preview { width: 180px; height: 180px; border-radius: 15px; object-fit: cover; display: block; margin: 10px auto; border: 4px solid var(--cor-primaria); background: #eee; }
-
-        label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #666; }
-        input, textarea, select { width: 100%; padding: 12px 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-top: 5px; text-transform: uppercase; }
-        
-        .linha-cpf-data { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 10px; }
-        .data-tripla { display: grid; grid-template-columns: 1fr 1.1fr 1.4fr; gap: 4px; }
-        
-        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; color: white; text-align: center; text-decoration: none; display: block; }
-        .btn-salvar { background: var(--cor-primaria); }
-        .btn-foto { background: var(--cor-alerta); }
-        .btn-whats { background: var(--cor-sucesso); }
-        .btn-tele { background: var(--cor-telegram); }
-        .btn-del { background: var(--cor-perigo); margin-top: 30px; }
-        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; font-size: 12px; }
+        body { font-family: sans-serif; background: #121212; color: #e0e0e0; padding: 15px; margin: 0; }
+        .caixa { background: #1e1e1e; padding: 20px; border-radius: 15px; max-width: 600px; margin: auto; border: 1px solid #333; }
+        .secao { background: #252525; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #0d47a1; }
+        h4 { margin: 0 0 10px 0; color: #0d47a1; font-size: 13px; text-transform: uppercase; }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #999; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; font-size: 15px; background: #2c2c2c; color: white; margin-top: 4px; }
+        .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #preview { width: 120px; height: 120px; border-radius: 10px; object-fit: cover; display: block; margin: 0 auto 15px; border: 2px solid #0d47a1; }
+        .btn { border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; text-decoration: none; display: block; text-align: center; }
+        .btn-gps { background: #6a1b9a; color: white; }
+        .btn-salvar { background: #0d47a1; color: white; }
+        .btn-whats { background: #25d366; color: white; }
+        .btn-del { background: #b71c1c; color: white; margin-top: 25px; }
     </style>
 </head>
 <body>
-<div class="assinatura">by CDMota</div>
-<div class="caixa">
-    <h3 style="text-align:center; color:var(--cor-primaria); margin-top:0">FICHA DE DADOS</h3>
-    <img id="preview" src="https://via.placeholder.com/180?text=FOTO">
-    <form id="formFinal">
-        <label>FOTO (TIRAR OU GALERIA)</label>
-        <input type="file" id="foto" accept="image/*" capture="environment">
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div><label>NOME COMPLETO</label><input type="text" id="nome" required oninput="this.value = this.value.toUpperCase()"></div>
-            <div><label>APELIDO</label><input type="text" id="apelido" oninput="this.value = this.value.toUpperCase()"></div>
-        </div>
 
-        <label>NOME DA MÃE</label>
-        <input type="text" id="mae" oninput="this.value = this.value.toUpperCase()">
-        
-        <div class="linha-cpf-data">
-            <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
-            <div>
-                <label>NASCIMENTO</label>
-                <div class="data-tripla">
-                    <select id="dia"></select>
-                    <select id="mes">
-                        <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+<div class="caixa">
+    <img id="preview" src="https://via.placeholder.com/150">
+    <input type="file" id="foto" accept="image/*" style="margin-bottom:20px; font-size:12px;">
+
+    <form id="formOperacional">
+        <div class="secao">
+            <h4>1. Identificação do Indivíduo</h4>
+            <label>Nome Completo</label>
+            <input type="text" id="nome" required>
+            <div class="duas-col">
+                <div><label>Vulgo/Apelido</label><input type="text" id="vulgo"></div>
+                <div><label>CPF</label><input type="tel" id="cpf" maxlength="14"></div>
+            </div>
+            <div class="duas-col">
+                <div><label>Data Nasc.</label><input type="tel" id="dataNasc" maxlength="10"></div>
+                <div><label>Status Atual</label>
+                    <select id="status">
+                        <option value="Abordado">Abordado</option>
+                        <option value="Preso">Preso (Flagrante)</option>
+                        <option value="Detido">Detido (Averiguação)</option>
+                        <option value="Foragido">Foragido / Mandado</option>
                     </select>
-                    <select id="ano"></select>
                 </div>
             </div>
         </div>
 
-        <label>ENDEREÇO (RUA, Nº, UF)</label>
-        <div style="display: grid; grid-template-columns: 2fr 1.2fr 0.8fr; gap: 10px;">
-            <input type="text" id="rua" placeholder="RUA" oninput="this.value = this.value.toUpperCase()">
-            <input type="text" id="cidade" placeholder="CIDADE" oninput="this.value = this.value.toUpperCase()">
-            <select id="uf">
-                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+        <div class="secao">
+            <h4>2. Inteligência Criminal</h4>
+            <div class="duas-col">
+                <div><label>Facção</label><input type="text" id="faccao" placeholder="Nenhuma"></div>
+                <div><label>Periculosidade</label>
+                    <select id="perigo">
+                        <option value="Baixa">Baixa</option>
+                        <option value="Média">Média</option>
+                        <option value="Alta">Alta (Risco à Vida)</option>
+                    </select>
+                </div>
+            </div>
+            <label>Natureza da Ocorrência</label>
+            <select id="natureza">
+                <option value="Averiguação">Averiguação / Atitude Suspeita</option>
+                <option value="Tráfico">Tráfico de Drogas</option>
+                <option value="Roubo/Furto">Roubo / Furto</option>
+                <option value="Mandado">Cumprimento de Mandado</option>
+                <option value="Violência">Violência Doméstica</option>
+                <option value="Outros">Outros</option>
             </select>
         </div>
-        <input type="text" id="numero" placeholder="NÚMERO / COMPLEMENTO" style="margin-top:5px" oninput="this.value = this.value.toUpperCase()">
-        
-        <label>OBSERVAÇÕES</label>
-        <textarea id="obs" rows="2" oninput="this.value = this.value.toUpperCase()"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR NO SISTEMA</button>
-        
-        <div id="areaApps" style="display: none; margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 15px;">
-            <button type="button" id="btnFoto" class="btn btn-foto" onclick="baixarFoto()">1º 📸 SALVAR FOTO</button>
-            <button type="button" class="btn btn-tele" onclick="compartilharApp('telegram')">2º 🔵 ENVIAR (TELEGRAM)</button>
-            <button type="button" class="btn btn-whats" onclick="compartilharApp('whatsapp')">2º 🟢 ENVIAR (WHATSAPP)</button>
-            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ APAGAR REGISTRO</button>
+        <div class="secao">
+            <h4>3. Localização da Abordagem</h4>
+            <label>Data/Hora da Abordagem</label>
+            <input type="text" id="dataAbordagem" readonly style="background:#1a1a1a;">
+            
+            <label>Coordenadas GPS (Onde foi abordado)</label>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="gps" readonly placeholder="Clique no botão ao lado">
+                <button type="button" class="btn-gps" style="width:50px; border-radius:6px;" onclick="pegarLocalizacao()">📍</button>
+            </div>
+            
+            <label>Endereço de Residência (Onde mora)</label>
+            <input type="text" id="residencia" placeholder="Cidade - UF / Bairro">
+            
+            <label>Número do BO</label>
+            <input type="text" id="bo" placeholder="Ex: 12345/2026">
         </div>
-        <a href="index.html" class="btn-voltar">⬅️ VOLTAR PARA LISTA</a>
+
+        <label>Relato da Abordagem / Observações</label>
+        <textarea id="obs" rows="4"></textarea>
+
+        <button type="submit" class="btn btn-salvar">💾 SALVAR NO DISPOSITIVO</button>
+        <button type="button" id="btnZap" class="btn btn-whats" style="display:none;" onclick="enviarZap()">🟢 COMPARTILHAR VIA WHATSAPP</button>
+        <button type="button" id="btnDel" class="btn btn-del" style="display:none;" onclick="excluir()">🗑️ EXCLUIR REGISTRO</button>
+        <a href="index.html" class="btn" style="color:#999;">CANCELAR</a>
     </form>
 </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('edit');
+    const index = urlParams.get('edit');
     let fotoBase64 = "";
 
-    const dSel = document.getElementById('dia');
-    for(let i=1;i<=31;i++) dSel.options.add(new Option(i.toString().padStart(2,'0'), i.toString().padStart(2,'0')));
-    const aSel = document.getElementById('ano');
-    const anoH = new Date().getFullYear();
-    for(let i=anoH;i>=1920;i--) aSel.options.add(new Option(i, i));
+    // Data Automática se for novo
+    if (index === null) {
+        document.getElementById('dataAbordagem').value = new Date().toLocaleString('pt-BR');
+    }
 
-    document.getElementById('cpf').oninput = e => {
-        let v = e.target.value.replace(/\D/g, '');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        e.target.value = v;
-    };
+    function pegarLocalizacao() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                const lat = pos.coords.latitude.toFixed(6);
+                const lon = pos.coords.longitude.toFixed(6);
+                document.getElementById('gps').value = `${lat}, ${lon}`;
+                alert("Localização capturada!");
+            }, () => alert("Ligue o GPS do celular!"));
+        }
+    }
 
+    // Carregar dados para edição
     window.onload = () => {
-        if (id !== null) {
-            const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-            const d = lista[id];
-            if (d) {
-                document.getElementById('nome').value = d.nome;
-                document.getElementById('apelido').value = d.apelido || '';
-                document.getElementById('mae').value = d.mae || '';
-                document.getElementById('cpf').value = d.cpf;
-                if(d.data) {
-                    const p = d.data.split('/');
-                    document.getElementById('dia').value = p[0]; document.getElementById('mes').value = p[1]; document.getElementById('ano').value = p[2];
-                }
-                document.getElementById('rua').value = d.rua || '';
-                document.getElementById('numero').value = d.numero || '';
-                document.getElementById('cidade').value = d.cidade || '';
-                document.getElementById('uf').value = d.uf || '';
-                document.getElementById('obs').value = d.obs || '';
-                if(d.foto) { document.getElementById('preview').src = d.foto; fotoBase64 = d.foto; }
-                document.getElementById('areaApps').style.display = 'block';
+        if (index !== null) {
+            const lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
+            const p = lista[index];
+            if (p) {
+                document.getElementById('btnZap').style.display = "block";
+                document.getElementById('btnDel').style.display = "block";
+                document.getElementById('nome').value = p.nome;
+                document.getElementById('vulgo').value = p.vulgo;
+                document.getElementById('cpf').value = p.cpf;
+                document.getElementById('dataNasc').value = p.dataNasc;
+                document.getElementById('status').value = p.status;
+                document.getElementById('faccao').value = p.faccao;
+                document.getElementById('perigo').value = p.perigo;
+                document.getElementById('natureza').value = p.natureza;
+                document.getElementById('dataAbordagem').value = p.dataAbordagem;
+                document.getElementById('gps').value = p.gps;
+                document.getElementById('residencia').value = p.residencia;
+                document.getElementById('bo').value = p.bo;
+                document.getElementById('obs').value = p.obs;
+                if(p.foto) { document.getElementById('preview').src = p.foto; fotoBase64 = p.foto; }
             }
         }
     };
 
+    function enviarZap() {
+        const n = document.getElementById('nome').value;
+        const v = document.getElementById('vulgo').value;
+        const gps = document.getElementById('gps').value;
+        const mapsUrl = gps ? `\n📍 *Mapa:* https://www.google.com/maps?q=${gps}` : "";
+        
+        const texto = `*RELATÓRIO DE ABORDAGEM*\n` +
+                      `*Nome:* ${n}\n*Vulgo:* ${v}\n` +
+                      `*Status:* ${document.getElementById('status').value}\n` +
+                      `*Natureza:* ${document.getElementById('natureza').value}\n` +
+                      `*BO:* ${document.getElementById('bo').value}\n` +
+                      `*Residência:* ${document.getElementById('residencia').value}\n` +
+                      `*Data/Hora:* ${document.getElementById('dataAbordagem').value}` +
+                      mapsUrl;
+
+        window.location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(texto);
+    }
+
+    // Processar foto
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -131,58 +172,49 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 600; cv.height = 600;
-                const ctx = cv.getContext('2d');
-                const min = Math.min(img.width, img.height);
-                ctx.drawImage(img, (img.width-min)/2, (img.height-min)/2, min, min, 0, 0, 600, 600);
-                fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
+                cv.width = 300; cv.height = 300;
+                cv.getContext('2d').drawImage(img, 0, 0, 300, 300);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.7);
                 document.getElementById('preview').src = fotoBase64;
             };
         };
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    document.getElementById('formFinal').onsubmit = e => {
+    document.getElementById('formOperacional').onsubmit = e => {
         e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-        const dataF = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
+        let lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
         const dados = {
-            nome: document.getElementById('nome').value, apelido: document.getElementById('apelido').value,
-            mae: document.getElementById('mae').value,
-            cpf: document.getElementById('cpf').value, data: dataF,
-            rua: document.getElementById('rua').value, numero: document.getElementById('numero').value,
-            cidade: document.getElementById('cidade').value,
-            uf: document.getElementById('uf').value, obs: document.getElementById('obs').value, foto: fotoBase64
+            nome: document.getElementById('nome').value,
+            vulgo: document.getElementById('vulgo').value,
+            cpf: document.getElementById('cpf').value,
+            dataNasc: document.getElementById('dataNasc').value,
+            status: document.getElementById('status').value,
+            faccao: document.getElementById('faccao').value,
+            perigo: document.getElementById('perigo').value,
+            natureza: document.getElementById('natureza').value,
+            dataAbordagem: document.getElementById('dataAbordagem').value,
+            gps: document.getElementById('gps').value,
+            residencia: document.getElementById('residencia').value,
+            bo: document.getElementById('bo').value,
+            obs: document.getElementById('obs').value,
+            foto: fotoBase64
         };
-        if (id !== null) lista[id] = dados; else lista.push(dados);
-        localStorage.setItem('banco_final', JSON.stringify(lista));
-        alert("DADOS SALVOS!"); window.location.href = "index.html";
+        if (index !== null) lista[index] = dados;
+        else lista.push(dados);
+        localStorage.setItem('banco_operacional', JSON.stringify(lista));
+        alert("Registro Salvo!");
+        window.location.href = "index.html";
     };
 
-    function baixarFoto() { if(!fotoBase64) return; const a = document.createElement('a'); a.href = fotoBase64; a.download = `foto_${document.getElementById('nome').value}.jpg`; a.click(); }
-    
-    function compartilharApp(plataforma) {
-        const n = document.getElementById('nome').value;
-        const ape = document.getElementById('apelido').value || 'NÃO INFORMADO';
-        const mae = document.getElementById('mae').value || 'NÃO INFORMADO';
-        const cpf = document.getElementById('cpf').value;
-        const nasc = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
-        const end = `${document.getElementById('rua').value}, ${document.getElementById('numero').value} - ${document.getElementById('cidade').value}/${document.getElementById('uf').value}`;
-        const obs = document.getElementById('obs').value || 'NENHUMA';
-
-        const texto = `*📋 FICHA DE CADASTRO - CDMota*%0A%0A` +
-                      `*👤 NOME:* ${n}%0A` +
-                      `*🎭 APELIDO:* ${ape}%0A` +
-                      `*👩‍👦 MÃE:* ${mae}%0A` +
-                      `*🆔 CPF:* ${cpf}%0A` +
-                      `*📅 NASC:* ${nasc}%0A` +
-                      `*📍 ENDEREÇO:* ${end}%0A` +
-                      `*📝 OBS:* ${obs}`;
-
-        window.location.href = plataforma === 'whatsapp' ? `whatsapp://send?text=${texto}` : `tg://msg?text=${texto}`;
+    function excluir() {
+        if(confirm("Excluir registro?")) {
+            let lista = JSON.parse(localStorage.getItem('banco_operacional'));
+            lista.splice(index, 1);
+            localStorage.setItem('banco_operacional', JSON.stringify(lista));
+            window.location.href = "index.html";
+        }
     }
-
-    function excluir() { if(confirm("DESEJA REALMENTE EXCLUIR?")) { let l = JSON.parse(localStorage.getItem('banco_final')); l.splice(id, 1); localStorage.setItem('banco_final', JSON.stringify(l)); window.location.href = "index.html"; } }
 </script>
 </body>
 </html>

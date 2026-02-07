@@ -73,28 +73,35 @@
     const idEdicao = params.get('edit');
     let fotoBase64 = "";
 
-    // 1. CORREÇÃO CARREGAMENTO: Agora busca pelo ID e preenche todos os campos
+    // CORREÇÃO: Carregar dados assim que abrir
     window.onload = function() {
-        if (idEdicao !== null) {
+        if (idEdicao !== null && idEdicao !== undefined) {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[idEdicao];
             if (p) {
+                // Preenche cada campo usando o ID
                 Object.keys(p).forEach(key => {
                     const el = document.getElementById(key);
                     if (el) el.value = p[key];
                 });
-                if (p.foto) { document.getElementById('preview').src = p.foto; fotoBase64 = p.foto; }
+                // Carrega a foto no preview
+                if (p.foto) { 
+                    document.getElementById('preview').src = p.foto; 
+                    fotoBase64 = p.foto; 
+                }
                 document.getElementById('areaApps').style.display = 'block';
             }
         }
     };
 
-    // 2. DATA/HORA AUTOMÁTICA AO SELECIONAR NATUREZA
+    // Preenche data automaticamente ao escolher natureza
     document.getElementById('natureza').onchange = function() {
-        if(this.value !== "") { document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase(); }
+        if(this.value !== "") { 
+            document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase(); 
+        }
     };
 
-    // 3. PREVIEW DA FOTO CORRIGIDO
+    // Processa a foto
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -117,27 +124,29 @@
         });
     }
 
-    // 4. SALVAR
+    // Salvar ou Atualizar
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};
-        document.querySelectorAll('input, select, textarea').forEach(i => { if(i.id) dados[i.id] = i.value.toUpperCase(); });
+        document.querySelectorAll('input, select, textarea').forEach(i => { 
+            if(i.id) dados[i.id] = i.value.toUpperCase(); 
+        });
         dados.foto = fotoBase64;
         if (idEdicao !== null) lista[idEdicao] = dados; else lista.push(dados);
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        alert("SALVO!"); window.location.href = "index.html";
+        alert("REGISTRO SALVO!"); window.location.href = "index.html";
     };
 
     function compartilhar(tipo) {
         const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
-        const msg = `📌 *RELATÓRIO*%0A👤 *NOME:* ${v('nome')}%0A🎭 *VULGO:* ${v('vulgo')}%0A⚖️ *NAT:* ${v('natureza')}%0A🕒 *DATA:* ${v('dataOcorrencia')}%0A📍 *GPS:* ${v('gps')}`;
+        const msg = `📌 *RELATÓRIO*%0A👤 *NOME:* ${v('nome')}%0A🎭 *VULGO:* ${v('vulgo')}%0A🛡️ *STATUS:* ${v('status')}%0A📍 *GPS:* ${v('gps')}`;
         const url = tipo === 'WA' ? `https://api.whatsapp.com/send?text=${msg}` : `https://t.me/share/url?url=${msg}`;
         window.location.href = url;
     }
 
     function excluir() {
-        if(confirm("EXCLUIR?")) {
+        if(confirm("EXCLUIR REGISTRO?")) {
             let lista = JSON.parse(localStorage.getItem(DB_NAME));
             lista.splice(idEdicao, 1);
             localStorage.setItem(DB_NAME, JSON.stringify(lista));

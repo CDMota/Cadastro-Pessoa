@@ -12,6 +12,7 @@
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 5px; background: #222; color: white; font-size: 13px; text-transform: uppercase; box-sizing: border-box; }
         .cor-especial { border: 1px solid var(--cor-natureza) !important; color: var(--cor-natureza); font-weight: bold; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .tres-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
         #preview { width: 140px; height: 140px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 10px; border: 3px solid var(--cor-destaque); background: #222; }
         .btn { border: none; padding: 15px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; text-align: center; color: white; text-decoration: none; display: block; }
         .btn-salvar { background: #2e7d32; font-size: 15px; }
@@ -68,9 +69,18 @@
         <label>ENDEREÇO E NÚMERO</label>
         <input type="text" id="end" placeholder="RUA, Nº">
 
-        <div class="duas-col">
-            <div><label>CIDADE - UF</label><input type="text" id="cidade" placeholder="CIDADE - UF"></div>
-            <div><label>Nº DO B.O.</label><input type="text" id="bo"></div>
+        <div class="tres-col">
+            <div><label>CIDADE</label><input type="text" id="cidade"></div>
+            <div><label>UF</label>
+                <select id="uf">
+                    <option value="PR">PR</option>
+                    <option value="SP">SP</option>
+                    <option value="SC">SC</option>
+                    <option value="MS">MS</option>
+                    <option value="RJ">RJ</option>
+                </select>
+            </div>
+            <div><label>Nº B.O.</label><input type="text" id="bo"></div>
         </div>
 
         <label>MAPA (LINK GOOGLE MAPS)</label>
@@ -97,7 +107,7 @@
 <script>
     const DB_NAME = 'SISTEMA_TATICO_ESTAVEL';
     const params = new URLSearchParams(window.location.search);
-    const idEdicao = params.get('edit');
+    let idEdicao = params.get('edit');
     let fotoBase64 = "";
 
     window.onload = function() {
@@ -105,7 +115,7 @@
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[parseInt(idEdicao)];
             if (p) {
-                const campos = ['nome', 'mae', 'vulgo', 'cpf', 'nasc', 'natureza', 'dataOcorrencia', 'status', 'end', 'cidade', 'bo', 'gps', 'obs'];
+                const campos = ['nome', 'mae', 'vulgo', 'cpf', 'nasc', 'natureza', 'dataOcorrencia', 'status', 'end', 'cidade', 'uf', 'bo', 'gps', 'obs'];
                 campos.forEach(id => {
                     const el = document.getElementById(id);
                     if (el && p[id] !== undefined) el.value = p[id];
@@ -146,8 +156,7 @@
             navigator.geolocation.getCurrentPosition(pos => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-                const linkMapa = `https://www.google.com/maps?q=$${lat},${lon}`;
-                document.getElementById('gps').value = linkMapa;
+                document.getElementById('gps').value = `http://googleusercontent.com/maps.google.com/${lat},${lon}`;
             }, () => alert("ERRO: Ative o GPS."));
         }
     }
@@ -163,7 +172,6 @@
         });
         dados.foto = fotoBase64;
 
-        // FUNÇÃO PARA SALVAR CÓPIA DA IMAGEM NA GALERIA (DOWNLOAD)
         if (fotoBase64) {
             const linkDownload = document.createElement('a');
             const nomeArquivo = (dados.nome + "_" + (dados.vulgo || "")).replace(/\s/g, "_");
@@ -176,11 +184,13 @@
             lista[parseInt(idEdicao)] = dados;
         } else {
             lista.push(dados);
+            idEdicao = lista.length - 1; // Atualiza o ID para o novo registro
         }
 
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        alert("REGISTRO SALVO E IMAGEM BAIXADA!");
-        window.location.href = "index.html";
+        document.getElementById('areaApps').style.display = 'block'; // Mostra botões de compartilhamento
+        alert("DADOS SALVOS E FOTO BAIXADA!");
+        // Removido o redirecionamento para manter a página aberta
     };
 
     function enviarApp(tipo) {
@@ -196,7 +206,7 @@
             `🕒 *DATA/HORA:* ${v('dataOcorrencia').toUpperCase()}%0A` +
             `🛡️ *STATUS:* ${v('status').toUpperCase()}%0A%0A` +
             `🏠 *END:* ${v('end').toUpperCase()}%0A` +
-            `🏙️ *CIDADE:* ${v('cidade').toUpperCase()}%0A` +
+            `🏙️ *CIDADE:* ${v('cidade').toUpperCase()} - ${v('uf').toUpperCase()}%0A` +
             `📂 *B.O:* ${v('bo').toUpperCase()}%0A` +
             `📝 *OBS:* ${v('obs').toUpperCase()}%0A%0A` +
             `📍 *MAPA:* ${v('gps')}`;

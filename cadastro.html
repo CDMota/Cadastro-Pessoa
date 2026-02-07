@@ -107,12 +107,14 @@
         });
     }
 
+    // --- CORREÇÃO: CARREGAR DADOS ---
     window.onload = () => {
         if (editIndex !== null) {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[editIndex];
             if (p) {
                 document.getElementById('areaAcao').style.display = "block";
+                // Preenche cada campo pelo ID
                 Object.keys(p).forEach(key => {
                     const el = document.getElementById(key);
                     if (el) el.value = p[key];
@@ -125,7 +127,6 @@
         }
     };
 
-    // FUNÇÃO DE DOWNLOAD
     function baixarFoto() { 
         if(!fotoBase64) return; 
         const a = document.createElement('a'); 
@@ -136,11 +137,11 @@
         document.body.removeChild(a);
     }
 
-    // SALVAR
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};
+        // Captura todos os inputs e selects
         document.querySelectorAll('input, select, textarea').forEach(i => {
             if(i.id) dados[i.id] = i.value.toUpperCase();
         });
@@ -149,30 +150,31 @@
         if (editIndex !== null) lista[editIndex] = dados; else lista.push(dados);
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
 
-        // DOWNLOAD DA FOTO
         baixarFoto();
-
         document.getElementById('areaAcao').style.display = "block";
-        alert("✅ SALVO E FOTO BAIXADA! AGORA VOCÊ PODE COMPARTILHAR.");
+        alert("✅ DADOS SALVOS E FOTO BAIXADA!");
     };
 
+    // --- CORREÇÃO: COMPARTILHAR TUDO ---
     function enviar(tipo) {
-        const nome = document.getElementById('nome').value.toUpperCase();
-        const vulgo = document.getElementById('vulgo').value.toUpperCase() || "N/I";
-        const status = document.getElementById('status').value.toUpperCase();
-        const gps = document.getElementById('gps').value;
-        const obs = document.getElementById('obs').value.toUpperCase();
-
-        const msg = `📌 *RELATÓRIO TÁTICO*\n\n` +
-                    `👤 *NOME:* ${nome}\n` +
-                    `🎭 *VULGO:* ${vulgo}\n` +
-                    `🛡️ *STATUS:* ${status}\n` +
-                    `📝 *OBS:* ${obs}\n\n` +
-                    `📍 *MAPA:* https://www.google.com/maps?q=${gps}`;
+        const getV = (id) => document.getElementById(id).value.toUpperCase();
+        
+        const msg = `📌 *RELATÓRIO OPERACIONAL*%0A%0A` +
+                    `👤 *NOME:* ${getV('nome')}%0A` +
+                    `👩‍👦 *MÃE:* ${getV('mae')}%0A` +
+                    `🎭 *VULGO:* ${getV('vulgo')}%0A` +
+                    `💳 *CPF:* ${getV('cpf')}%0A` +
+                    `📅 *NASC:* ${getV('dataNasc')}%0A` +
+                    `⚥ *SEXO:* ${getV('sexo')}%0A` +
+                    `⚖️ *NATUREZA:* ${getV('natureza')}%0A` +
+                    `🕒 *DATA/HORA:* ${getV('dataOcorrencia')}%0A` +
+                    `🛡️ *STATUS:* ${getV('status')}%0A` +
+                    `📝 *OBS:* ${getV('obs')}%0A%0A` +
+                    `📍 *MAPA:* https://www.google.com/maps?q=${getV('gps')}`;
 
         const url = tipo === 'WA' ? 
-            `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}` : 
-            `https://t.me/share/url?url=${encodeURIComponent(msg)}`;
+            `https://api.whatsapp.com/send?text=${msg}` : 
+            `https://t.me/share/url?url=${msg}`;
         
         window.location.href = url;
     }

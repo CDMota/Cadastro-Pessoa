@@ -26,7 +26,7 @@
         .btn-whats { background: #25d366; color: black; }
         .btn-tele { background: #0088cc; }
         .btn-gps { background: #6a1b9a; width: 50px; }
-        .btn-del { background: #b71c1c; margin-top: 30px; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-del { background: #b71c1c; margin-top: 30px; }
     </style>
 </head>
 <body>
@@ -84,7 +84,7 @@
             <div><label>CIDADE</label><input type="text" id="cidade"></div>
             <div><label>ESTADO (UF)</label>
                 <select id="uf">
-                    <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP" selected>SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                    <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR" selected>PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
                 </select>
             </div>
         </div>
@@ -113,9 +113,9 @@
 
         <button type="submit" class="btn btn-salvar">💾 SALVAR E BAIXAR FOTO</button>
         
-        <div id="areaApps" style="display:none; margin-top:20px; border-top:1px dashed #333; padding-top:10px;">
-            <button type="button" class="btn btn-whats" onclick="enviarApp('whatsapp')">🟢 COMPARTILHAR WHATSAPP</button>
-            <button type="button" class="btn btn-tele" onclick="enviarApp('telegram')">🔵 COMPARTILHAR TELEGRAM</button>
+        <div id="areaApps" style="display:none; margin-top:20px; border-top:1px dashed #444; padding-top:10px;">
+            <button type="button" class="btn btn-whats" onclick="enviarApp('WA')">🟢 COMPARTILHAR WHATSAPP</button>
+            <button type="button" class="btn btn-tele" onclick="enviarApp('TG')">🔵 COMPARTILHAR TELEGRAM</button>
             <button type="button" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR REGISTRO</button>
         </div>
         
@@ -129,7 +129,7 @@
     const idEdicao = params.get('edit');
     let fotoBase64 = "";
 
-    // Máscara de Nascimento
+    // Máscara Nascimento
     document.getElementById('dataNasc').oninput = e => {
         let v = e.target.value.replace(/\D/g,'');
         if (v.length > 4) v = v.replace(/(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3');
@@ -149,17 +149,30 @@
         });
     }
 
-    // CARREGAR DADOS AO ABRIR
+    // --- CARREGAMENTO CORRIGIDO ---
     window.onload = () => {
         if (idEdicao !== null) {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[idEdicao];
             if (p) {
-                // Preenche todos os campos
-                Object.keys(p).forEach(key => {
-                    const el = document.getElementById(key);
-                    if (el) el.value = p[key];
-                });
+                // Preenchimento forçado campo a campo
+                document.getElementById('nome').value = p.nome || "";
+                document.getElementById('mae').value = p.mae || "";
+                document.getElementById('vulgo').value = p.vulgo || "";
+                document.getElementById('cpf').value = p.cpf || "";
+                document.getElementById('dataNasc').value = p.dataNasc || "";
+                document.getElementById('sexo').value = p.sexo || "MASCULINO";
+                document.getElementById('natureza').value = p.natureza || "";
+                document.getElementById('dataOcorrencia').value = p.dataOcorrencia || "";
+                document.getElementById('rua').value = p.rua || "";
+                document.getElementById('numero').value = p.numero || "";
+                document.getElementById('cidade').value = p.cidade || "";
+                document.getElementById('uf').value = p.uf || "PR";
+                document.getElementById('status').value = p.status || "ABORDADO";
+                document.getElementById('bo').value = p.bo || "";
+                document.getElementById('gps').value = p.gps || "";
+                document.getElementById('obs').value = p.obs || "";
+                
                 if (p.foto) {
                     document.getElementById('preview').src = p.foto;
                     fotoBase64 = p.foto;
@@ -169,7 +182,7 @@
         }
     };
 
-    // PROCESSAR FOTO
+    // FOTO
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -199,50 +212,22 @@
         if (idEdicao !== null) lista[idEdicao] = dados; else lista.push(dados);
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
 
-        // Baixar foto automaticamente
         if(fotoBase64) {
             const a = document.createElement('a');
             a.href = fotoBase64;
             a.download = `FOTO_${dados.nome}.jpg`;
             a.click();
         }
-
         document.getElementById('areaApps').style.display = 'block';
-        alert("✅ DADOS SALVOS E FOTO ENVIADA PARA GALERIA!");
+        alert("✅ SALVO!");
     };
 
-    // COMPARTILHAR
-    function enviarApp(plataforma) {
+    function enviarApp(tipo) {
         const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
         const msg = `📌 *RELATÓRIO OPERACIONAL*%0A%0A` +
-                    `👤 *NOME:* ${v('nome')}%0A` +
-                    `🎭 *VULGO:* ${v('vulgo')}%0A` +
-                    `👩‍👦 *MÃE:* ${v('mae')}%0A` +
-                    `💳 *DOC:* ${v('cpf')}%0A` +
-                    `📅 *NASC:* ${v('dataNasc')}%0A%0A` +
-                    `⚖️ *NATUREZA:* ${v('natureza')}%0A` +
-                    `🕒 *DATA/HORA:* ${v('dataOcorrencia')}%0A` +
-                    `🛡️ *STATUS:* ${v('status')}%0A%0A` +
-                    `🏠 *END:* ${v('rua')}, ${v('numero')}%0A` +
-                    `🏙️ *CIDADE:* ${v('cidade')} - ${v('uf')}%0A` +
-                    `📂 *B.O:* ${v('bo')}%0A` +
-                    `📝 *OBS:* ${v('obs')}%0A%0A` +
-                    `📍 *MAPA:* https://www.google.com/maps?q=${document.getElementById('gps').value}`;
+                    `👤 *NOME:* ${v('nome')}%0A🎭 *VULGO:* ${v('vulgo')}%0A👩‍👦 *MÃE:* ${v('mae')}%0A💳 *DOC:* ${v('cpf')}%0A📅 *NASC:* ${v('dataNasc')}%0A%0A` +
+                    `⚖️ *NATUREZA:* ${v('natureza')}%0A🕒 *DATA/HORA:* ${v('dataOcorrencia')}%0A🛡️ *STATUS:* ${v('status')}%0A%0A` +
+                    `🏠 *END:* ${v('rua')}, ${v('numero')}%0A🏙️ *CIDADE:* ${v('cidade')} - ${v('uf')}%0A📂 *B.O:* ${v('bo')}%0A📝 *OBS:* ${v('obs')}%0A%0A` +
+                    `📍 *MAPA:* http://maps.google.com/maps?q=${document.getElementById('gps').value}`;
 
-        const url = plataforma === 'whatsapp' ? 
-            `https://api.whatsapp.com/send?text=${msg}` : 
-            `https://t.me/share/url?url=${msg}`;
-        window.location.href = url;
-    }
-
-    function excluirRegistro() {
-        if(confirm("DESEJA APAGAR ESTA FICHA?")) {
-            let lista = JSON.parse(localStorage.getItem(DB_NAME));
-            lista.splice(idEdicao, 1);
-            localStorage.setItem(DB_NAME, JSON.stringify(lista));
-            window.location.href = "index.html";
-        }
-    }
-</script>
-</body>
-</html>
+        window.location.href = tipo === 'WA' ?

@@ -25,7 +25,7 @@
 
 <div class="caixa">
     <img id="preview" src="https://via.placeholder.com/140?text=FOTO">
-    <input type="file" id="foto" accept="image/*" capture="environment" style="font-size: 9px; margin-bottom: 10px;">
+    <input type="file" id="foto" accept="image/*" style="font-size: 9px; margin-bottom: 10px;">
 
     <form id="formFinal">
         <label>NOME COMPLETO</label>
@@ -82,7 +82,7 @@
         <label>OBSERVAÇÕES</label>
         <textarea id="obs" rows="2"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR REGISTRO</button>
+        <button type="submit" class="btn btn-salvar">💾 SALVAR E BAIXAR FOTO</button>
         
         <div id="areaApps" style="display:none; margin-top:20px; border-top: 1px dashed #444; padding-top: 10px;">
             <button type="button" class="btn btn-whats" onclick="enviarApp('WA')">🟢 COMPARTILHAR WHATSAPP</button>
@@ -104,14 +104,12 @@
         if (idEdicao !== null && idEdicao !== "") {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[parseInt(idEdicao)];
-            
             if (p) {
                 const campos = ['nome', 'mae', 'vulgo', 'cpf', 'nasc', 'natureza', 'dataOcorrencia', 'status', 'end', 'cidade', 'bo', 'gps', 'obs'];
                 campos.forEach(id => {
                     const el = document.getElementById(id);
                     if (el && p[id] !== undefined) el.value = p[id];
                 });
-
                 if (p.foto) {
                     document.getElementById('preview').src = p.foto;
                     fotoBase64 = p.foto;
@@ -134,27 +132,23 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 450; cv.height = 450;
-                cv.getContext('2d').drawImage(img, 0, 0, 450, 450);
-                fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
+                cv.width = 600; cv.height = 600;
+                cv.getContext('2d').drawImage(img, 0, 0, 600, 600);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.9);
                 document.getElementById('preview').src = fotoBase64;
             };
         };
         if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
     };
 
-    // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
     function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-                // Formato de link direto para localização
-                const linkMapa = `https://www.google.com/maps?q=${lat},${lon}`;
+                const linkMapa = `https://www.google.com/maps?q=$${lat},${lon}`;
                 document.getElementById('gps').value = linkMapa;
-            }, () => alert("ERRO: Ative a localização/GPS do celular."));
-        } else {
-            alert("Seu navegador não suporta GPS.");
+            }, () => alert("ERRO: Ative o GPS."));
         }
     }
 
@@ -163,15 +157,20 @@
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};
         
-        // Coleta todos os campos transformando em MAIÚSCULO, exceto o GPS
         document.querySelectorAll('input, select, textarea').forEach(i => {
-            if(i.id === 'gps') {
-                dados[i.id] = i.value; // Mantém a URL do mapa intacta
-            } else if(i.id) {
-                dados[i.id] = i.value.toUpperCase();
-            }
+            if(i.id === 'gps') dados[i.id] = i.value;
+            else if(i.id) dados[i.id] = i.value.toUpperCase();
         });
         dados.foto = fotoBase64;
+
+        // FUNÇÃO PARA SALVAR CÓPIA DA IMAGEM NA GALERIA (DOWNLOAD)
+        if (fotoBase64) {
+            const linkDownload = document.createElement('a');
+            const nomeArquivo = (dados.nome + "_" + (dados.vulgo || "")).replace(/\s/g, "_");
+            linkDownload.href = fotoBase64;
+            linkDownload.download = nomeArquivo + ".jpg";
+            linkDownload.click();
+        }
 
         if (idEdicao !== null && idEdicao !== "") {
             lista[parseInt(idEdicao)] = dados;
@@ -180,14 +179,12 @@
         }
 
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        alert("REGISTRO SALVO!");
+        alert("REGISTRO SALVO E IMAGEM BAIXADA!");
         window.location.href = "index.html";
     };
 
     function enviarApp(tipo) {
         const v = (id) => document.getElementById(id).value || "---";
-        
-        // Montagem do texto com ícones apenas para o envio
         const texto = 
             `📌 *RELATÓRIO OPERACIONAL*%0A%0A` +
             `👤 *NOME:* ${v('nome').toUpperCase()}%0A` +
@@ -207,12 +204,11 @@
         const url = tipo === 'WA' ? 
             `https://api.whatsapp.com/send?text=${texto}` : 
             `https://t.me/share/url?url=${texto}`;
-        
         window.location.href = url;
     }
 
     function excluirRegistro() {
-        if(confirm("EXCLUIR REGISTRO?")) {
+        if(confirm("EXCLUIR?")) {
             let lista = JSON.parse(localStorage.getItem(DB_NAME));
             lista.splice(parseInt(idEdicao), 1);
             localStorage.setItem(DB_NAME, JSON.stringify(lista));

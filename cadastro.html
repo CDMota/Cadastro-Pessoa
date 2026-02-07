@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
     <style>
-        /* FRONT-END EXCELENTE PRESERVADO */
+        /* SEU FRONT-END MANTIDO */
         body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
         .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 12px; color: #666; }
@@ -14,45 +14,39 @@
         #preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid #007bff; background: #eee; }
         .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 15px; text-align: center; text-decoration: none; display: block; }
         .btn-salvar { background: #007bff; color: white; }
-        .btn-whats { background: #25d366; color: white; display: none; }
-        .btn-tele { background: #0088cc; color: white; display: none; }
+        .btn-print { background: #28a745; color: white; display: none; }
         .btn-del { background: #dc3545; color: white; display: none; }
         .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; }
+
+        /* Estilo da Ficha de Impressão (fica escondida até clicar no botão) */
+        #ficha-impressao { display: none; background: white; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div class="caixa">
+<div id="tela-principal" class="caixa">
     <h3 id="txtTitulo" style="text-align:center; color:#007bff; margin-top:0">FICHA DE DADOS</h3>
     <img id="preview" src="https://via.placeholder.com/100">
     
     <form id="formFinal">
         <label>Foto de Identificação</label>
         <input type="file" id="foto" accept="image/*">
-        
         <label>Nome Completo</label>
         <input type="text" id="nome" required>
-        
         <div class="duas-col">
             <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
-            <div><label>Nascimento</label><input type="tel" id="data" maxlength="10" required></div>
+            <div><label>Data Nasc.</label><input type="tel" id="data" maxlength="10" required></div>
         </div>
-        
         <div class="duas-col">
             <div><label>Cidade</label><input type="text" id="cidade"></div>
             <div><label>UF</label><input type="text" id="uf" maxlength="2"></div>
         </div>
-        
         <label>Observações</label>
         <textarea id="obs" rows="3"></textarea>
 
-        <button type="submit" id="btnAcao" class="btn btn-salvar">💾 SALVAR ALTERAÇÕES</button>
-        
-        <button type="button" id="btnWhats" class="btn btn-whats" onclick="abrirApp('whatsapp')">🟢 WHATSAPP DIRETO</button>
-        <button type="button" id="btnTele" class="btn btn-tele" onclick="abrirApp('telegram')">🔵 TELEGRAM DIRETO</button>
-        
-        <button type="button" id="btnDel" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR REGISTRO</button>
-        
+        <button type="submit" id="btnAcao" class="btn btn-salvar">💾 SALVAR DADOS</button>
+        <button type="button" id="btnPDF" class="btn btn-print" onclick="gerarFichaParaCompartilhar()">📄 GERAR FICHA (PDF/ZAP)</button>
+        <button type="button" id="btnDel" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR CADASTRO</button>
         <a href="index.html" class="btn-voltar">VOLTAR PARA LISTA</a>
     </form>
 </div>
@@ -74,54 +68,62 @@
         e.target.value = v;
     };
 
-    // CARREGAR DADOS AO ABRIR NO CHROME
     window.onload = () => {
         if (idEdicao !== null) {
             const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
             const d = lista[idEdicao];
             if (d) {
-                document.getElementById('btnWhats').style.display = "block";
-                document.getElementById('btnTele').style.display = "block";
+                document.getElementById('btnPDF').style.display = "block";
                 document.getElementById('btnDel').style.display = "block";
-                document.getElementById('txtTitulo').innerText = "EDITAR CADASTRO";
-                document.getElementById('btnAcao').innerText = "💾 ATUALIZAR DADOS";
-                
-                document.getElementById('nome').value = d.nome || '';
-                document.getElementById('cpf').value = d.cpf || '';
-                document.getElementById('data').value = d.data || '';
-                document.getElementById('cidade').value = d.cidade || '';
-                document.getElementById('uf').value = d.uf || '';
-                document.getElementById('obs').value = d.obs || '';
+                document.getElementById('nome').value = d.nome;
+                document.getElementById('cpf').value = d.cpf;
+                document.getElementById('data').value = d.data;
+                document.getElementById('cidade').value = d.cidade;
+                document.getElementById('uf').value = d.uf;
+                document.getElementById('obs').value = d.obs;
                 if(d.foto) { document.getElementById('preview').src = d.foto; fotoBase64 = d.foto; }
             }
         }
     };
 
-    // FUNÇÃO QUE O CHROME USA PARA CHAMAR OS APPS DIRETAMENTE
-    function abrirApp(plataforma) {
+    // NOVA LÓGICA: CRIA UMA FICHA LIMPA PARA COMPARTILHAR
+    function gerarFichaParaCompartilhar() {
         const nome = document.getElementById('nome').value;
         const cpf = document.getElementById('cpf').value;
         const data = document.getElementById('data').value;
-        const local = document.getElementById('cidade').value + " - " + document.getElementById('uf').value;
+        const cidade = document.getElementById('cidade').value;
+        const uf = document.getElementById('uf').value;
         const obs = document.getElementById('obs').value;
+        const foto = document.getElementById('preview').src;
 
-        // Texto formatado com negritos
-        const mensagem = `*FICHA DE CADASTRO*%0A%0A` +
-                         `*Nome:* ${nome}%0A` +
-                         `*CPF:* ${cpf}%0A` +
-                         `*Data:* ${data}%0A` +
-                         `*Local:* ${local}%0A` +
-                         `*Obs:* ${obs}`;
+        // Cria o conteúdo da ficha
+        const conteudoFicha = `
+            <html>
+            <head><title>Ficha_${nome}</title></head>
+            <body style="font-family:sans-serif; text-align:center; padding:20px;">
+                <div style="border:2px solid #007bff; border-radius:15px; padding:20px; max-width:400px; margin:auto;">
+                    <h2 style="color:#007bff;">FICHA INDIVIDUAL</h2>
+                    <img src="${foto}" style="width:120px; height:120px; border-radius:50%; border:3px solid #007bff; object-fit:cover;">
+                    <div style="text-align:left; margin-top:20px; font-size:16px;">
+                        <p><b>Nome:</b> ${nome}</p>
+                        <p><b>CPF:</b> ${cpf}</p>
+                        <p><b>Nascimento:</b> ${data}</p>
+                        <p><b>Cidade:</b> ${cidade} - ${uf}</p>
+                        <p><b>Observações:</b> ${obs}</p>
+                    </div>
+                    <p style="font-size:10px; color:#999; margin-top:30px;">Gerado pelo Sistema de Cadastro</p>
+                </div>
+                <p style="margin-top:20px; color:#666;">Use o menu do navegador para <b>Compartilhar</b> ou <b>Imprimir como PDF</b>.</p>
+            </body>
+            </html>
+        `;
 
-        if (plataforma === 'whatsapp') {
-            window.location.href = `whatsapp://send?text=${mensagem}`;
-        } else {
-            // No Telegram, o protocolo direto é tg://msg
-            window.location.href = `tg://msg?text=${mensagem}`;
-        }
+        // Abre em uma nova aba para o sistema não bloquear o download
+        const novaAba = window.open('', '_blank');
+        novaAba.document.write(conteudoFicha);
+        novaAba.document.close();
     }
 
-    // PROCESSAR FOTO
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -138,11 +140,10 @@
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    // GUARDAR DADOS
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-        const registro = {
+        const reg = {
             nome: document.getElementById('nome').value,
             cpf: document.getElementById('cpf').value,
             data: document.getElementById('data').value,
@@ -151,15 +152,15 @@
             obs: document.getElementById('obs').value,
             foto: fotoBase64
         };
-        if (idEdicao !== null) lista[idEdicao] = registro;
-        else lista.push(registro);
+        if (idEdicao !== null) lista[idEdicao] = reg;
+        else lista.push(reg);
         localStorage.setItem('banco_final', JSON.stringify(lista));
-        alert("Dados guardados!");
+        alert("Salvo!");
         window.location.href = "index.html";
     };
 
     function excluirRegistro() {
-        if(confirm("Deseja apagar permanentemente?")) {
+        if(confirm("Excluir?")) {
             let lista = JSON.parse(localStorage.getItem('banco_final'));
             lista.splice(idEdicao, 1);
             localStorage.setItem('banco_final', JSON.stringify(lista));

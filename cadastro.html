@@ -26,7 +26,7 @@
 
 <div class="caixa">
     <img id="preview" src="https://via.placeholder.com/160?text=FOTO">
-    <input type="file" id="foto" accept="image/*" capture="environment">
+    <input type="file" id="foto" accept="image/*" capture="environment" style="font-size: 10px; margin-bottom: 10px;">
 
     <form id="formFinal">
         <label>NOME COMPLETO</label>
@@ -101,7 +101,7 @@
 
         <button type="submit" class="btn btn-salvar">💾 SALVAR REGISTRO</button>
         
-        <div id="areaApps" style="display:none; margin-top:20px;">
+        <div id="areaApps" style="display:none; margin-top:20px; border-top: 1px dashed #444; padding-top: 10px;">
             <button type="button" class="btn btn-whats" onclick="enviarApp('WA')">🟢 COMPARTILHAR WHATSAPP</button>
             <button type="button" class="btn btn-tele" onclick="enviarApp('TG')">🔵 COMPARTILHAR TELEGRAM</button>
             <button type="button" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR REGISTRO</button>
@@ -117,67 +117,65 @@
     const idEdicao = params.get('edit');
     let fotoBase64 = "";
 
-    // 1. CARREGAR DADOS AO ABRIR (CORREÇÃO PRINCIPAL)
+    // 1. CARREGAR DADOS (MÉTODO REFORÇADO)
     window.onload = function() {
-        if (idEdicao !== null && idEdicao !== undefined) {
+        if (idEdicao !== null) {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[idEdicao];
             
             if (p) {
-                // Preenche cada campo se o ID existir
-                Object.keys(p).forEach(key => {
-                    const el = document.getElementById(key);
-                    if (el) el.value = p[key];
+                // Preencher campos de texto e select
+                const campos = ['nome', 'vulgo', 'cpf', 'dataNasc', 'sexo', 'natureza', 'dataOcorrencia', 'rua', 'numero', 'cidade', 'uf', 'status', 'bo', 'gps', 'obs'];
+                
+                campos.forEach(id => {
+                    if (p[id] !== undefined) {
+                        document.getElementById(id).value = p[id];
+                    }
                 });
 
-                // Carrega a Foto no Preview
+                // Carregar Foto
                 if (p.foto) {
                     document.getElementById('preview').src = p.foto;
                     fotoBase64 = p.foto;
                 }
                 
-                // Mostra botões de Zap/Tele/Excluir
                 document.getElementById('areaApps').style.display = 'block';
             }
         }
     };
 
-    // 2. DATA/HORA AUTOMÁTICA AO SELECIONAR NATUREZA
+    // 2. DATA/HORA AO MUDAR NATUREZA
     document.getElementById('natureza').addEventListener('change', function() {
         if(this.value !== "") {
             const agora = new Date();
-            const dataFormatada = agora.toLocaleString('pt-BR').toUpperCase();
-            document.getElementById('dataOcorrencia').value = dataFormatada;
+            document.getElementById('dataOcorrencia').value = agora.toLocaleString('pt-BR').toUpperCase();
         }
     });
 
-    // 3. PREVIEW DA FOTO AO SELECIONAR ARQUIVO
+    // 3. PREVIEW DA FOTO
     document.getElementById('foto').onchange = e => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = ev => {
-                const img = new Image();
-                img.src = ev.target.result;
-                img.onload = () => {
-                    const cv = document.createElement('canvas');
-                    cv.width = 500; cv.height = 500;
-                    cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
-                    fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
-                    document.getElementById('preview').src = fotoBase64;
-                };
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const img = new Image();
+            img.src = ev.target.result;
+            img.onload = () => {
+                const cv = document.createElement('canvas');
+                cv.width = 500; cv.height = 500;
+                cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
+                document.getElementById('preview').src = fotoBase64;
             };
-            reader.readAsDataURL(file);
-        }
+        };
+        if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
     };
 
     function pegarGPS() {
         navigator.geolocation.getCurrentPosition(pos => {
             document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
-        }, () => alert("Ative o GPS do celular"));
+        });
     }
 
-    // 4. SALVAR / ATUALIZAR
+    // 4. SALVAR
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
@@ -188,29 +186,23 @@
         });
         dados.foto = fotoBase64;
 
-        if (idEdicao !== null) {
-            lista[idEdicao] = dados;
-        } else {
-            lista.push(dados);
-        }
+        if (idEdicao !== null) lista[idEdicao] = dados;
+        else lista.push(dados);
 
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        alert("✅ REGISTRO SALVO!");
+        alert("✅ DADOS SALVOS!");
         window.location.href = "index.html";
     };
 
     function enviarApp(tipo) {
         const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
-        const msg = `📌 *RELATÓRIO OPERACIONAL*%0A%0A👤 *NOME:* ${v('nome')}%0A🎭 *VULGO:* ${v('vulgo')}%0A⚖️ *NAT:* ${v('natureza')}%0A🕒 *DATA:* ${v('dataOcorrencia')}%0A🛡️ *STATUS:* ${v('status')}%0A📍 *MAPA:* http://maps.google.com/maps?q=${v('gps')}`;
-        
-        const url = tipo === 'WA' ? 
-            `https://api.whatsapp.com/send?text=${msg}` : 
-            `https://t.me/share/url?url=${msg}`;
+        const msg = `*CADASTRO:* ${v('nome')}\n*NAT:* ${v('natureza')}\n*DATA:* ${v('dataOcorrencia')}\n*COORD:* ${v('gps')}`;
+        const url = tipo === 'WA' ? `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}` : `https://t.me/share/url?url=${encodeURIComponent(msg)}`;
         window.location.href = url;
     }
 
     function excluirRegistro() {
-        if(confirm("DESEJA REALMENTE EXCLUIR ESTA FICHA?")) {
+        if(confirm("EXCLUIR REGISTRO?")) {
             let lista = JSON.parse(localStorage.getItem(DB_NAME));
             lista.splice(idEdicao, 1);
             localStorage.setItem(DB_NAME, JSON.stringify(lista));

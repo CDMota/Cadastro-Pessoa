@@ -10,7 +10,7 @@
         .caixa { background: #151515; padding: 15px; border-radius: 10px; max-width: 500px; margin: auto; border: 1px solid #333; }
         label { display: block; margin-top: 10px; font-size: 10px; color: #888; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 5px; background: #222; color: white; font-size: 14px; text-transform: uppercase; box-sizing: border-box; }
-        .cor-especial { border: 1px solid var(--cor-natureza-data); color: var(--cor-natureza-data); font-weight: bold; }
+        .cor-especial { border: 2px solid var(--cor-natureza-data) !important; color: var(--cor-natureza-data); font-weight: bold; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .quatro-col { display: grid; grid-template-columns: 2.5fr 1fr; gap: 8px; }
         #preview { width: 160px; height: 160px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 10px; border: 3px solid var(--cor-destaque); background: #222; }
@@ -50,11 +50,12 @@
         <div class="duas-col">
             <div>
                 <label>NATUREZA</label>
-                <select id="natureza" class="cor-especial" id="naturezaSelect">
+                <select id="natureza" class="cor-especial">
                     <option value="">SELECIONE...</option>
                     <option value="ABORDADO">ABORDADO</option>
                     <option value="PRISÃO">PRISÃO</option>
                     <option value="AVERIGUAÇÃO">AVERIGUAÇÃO</option>
+                    <option value="TRÁFICO">TRÁFICO</option>
                 </select>
             </div>
             <div>
@@ -98,15 +99,15 @@
         <label>OBSERVAÇÕES</label>
         <textarea id="obs" rows="3"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR NO SISTEMA</button>
+        <button type="submit" class="btn btn-salvar">💾 SALVAR REGISTRO</button>
         
         <div id="areaApps" style="display:none; margin-top:20px;">
-            <button type="button" class="btn btn-whats" onclick="enviarApp('WA')">🟢 WHATSAPP</button>
-            <button type="button" class="btn btn-tele" onclick="enviarApp('TG')">🔵 TELEGRAM</button>
-            <button type="button" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR</button>
+            <button type="button" class="btn btn-whats" onclick="enviarApp('WA')">🟢 COMPARTILHAR WHATSAPP</button>
+            <button type="button" class="btn btn-tele" onclick="enviarApp('TG')">🔵 COMPARTILHAR TELEGRAM</button>
+            <button type="button" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR REGISTRO</button>
         </div>
         
-        <a href="index.html" class="btn" style="background:#333;">⬅️ VOLTAR</a>
+        <a href="index.html" class="btn" style="background:#333;">⬅️ VOLTAR PARA LISTA</a>
     </form>
 </div>
 
@@ -116,84 +117,100 @@
     const idEdicao = params.get('edit');
     let fotoBase64 = "";
 
-    // CORREÇÃO: Puxar data e hora ao mudar natureza
-    document.getElementById('natureza').addEventListener('change', function() {
-        if(this.value !== "") {
-            const agora = new Date();
-            document.getElementById('dataOcorrencia').value = agora.toLocaleString('pt-BR').toUpperCase();
-        }
-    });
-
-    // CORREÇÃO: Preview da Foto
-    document.getElementById('foto').addEventListener('change', function(e) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = 500; canvas.height = 500;
-                ctx.drawImage(img, 0, 0, 500, 500);
-                fotoBase64 = canvas.toDataURL('image/jpeg', 0.8);
-                document.getElementById('preview').src = fotoBase64;
-            }
-        }
-        if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
-    });
-
-    function pegarGPS() {
-        navigator.geolocation.getCurrentPosition(pos => {
-            document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
-        });
-    }
-
-    // Carregar dados existentes
-    window.onload = () => {
-        if (idEdicao !== null) {
+    // 1. CARREGAR DADOS AO ABRIR (CORREÇÃO PRINCIPAL)
+    window.onload = function() {
+        if (idEdicao !== null && idEdicao !== undefined) {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[idEdicao];
+            
             if (p) {
+                // Preenche cada campo se o ID existir
                 Object.keys(p).forEach(key => {
                     const el = document.getElementById(key);
                     if (el) el.value = p[key];
                 });
+
+                // Carrega a Foto no Preview
                 if (p.foto) {
                     document.getElementById('preview').src = p.foto;
                     fotoBase64 = p.foto;
                 }
+                
+                // Mostra botões de Zap/Tele/Excluir
                 document.getElementById('areaApps').style.display = 'block';
             }
         }
     };
 
-    // CORREÇÃO: Salvar os dados
-    document.getElementById('formFinal').onsubmit = function(e) {
+    // 2. DATA/HORA AUTOMÁTICA AO SELECIONAR NATUREZA
+    document.getElementById('natureza').addEventListener('change', function() {
+        if(this.value !== "") {
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleString('pt-BR').toUpperCase();
+            document.getElementById('dataOcorrencia').value = dataFormatada;
+        }
+    });
+
+    // 3. PREVIEW DA FOTO AO SELECIONAR ARQUIVO
+    document.getElementById('foto').onchange = e => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = new Image();
+                img.src = ev.target.result;
+                img.onload = () => {
+                    const cv = document.createElement('canvas');
+                    cv.width = 500; cv.height = 500;
+                    cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
+                    fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('preview').src = fotoBase64;
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    function pegarGPS() {
+        navigator.geolocation.getCurrentPosition(pos => {
+            document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
+        }, () => alert("Ative o GPS do celular"));
+    }
+
+    // 4. SALVAR / ATUALIZAR
+    document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
-        const dados = {};
         
+        const dados = {};
         document.querySelectorAll('input, select, textarea').forEach(i => {
             if(i.id) dados[i.id] = i.value.toUpperCase();
         });
         dados.foto = fotoBase64;
 
-        if (idEdicao !== null) lista[idEdicao] = dados;
-        else lista.push(dados);
+        if (idEdicao !== null) {
+            lista[idEdicao] = dados;
+        } else {
+            lista.push(dados);
+        }
 
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        alert("✅ SALVO COM SUCESSO!");
-        window.location.href = "index.html"; // Volta para a lista para ver o novo item
+        alert("✅ REGISTRO SALVO!");
+        window.location.href = "index.html";
     };
 
     function enviarApp(tipo) {
         const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
-        const msg = `📌 *RELATÓRIO*%0A👤 *NOME:* ${v('nome')}%0A⚖️ *NAT:* ${v('natureza')}%0A🕒 *DATA:* ${v('dataOcorrencia')}%0A📍 *GPS:* ${v('gps')}`;
-        window.location.href = tipo === 'WA' ? `https://api.whatsapp.com/send?text=${msg}` : `https://t.me/share/url?url=${msg}`;
+        const msg = `📌 *RELATÓRIO OPERACIONAL*%0A%0A👤 *NOME:* ${v('nome')}%0A🎭 *VULGO:* ${v('vulgo')}%0A⚖️ *NAT:* ${v('natureza')}%0A🕒 *DATA:* ${v('dataOcorrencia')}%0A🛡️ *STATUS:* ${v('status')}%0A📍 *MAPA:* http://maps.google.com/maps?q=${v('gps')}`;
+        
+        const url = tipo === 'WA' ? 
+            `https://api.whatsapp.com/send?text=${msg}` : 
+            `https://t.me/share/url?url=${msg}`;
+        window.location.href = url;
     }
 
     function excluirRegistro() {
-        if(confirm("EXCLUIR?")) {
+        if(confirm("DESEJA REALMENTE EXCLUIR ESTA FICHA?")) {
             let lista = JSON.parse(localStorage.getItem(DB_NAME));
             lista.splice(idEdicao, 1);
             localStorage.setItem(DB_NAME, JSON.stringify(lista));

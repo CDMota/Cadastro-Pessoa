@@ -3,173 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FICHA OPERACIONAL</title>
+    <title>Cadastro</title>
     <style>
-        body { font-family: sans-serif; background: #0a0a0a; color: #ddd; padding: 10px; text-transform: uppercase; }
-        .caixa { background: #151515; padding: 15px; border-radius: 10px; max-width: 500px; margin: auto; border: 1px solid #333; }
-        label { display: block; margin-top: 10px; font-size: 10px; color: #888; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 5px; background: #222; color: white; font-size: 14px; text-transform: uppercase; box-sizing: border-box; }
-        .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        #preview { width: 150px; height: 150px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 10px; border: 2px solid #d32f2f; background: #222; }
-        .btn { border: none; padding: 15px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; text-align: center; color: white; text-decoration: none; display: block; font-size: 12px; }
-        .btn-salvar { background: #2e7d32; }
-        .btn-whats { background: #25d366; color: black; }
-        .btn-tele { background: #0088cc; }
-        .btn-gps { background: #6a1b9a; width: 60px; }
-        .btn-del { background: #b71c1c; margin-top: 20px; }
+        /* SEU FRONT-END MANTIDO */
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
+        .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 12px; color: #666; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 5px; }
+        .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid #007bff; background: #eee; }
+        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 15px; text-align: center; text-decoration: none; display: block; }
+        .btn-salvar { background: #007bff; color: white; }
+        .btn-print { background: #28a745; color: white; display: none; }
+        .btn-del { background: #dc3545; color: white; display: none; }
+        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; }
+
+        /* Estilo da Ficha de Impressão (fica escondida até clicar no botão) */
+        #ficha-impressao { display: none; background: white; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div class="caixa">
-    <img id="preview" src="">
-    <input type="file" id="foto" accept="image/*">
-
+<div id="tela-principal" class="caixa">
+    <h3 id="txtTitulo" style="text-align:center; color:#007bff; margin-top:0">FICHA DE DADOS</h3>
+    <img id="preview" src="https://via.placeholder.com/100">
+    
     <form id="formFinal">
-        <label>NOME COMPLETO</label>
+        <label>Foto de Identificação</label>
+        <input type="file" id="foto" accept="image/*">
+        <label>Nome Completo</label>
         <input type="text" id="nome" required>
-        
-        <label>NOME DA MÃE</label>
-        <input type="text" id="mae">
-
         <div class="duas-col">
-            <div><label>VULGO</label><input type="text" id="vulgo"></div>
-            <div><label>CPF</label><input type="tel" id="cpf"></div>
+            <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
+            <div><label>Data Nasc.</label><input type="tel" id="data" maxlength="10" required></div>
         </div>
-
         <div class="duas-col">
-            <div><label>NASCIMENTO</label><input type="tel" id="dataNasc"></div>
-            <div><label>SEXO</label>
-                <select id="sexo">
-                    <option value="MASCULINO">MASCULINO</option>
-                    <option value="FEMININO">FEMININO</option>
-                </select>
-            </div>
+            <div><label>Cidade</label><input type="text" id="cidade"></div>
+            <div><label>UF</label><input type="text" id="uf" maxlength="2"></div>
         </div>
-
-        <label>NATUREZA</label>
-        <select id="natureza" onchange="verificarAbordado()">
-            <option value="">SELECIONE...</option>
-            <option value="ABORDADO">ABORDADO</option>
-            <option value="PRISÃO">PRISÃO</option>
-        </select>
-
-        <div class="duas-col">
-            <div><label>DATA/HORA</label><input type="text" id="dataOcorrencia"></div>
-            <div><label>STATUS</label>
-                <select id="status">
-                    <option value="ABORDADO">ABORDADO</option>
-                    <option value="PRESO">PRESO</option>
-                    <option value="FORAGIDO">FORAGIDO</option>
-                    <option value="TORNOZELEIRA">TORNOZELEIRA</option>
-                    <option value="FALECIDO">FALECIDO</option>
-                </select>
-            </div>
-        </div>
-
-        <label>GPS</label>
-        <div style="display:flex; gap:5px;">
-            <input type="text" id="gps" readonly>
-            <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
-        </div>
-
-        <label>ENDEREÇO (RUA/Nº/BAIRRO/CIDADE)</label>
-        <textarea id="enderecoCompleto" rows="2"></textarea>
-
-        <label>BO Nº / OBSERVAÇÕES</label>
+        <label>Observações</label>
         <textarea id="obs" rows="3"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR E BAIXAR FOTO</button>
-        
-        <div id="areaAcao" style="display:none;">
-            <button type="button" class="btn btn-whats" onclick="enviar('WA')">🟢 WHATSAPP COMPLETO</button>
-            <button type="button" class="btn btn-tele" onclick="enviar('TG')">🔵 TELEGRAM COMPLETO</button>
-            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ EXCLUIR</button>
-        </div>
-        
-        <a href="index.html" class="btn" style="background:#444;">VOLTAR</a>
+        <button type="submit" id="btnAcao" class="btn btn-salvar">💾 SALVAR DADOS</button>
+        <button type="button" id="btnPDF" class="btn btn-print" onclick="gerarFichaParaCompartilhar()">📄 GERAR FICHA (PDF/ZAP)</button>
+        <button type="button" id="btnDel" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR CADASTRO</button>
+        <a href="index.html" class="btn-voltar">VOLTAR PARA LISTA</a>
     </form>
 </div>
 
 <script>
-    const CHAVE = 'SISTEMA_V7_FINAL';
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('edit');
+    const urlParams = new URLSearchParams(window.location.search);
+    const idEdicao = urlParams.get('edit');
     let fotoBase64 = "";
 
-    function verificarAbordado() {
-        if(document.getElementById('natureza').value === "ABORDADO") {
-            document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase();
-        }
-    }
-
-    function pegarGPS() {
-        navigator.geolocation.getCurrentPosition(pos => {
-            document.getElementById('gps').value = `${pos.coords.latitude.toFixed(6)},${pos.coords.longitude.toFixed(6)}`;
-        });
-    }
+    // MÁSCARAS
+    document.getElementById('cpf').oninput = e => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = v;
+    };
+    document.getElementById('data').oninput = e => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
+        e.target.value = v;
+    };
 
     window.onload = () => {
-        if (id !== null) {
-            const lista = JSON.parse(localStorage.getItem(CHAVE) || '[]');
-            const p = lista[id];
-            if (p) {
-                document.getElementById('areaAcao').style.display = "block";
-                Object.keys(p).forEach(key => {
-                    const el = document.getElementById(key);
-                    if (el) el.value = p[key];
-                });
-                if (p.foto) {
-                    document.getElementById('preview').src = p.foto;
-                    fotoBase64 = p.foto;
-                }
+        if (idEdicao !== null) {
+            const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+            const d = lista[idEdicao];
+            if (d) {
+                document.getElementById('btnPDF').style.display = "block";
+                document.getElementById('btnDel').style.display = "block";
+                document.getElementById('nome').value = d.nome;
+                document.getElementById('cpf').value = d.cpf;
+                document.getElementById('data').value = d.data;
+                document.getElementById('cidade').value = d.cidade;
+                document.getElementById('uf').value = d.uf;
+                document.getElementById('obs').value = d.obs;
+                if(d.foto) { document.getElementById('preview').src = d.foto; fotoBase64 = d.foto; }
             }
         }
     };
 
-    document.getElementById('formFinal').onsubmit = e => {
-        e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem(CHAVE) || '[]');
-        const dados = {};
-        document.querySelectorAll('input, select, textarea').forEach(i => {
-            if(i.id) dados[i.id] = i.value.toUpperCase();
-        });
-        dados.foto = fotoBase64;
+    // NOVA LÓGICA: CRIA UMA FICHA LIMPA PARA COMPARTILHAR
+    function gerarFichaParaCompartilhar() {
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        const data = document.getElementById('data').value;
+        const cidade = document.getElementById('cidade').value;
+        const uf = document.getElementById('uf').value;
+        const obs = document.getElementById('obs').value;
+        const foto = document.getElementById('preview').src;
 
-        if (id !== null) lista[id] = dados; else lista.push(dados);
-        localStorage.setItem(CHAVE, JSON.stringify(lista));
+        // Cria o conteúdo da ficha
+        const conteudoFicha = `
+            <html>
+            <head><title>Ficha_${nome}</title></head>
+            <body style="font-family:sans-serif; text-align:center; padding:20px;">
+                <div style="border:2px solid #007bff; border-radius:15px; padding:20px; max-width:400px; margin:auto;">
+                    <h2 style="color:#007bff;">FICHA INDIVIDUAL</h2>
+                    <img src="${foto}" style="width:120px; height:120px; border-radius:50%; border:3px solid #007bff; object-fit:cover;">
+                    <div style="text-align:left; margin-top:20px; font-size:16px;">
+                        <p><b>Nome:</b> ${nome}</p>
+                        <p><b>CPF:</b> ${cpf}</p>
+                        <p><b>Nascimento:</b> ${data}</p>
+                        <p><b>Cidade:</b> ${cidade} - ${uf}</p>
+                        <p><b>Observações:</b> ${obs}</p>
+                    </div>
+                    <p style="font-size:10px; color:#999; margin-top:30px;">Gerado pelo Sistema de Cadastro</p>
+                </div>
+                <p style="margin-top:20px; color:#666;">Use o menu do navegador para <b>Compartilhar</b> ou <b>Imprimir como PDF</b>.</p>
+            </body>
+            </html>
+        `;
 
-        // --- SALVAR NA GALERIA (DOWNLOAD) ---
-        if(fotoBase64) {
-            const link = document.createElement('a');
-            link.href = fotoBase64;
-            link.download = `FOTO_${dados.nome}.jpg`;
-            link.click();
-        }
-
-        alert("DADOS SALVOS E FOTO ENVIADA PARA GALERIA!");
-        window.location.href = "index.html";
-    };
-
-    function enviar(tipo) {
-        const d = (id) => document.getElementById(id).value;
-        const msg = `*RELATÓRIO OPERACIONAL*\n` +
-                    `*NOME:* ${d('nome')}\n` +
-                    `*VULGO:* ${d('vulgo')}\n` +
-                    `*MÃE:* ${d('mae')}\n` +
-                    `*CPF:* ${d('cpf')}\n` +
-                    `*NASC:* ${d('dataNasc')}\n` +
-                    `*STATUS:* ${d('status')}\n` +
-                    `*NATUREZA:* ${d('natureza')}\n` +
-                    `*DATA/HORA:* ${d('dataOcorrencia')}\n` +
-                    `*END:* ${d('enderecoCompleto')}\n` +
-                    `*OBS:* ${d('obs')}\n` +
-                    `*MAPA:* http://maps.google.com/maps?q=${d('gps')}`;
-
-        const url = tipo === 'WA' 
-            ? `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`
-            : `https://t.me/share/url?url=${encodeURIComponent(msg)}`;
-        window.location.href = url;
+        // Abre em uma nova aba para o sistema não bloquear o download
+        const novaAba = window.open('', '_blank');
+        novaAba.document.write(conteudoFicha);
+        novaAba.document.close();
     }
 
     document.getElementById('foto').onchange = e => {
@@ -179,20 +131,39 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 500; cv.height = 500;
-                cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
-                fotoBase64 = cv.toDataURL('image/jpeg', 0.9);
+                cv.width = 250; cv.height = 250;
+                cv.getContext('2d').drawImage(img, 0, 0, 250, 250);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.7);
                 document.getElementById('preview').src = fotoBase64;
             };
         };
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    function excluir() {
-        if(confirm("EXCLUIR REGISTRO?")) {
-            let lista = JSON.parse(localStorage.getItem(CHAVE));
-            lista.splice(id, 1);
-            localStorage.setItem(CHAVE, JSON.stringify(lista));
+    document.getElementById('formFinal').onsubmit = e => {
+        e.preventDefault();
+        let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+        const reg = {
+            nome: document.getElementById('nome').value,
+            cpf: document.getElementById('cpf').value,
+            data: document.getElementById('data').value,
+            cidade: document.getElementById('cidade').value,
+            uf: document.getElementById('uf').value,
+            obs: document.getElementById('obs').value,
+            foto: fotoBase64
+        };
+        if (idEdicao !== null) lista[idEdicao] = reg;
+        else lista.push(reg);
+        localStorage.setItem('banco_final', JSON.stringify(lista));
+        alert("Salvo!");
+        window.location.href = "index.html";
+    };
+
+    function excluirRegistro() {
+        if(confirm("Excluir?")) {
+            let lista = JSON.parse(localStorage.getItem('banco_final'));
+            lista.splice(idEdicao, 1);
+            localStorage.setItem('banco_final', JSON.stringify(lista));
             window.location.href = "index.html";
         }
     }

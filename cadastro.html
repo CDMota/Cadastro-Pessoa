@@ -75,7 +75,7 @@
 
         <label>MAPA (LINK GOOGLE MAPS)</label>
         <div style="display:flex; gap:5px;">
-            <input type="text" id="gps" placeholder="Clique no ícone ao lado" readonly>
+            <input type="text" id="gps" placeholder="GERAR LINK NO ÍCONE" readonly>
             <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
         </div>
 
@@ -100,14 +100,12 @@
     const idEdicao = params.get('edit');
     let fotoBase64 = "";
 
-    // 1. CARREGAR DADOS COM SEGURANÇA
     window.onload = function() {
         if (idEdicao !== null && idEdicao !== "") {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[parseInt(idEdicao)];
             
             if (p) {
-                // IDs exatos dos campos para retorno infalível
                 const campos = ['nome', 'mae', 'vulgo', 'cpf', 'nasc', 'natureza', 'dataOcorrencia', 'status', 'end', 'cidade', 'bo', 'gps', 'obs'];
                 campos.forEach(id => {
                     const el = document.getElementById(id);
@@ -123,14 +121,12 @@
         }
     };
 
-    // 2. DATA/HORA AUTOMÁTICA
     document.getElementById('natureza').onchange = function() {
         if(this.value !== "") {
             document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase();
         }
     };
 
-    // 3. FOTO E GPS (CORRIGIDO)
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -147,29 +143,34 @@
         if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
     };
 
+    // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
     function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-                // Link oficial do Google Maps que abre em qualquer celular
-                document.getElementById('gps').value = `https://www.google.com/maps?q=${lat},${lon}`;
-            }, () => alert("ERRO: Ative a localização do celular."));
+                // Formato de link direto para localização
+                const linkMapa = `https://www.google.com/maps?q=${lat},${lon}`;
+                document.getElementById('gps').value = linkMapa;
+            }, () => alert("ERRO: Ative a localização/GPS do celular."));
         } else {
-            alert("Navegador sem suporte a GPS.");
+            alert("Seu navegador não suporta GPS.");
         }
     }
 
-    // 4. SALVAR
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};
+        
+        // Coleta todos os campos transformando em MAIÚSCULO, exceto o GPS
         document.querySelectorAll('input, select, textarea').forEach(i => {
-            if(i.id) dados[i.id] = i.value.toUpperCase();
+            if(i.id === 'gps') {
+                dados[i.id] = i.value; // Mantém a URL do mapa intacta
+            } else if(i.id) {
+                dados[i.id] = i.value.toUpperCase();
+            }
         });
-        // Manter o link do mapa em minúsculas para não quebrar a URL
-        dados.gps = document.getElementById('gps').value;
         dados.foto = fotoBase64;
 
         if (idEdicao !== null && idEdicao !== "") {
@@ -179,30 +180,29 @@
         }
 
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        alert("DADOS SALVOS COM SUCESSO!");
+        alert("REGISTRO SALVO!");
         window.location.href = "index.html";
     };
 
-    // 5. COMPARTILHAR (Ícones apenas no compartilhamento)
     function enviarApp(tipo) {
-        const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
-        const mapaUrl = document.getElementById('gps').value || "---";
+        const v = (id) => document.getElementById(id).value || "---";
         
+        // Montagem do texto com ícones apenas para o envio
         const texto = 
             `📌 *RELATÓRIO OPERACIONAL*%0A%0A` +
-            `👤 *NOME:* ${v('nome')}%0A` +
-            `🎭 *VULGO:* ${v('vulgo')}%0A` +
-            `👩‍👦 *MÃE:* ${v('mae')}%0A` +
-            `💳 *DOC:* ${v('cpf')}%0A` +
-            `📅 *NASC:* ${v('nasc')}%0A%0A` +
-            `⚖️ *NATUREZA:* ${v('natureza')}%0A` +
-            `🕒 *DATA/HORA:* ${v('dataOcorrencia')}%0A` +
-            `🛡️ *STATUS:* ${v('status')}%0A%0A` +
-            `🏠 *END:* ${v('end')}%0A` +
-            `🏙️ *CIDADE:* ${v('cidade')}%0A` +
-            `📂 *B.O:* ${v('bo')}%0A` +
-            `📝 *OBS:* ${v('obs')}%0A%0A` +
-            `📍 *MAPA:* ${mapaUrl}`;
+            `👤 *NOME:* ${v('nome').toUpperCase()}%0A` +
+            `🎭 *VULGO:* ${v('vulgo').toUpperCase()}%0A` +
+            `👩‍👦 *MÃE:* ${v('mae').toUpperCase()}%0A` +
+            `💳 *DOC:* ${v('cpf').toUpperCase()}%0A` +
+            `📅 *NASC:* ${v('nasc').toUpperCase()}%0A%0A` +
+            `⚖️ *NATUREZA:* ${v('natureza').toUpperCase()}%0A` +
+            `🕒 *DATA/HORA:* ${v('dataOcorrencia').toUpperCase()}%0A` +
+            `🛡️ *STATUS:* ${v('status').toUpperCase()}%0A%0A` +
+            `🏠 *END:* ${v('end').toUpperCase()}%0A` +
+            `🏙️ *CIDADE:* ${v('cidade').toUpperCase()}%0A` +
+            `📂 *B.O:* ${v('bo').toUpperCase()}%0A` +
+            `📝 *OBS:* ${v('obs').toUpperCase()}%0A%0A` +
+            `📍 *MAPA:* ${v('gps')}`;
 
         const url = tipo === 'WA' ? 
             `https://api.whatsapp.com/send?text=${texto}` : 
@@ -212,7 +212,7 @@
     }
 
     function excluirRegistro() {
-        if(confirm("DESEJA REALMENTE EXCLUIR ESTE REGISTRO?")) {
+        if(confirm("EXCLUIR REGISTRO?")) {
             let lista = JSON.parse(localStorage.getItem(DB_NAME));
             lista.splice(parseInt(idEdicao), 1);
             localStorage.setItem(DB_NAME, JSON.stringify(lista));

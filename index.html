@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA TÁTICO - LISTA</title>
+    <title>SISTEMA TÁTICO</title>
     <style>
         body { font-family: sans-serif; background: #0a0a0a; color: white; padding: 15px; margin: 0; }
         .topo { background: #1a1a1a; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d32f2f; }
@@ -21,7 +21,7 @@
         <h3 style="margin:0">SISTEMA TÁTICO</h3>
         <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
-    <input type="text" id="busca" placeholder="🔍 BUSCAR NOME OU CPF..." oninput="filtrar()">
+    <input type="text" id="busca" placeholder="🔍 BUSCAR..." oninput="filtrar()">
     <div id="listaContainer"></div>
 
     <script>
@@ -33,14 +33,7 @@
             lista.forEach((p, index) => {
                 const item = document.createElement('div');
                 item.className = 'cartao';
-                item.innerHTML = `
-                    <img src="${p.foto || ''}" class="foto-lista">
-                    <div class="info">
-                        <h4>${p.nome}</h4>
-                        <p>CPF: ${p.cpf || '---'} | CIDADE: ${p.cidade || '---'}</p>
-                    </div>
-                    <a href="cadastro.html?edit=${index}" class="btn-ver">ABRIR</a>
-                `;
+                item.innerHTML = `<img src="${p.foto || ''}" class="foto-lista"><div class="info"><h4>${p.nome}</h4><p>CPF: ${p.cpf || '---'}</p></div><a href="cadastro.html?edit=${index}" class="btn-ver">VER</a>`;
                 container.appendChild(item);
             });
         }

@@ -19,7 +19,7 @@
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .quatro-col { display: grid; grid-template-columns: 2.5fr 1fr; gap: 8px; }
         
-        /* Ajuste do campo de foto */
+        /* Ajuste do Preview */
         #preview { width: 160px; height: 160px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 10px; border: 3px solid var(--cor-destaque); background: #222; }
         
         .btn { border: none; padding: 15px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; text-align: center; color: white; text-decoration: none; display: block; }
@@ -33,7 +33,7 @@
 <body>
 
 <div class="caixa">
-    <img id="preview" src="https://via.placeholder.com/160?text=SEM+FOTO">
+    <img id="preview" src="https://via.placeholder.com/160?text=FOTO">
     <input type="file" id="foto" accept="image/*" capture="environment" style="font-size:10px; margin-bottom:10px;">
 
     <form id="formFinal">
@@ -86,7 +86,8 @@
             <div><label>ESTADO (UF)</label>
                 <select id="uf">
                     <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
-                    <option value="PR" selected>PR</option> <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                    <option value="PR" selected>PR</option>
+                    <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
                 </select>
             </div>
         </div>
@@ -113,7 +114,7 @@
         <label>OBSERVAÇÕES ADICIONAIS</label>
         <textarea id="obs" rows="3"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR E BAIXAR FOTO</button>
+        <button type="submit" class="btn btn-salvar">💾 SALVAR REGISTRO</button>
         
         <div id="areaApps" style="display:none; margin-top:20px; border-top:1px dashed #444; padding-top:10px;">
             <button type="button" class="btn btn-whats" onclick="enviarApp('WA')">🟢 COMPARTILHAR WHATSAPP</button>
@@ -151,14 +152,14 @@
         });
     }
 
-    // --- CARREGAMENTO CORRIGIDO PARA MOSTRAR A FOTO ---
+    // --- CARREGAMENTO DO PREVIEW E DADOS ---
     window.onload = () => {
         if (idEdicao !== null) {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[idEdicao];
             
             if (p) {
-                // Preenche os campos de texto e select
+                // Preencher campos
                 document.getElementById('nome').value = p.nome || "";
                 document.getElementById('mae').value = p.mae || "";
                 document.getElementById('vulgo').value = p.vulgo || "";
@@ -176,19 +177,18 @@
                 document.getElementById('gps').value = p.gps || "";
                 document.getElementById('obs').value = p.obs || "";
                 
-                // CORREÇÃO DA FOTO: Verifica se existe e carrega no preview
-                if (p.foto && p.foto.startsWith("data:image")) {
+                // FORÇAR CARREGAMENTO DA FOTO NO PREVIEW
+                if (p.foto) {
                     document.getElementById('preview').src = p.foto;
                     fotoBase64 = p.foto;
                 }
                 
-                // Mostra os botões de ação
                 document.getElementById('areaApps').style.display = 'block';
             }
         }
     };
 
-    // CAPTURAR NOVA FOTO E REDIMENSIONAR
+    // CAPTURA DE NOVA FOTO
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -196,46 +196,48 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 500; cv.height = 500; // Tamanho ideal para economia de memória
+                cv.width = 500; cv.height = 500;
                 cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
                 fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
+                // ATUALIZA O PREVIEW NA HORA
                 document.getElementById('preview').src = fotoBase64;
             };
         };
         reader.readAsDataURL(e.target.files[0]);
     };
 
-    // SALVAR DADOS
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
-        
         const dados = {};
-        // Captura todos os IDs e converte para MAIÚSCULO
         document.querySelectorAll('input, select, textarea').forEach(i => {
             if(i.id) dados[i.id] = i.value.toUpperCase();
         });
-        dados.foto = fotoBase64; // Mantém a string da foto
+        dados.foto = fotoBase64;
 
         if (idEdicao !== null) lista[idEdicao] = dados; 
         else lista.push(dados);
         
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-
-        // Baixa a foto para o telemóvel
-        if(fotoBase64) {
-            const a = document.createElement('a');
-            a.href = fotoBase64;
-            a.download = `CADASTRO_${dados.nome}.jpg`;
-            a.click();
-        }
-
         document.getElementById('areaApps').style.display = 'block';
-        alert("✅ REGISTRO SALVO!");
+        alert("✅ REGISTRO ATUALIZADO!");
     };
 
-    // COMPARTILHAR
     function enviarApp(tipo) {
         const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
-        const msg = `📌 *RELATÓRIO OPERACIONAL*%0A%0A` +
-                    `👤 *NOME:* ${v('nome')}%0A🎭 *VULGO:* ${v('vulgo')}%0A👩‍👦 *MÃE:* ${v('mae')}%0A💳 *DOC:* ${v('cpf')}%0A📅 *NASC:* ${v('dataNasc')}%0
+        const msg = `📌 *RELATÓRIO OPERACIONAL*%0A%0A👤 *NOME:* ${v('nome')}%0A💳 *DOC:* ${v('cpf')}%0A⚖️ *NATUREZA:* ${v('natureza')}%0A🛡️ *STATUS:* ${v('status')}%0A📍 *GPS:* ${v('gps')}`;
+        const url = tipo === 'WA' ? `https://api.whatsapp.com/send?text=${msg}` : `https://t.me/share/url?url=${msg}`;
+        window.location.href = url;
+    }
+
+    function excluirRegistro() {
+        if(confirm("EXCLUIR?")) {
+            let lista = JSON.parse(localStorage.getItem(DB_NAME));
+            lista.splice(idEdicao, 1);
+            localStorage.setItem(DB_NAME, JSON.stringify(lista));
+            window.location.href = "index.html";
+        }
+    }
+</script>
+</body>
+</html>

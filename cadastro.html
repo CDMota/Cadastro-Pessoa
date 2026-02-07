@@ -3,38 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
+    <title>Cadastro - CDMota</title>
     <style>
-        /* SEU FRONT-END MANTIDO */
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
+        :root { --cor-primaria: #007bff; --cor-sucesso: #25d366; --cor-telegram: #0088cc; --cor-alerta: #f39c12; --cor-perigo: #dc3545; }
+        .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; text-transform: none; }
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; text-transform: uppercase; }
         .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        label { display: block; margin-top: 10px; font-weight: bold; font-size: 12px; color: #666; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 5px; }
-        .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        #preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid #007bff; background: #eee; }
-        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 15px; text-align: center; text-decoration: none; display: block; }
-        .btn-salvar { background: #007bff; color: white; }
-        .btn-print { background: #28a745; color: white; display: none; }
-        .btn-del { background: #dc3545; color: white; display: none; }
-        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; }
+        
+        /* FOTO QUADRADA AJUSTADA */
+        #preview { 
+            width: 180px; height: 180px; border-radius: 15px; 
+            object-fit: cover; display: block; margin: 10px auto; 
+            border: 4px solid var(--cor-primaria); background: #eee; 
+        }
 
-        /* Estilo da Ficha de Impressão (fica escondida até clicar no botão) */
-        #ficha-impressao { display: none; background: white; padding: 20px; }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #666; }
+        input, textarea, select { width: 100%; padding: 12px 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-top: 5px; text-transform: uppercase; }
+        
+        .linha-cpf-data { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 10px; }
+        .data-tripla { display: grid; grid-template-columns: 1fr 1.1fr 1.4fr; gap: 4px; }
+        .data-tripla select { padding: 12px 2px; font-size: 13px; text-align: center; }
+        
+        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; color: white; text-align: center; text-decoration: none; display: block; }
+        .btn-salvar { background: var(--cor-primaria); }
+        .btn-foto { background: var(--cor-alerta); }
+        .btn-whats { background: var(--cor-sucesso); }
+        .btn-tele { background: var(--cor-telegram); }
+        .btn-del { background: var(--cor-perigo); margin-top: 30px; }
+        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; font-size: 12px; }
     </style>
 </head>
 <body>
-
-<div id="tela-principal" class="caixa">
-    <h3 id="txtTitulo" style="text-align:center; color:#007bff; margin-top:0">FICHA DE DADOS</h3>
-    <img id="preview" src="https://via.placeholder.com/100">
-    
+<div class="assinatura">by CDMota</div>
+<div class="caixa">
+    <h3 style="text-align:center; color:var(--cor-primaria); margin-top:0">FICHA DE DADOS</h3>
+    <img id="preview" src="https://via.placeholder.com/180?text=FOTO">
     <form id="formFinal">
-        <label>Foto de Identificação</label>
-        <input type="file" id="foto" accept="image/*">
-        <label>Nome Completo</label>
-        <input type="text" id="nome" required>
-        <div class="duas-col">
+        <label>FOTO (TIRAR OU GALERIA)</label>
+        <input type="file" id="foto" accept="image/*" capture="environment">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div><label>NOME COMPLETO</label><input type="text" id="nome" required oninput="this.value = this.value.toUpperCase()"></div>
+            <div><label>APELIDO</label><input type="text" id="apelido" oninput="this.value = this.value.toUpperCase()"></div>
+        </div>
+        
+        <div class="linha-cpf-data">
             <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
+            <div>
+                <label>NASCIMENTO</label>
+                <div class="data-tripla">
+                    <select id="dia"></select>
+                    <select id="mes">
+                        <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                    </select>
+                    <select id="ano"></select>
+                </div>
+            </div>
+        </div>
+
+        <label>ENDEREÇO (RUA, Nº, UF)</label>
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px;">
+            <input type="text" id="rua" placeholder="RUA" oninput="this.value = this.value.toUpperCase()">
+            <input type="text" id="numero" placeholder="Nº">
+            <select id="uf">
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+            </select>
+        </div>
+        
+        <label>OBSERVAÇÕES</label>
+        <textarea id="obs" rows="2" oninput="this.value = this.value.toUpperCase()"></textarea>
+
+        <button type="submit" class="btn btn-salvar">💾 SALVAR NO SISTEMA</button>
+        
+        <div id="areaApps" style="display: none; margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 15px;">
+            <button type="button" id="btnFoto" class="btn btn-foto" onclick="baixarFoto()">1º 📸 SALVAR FOTO</button>
+            <button type="button" class="btn btn-tele" onclick="compartilharApp('telegram')">2º 🔵 ENVIAR (TELEGRAM)</button>
+            <button type="button" class="btn btn-whats" onclick="compartilharApp('whatsapp')">2º 🟢 ENVIAR (WHATSAPP)</button>
+            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ APAGAR REGISTRO</button>
+        </div>
+        <a href="index.html" class="btn-voltar">⬅️ VOLTAR PARA LISTA</a>
+    </form>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('edit');
+    let fotoBase64 = "";
+
+    // GERAR DIAS E ANOS
+    const dSel = document.getElementById('dia');
+    for(let i=1;i<=31;i++) dSel.options.add(new Option(i.toString().padStart(2,'0'), i.toString().padStart(2,'0')));
+    const aSel = document.getElementById('ano');
+    const anoH = new Date().getFullYear();
+    for(let i=anoH;i>=1920;i--) aSel.options.add(new Option(i, i));
+
+    // MÁSCARA CPF
+    document.getElementById('cpf').oninput = e => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = v;
+    };
+
+    window.onload = () => {
+        if (id !== null) {
+            const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+            const d = lista[id];
+            if (d) {
+                document.getElementById('nome').value = d.nome;
+                document.getElementById('apelido').value = d.apelido || '';
+                document.getElementById('cpf').value = d.cpf;
+                if(d.data) {
+                    const p = d.data.split('/');
+                    document.getElementById('dia').value = p[0]; document.getElementById('mes').value = p[1]; document.getElementById('ano').value = p[2];
+                }
+                document.getElementById('rua').value = d.rua || '';
+                document.getElementById('numero').value = d.numero || '';
+                document.getElementById('uf').value = d.uf || '';
+                document.getElementById('obs').value = d.obs || '';
+                if(d.foto) { document.getElementById('preview').src = d.foto; fotoBase64 = d.foto; }
+                document.getElementById('areaApps').style.display = 'block';
+            }
+        }
+    };
+
+    document.getElementById('foto').onchange = e => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const img = new Image();
+            img.src = ev.target.result;
+            img.onload = () => {
+                const cv = document.createElement('canvas');
+                cv.width = 600; cv.height = 600;
+                const ctx = cv.getContext('2d');
+                const min = Math.min(img.width, img.height);
+                ctx.drawImage(img, (img.width-min)/2, (img.height-min)/2, min, min, 0, 0, 600, 600);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
+                document.getElementById('preview').src = fotoBase64;
+            };
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    document.getElementById('formFinal').onsubmit = e => {
+        e.preventDefault();
+        let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+        const dataF = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
+        const dados = {
+            nome: document.getElementById('nome').value, apelido: document.getElementById('apelido').value,
+            cpf: document.getElementById('cpf').value, data: dataF,
+            rua: document.getElementById('rua').value, numero: document.getElementById('numero').value,
+            uf: document.getElementById('uf').value, obs: document.getElementById('obs').value, foto: fotoBase64
+        };
+        if (id !== null) lista[id] = dados; else lista.push(dados);
+        localStorage.setItem('banco_final', JSON.stringify(lista));
+        alert("DADOS SALVOS!"); window.location.href = "index.html";
+    };
+
+    function baixarFoto() { if(!fotoBase64) return; const a = document.createElement('a'); a.href = fotoBase64; a.download = `foto_${document.getElementById('nome').value}.jpg`; a.click(); }
+    
+    function compartilharApp(plataforma) {
+        const n = document.getElementById('nome').value;
+        const dataF = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
+        const texto = `*CADASTRO CDMota*%0A*NOME:* ${n}%0A*CPF:* ${document.getElementById('cpf').value}%0A*NASC:* ${dataF}%0A*OBS:* ${document.getElementById('obs').value}`;
+        window.location.href = plataforma === 'whatsapp' ? `whatsapp://send?text=${texto}` : `tg://msg?text=${texto}`;
+    }
+
+    function excluir() { if(confirm("DESEJA REALMENTE EXCLUIR?")) { let l = JSON.parse(localStorage.getItem('banco_final')); l.splice(id, 1); localStorage.setItem('banco_final', JSON.stringify(l)); window.location.href = "index.html"; } }
+</script>
+</body>
+</html>            <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
             <div><label>Data Nasc.</label><input type="tel" id="data" maxlength="10" required></div>
         </div>
         <div class="duas-col">

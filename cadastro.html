@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FICHA OPERACIONAL V2</title>
     <style>
-        :root { --cor-destaque: #d32f2f; --cor-natureza-data: #ffc107; }
+        :root { --cor-destaque: #d32f2f; --cor-natureza: #ffc107; }
         body { font-family: sans-serif; background: #0a0a0a; color: #ddd; padding: 10px; text-transform: uppercase; }
         .caixa { background: #151515; padding: 15px; border-radius: 10px; max-width: 500px; margin: auto; border: 1px solid #333; }
         label { display: block; margin-top: 10px; font-size: 10px; color: #888; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 5px; background: #222; color: white; font-size: 14px; text-transform: uppercase; box-sizing: border-box; }
-        .cor-especial { border: 2px solid var(--cor-natureza-data) !important; color: var(--cor-natureza-data); font-weight: bold; }
+        .cor-especial { border: 2px solid var(--cor-natureza) !important; color: var(--cor-natureza); font-weight: bold; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .quatro-col { display: grid; grid-template-columns: 2.5fr 1fr; gap: 8px; }
         #preview { width: 160px; height: 160px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 10px; border: 3px solid var(--cor-destaque); background: #222; }
@@ -26,7 +26,7 @@
 
 <div class="caixa">
     <img id="preview" src="https://via.placeholder.com/160?text=FOTO">
-    <input type="file" id="foto" accept="image/*" capture="environment" style="font-size: 10px; margin-bottom: 10px;">
+    <input type="file" id="foto" accept="image/*" capture="environment" style="font-size:10px; margin-bottom:10px;">
 
     <form id="formFinal">
         <label>NOME COMPLETO</label>
@@ -85,6 +85,8 @@
                 <select id="status">
                     <option value="ABORDADO">ABORDADO</option>
                     <option value="PRESO">PRESO</option>
+                    <option value="FORAGIDO">FORAGIDO</option>
+                    <option value="TORNOZELEIRA">TORNOZELEIRA</option>
                 </select>
             </div>
             <div><label>Nº DO B.O.</label><input type="text" id="bo"></div>
@@ -117,42 +119,35 @@
     const idEdicao = params.get('edit');
     let fotoBase64 = "";
 
-    // 1. CARREGAR DADOS (MÉTODO REFORÇADO)
+    // 1. CARREGAMENTO COMPLETO DE DADOS
     window.onload = function() {
         if (idEdicao !== null) {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[idEdicao];
-            
             if (p) {
-                // Preencher campos de texto e select
-                const campos = ['nome', 'vulgo', 'cpf', 'dataNasc', 'sexo', 'natureza', 'dataOcorrencia', 'rua', 'numero', 'cidade', 'uf', 'status', 'bo', 'gps', 'obs'];
-                
-                campos.forEach(id => {
-                    if (p[id] !== undefined) {
-                        document.getElementById(id).value = p[id];
-                    }
+                // Preenche todos os campos pelo ID
+                Object.keys(p).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = p[id];
                 });
-
-                // Carregar Foto
+                // Carrega a foto
                 if (p.foto) {
                     document.getElementById('preview').src = p.foto;
                     fotoBase64 = p.foto;
                 }
-                
                 document.getElementById('areaApps').style.display = 'block';
             }
         }
     };
 
-    // 2. DATA/HORA AO MUDAR NATUREZA
-    document.getElementById('natureza').addEventListener('change', function() {
+    // 2. DATA/HORA AUTOMÁTICA
+    document.getElementById('natureza').onchange = function() {
         if(this.value !== "") {
-            const agora = new Date();
-            document.getElementById('dataOcorrencia').value = agora.toLocaleString('pt-BR').toUpperCase();
+            document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase();
         }
-    });
+    };
 
-    // 3. PREVIEW DA FOTO
+    // 3. PREVIEW DA FOTO CORRIGIDO
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -175,11 +170,34 @@
         });
     }
 
-    // 4. SALVAR
+    // 4. COMPARTILHAMENTO COM ÍCONES E DADOS COMPLETOS
+    function enviarApp(tipo) {
+        const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
+        
+        const msg = `📌 *RELATÓRIO OPERACIONAL*%0A%0A` +
+                    `👤 *NOME:* ${v('nome')}%0A` +
+                    `🎭 *VULGO:* ${v('vulgo')}%0A` +
+                    `💳 *DOC:* ${v('cpf')}%0A` +
+                    `📅 *NASC:* ${v('dataNasc')}%0A%0A` +
+                    `⚖️ *NATUREZA:* ${v('natureza')}%0A` +
+                    `🕒 *DATA/HORA:* ${v('dataOcorrencia')}%0A` +
+                    `🛡️ *STATUS:* ${v('status')}%0A%0A` +
+                    `🏠 *END:* ${v('rua')}, ${v('numero')}%0A` +
+                    `🏙️ *CIDADE:* ${v('cidade')} - ${v('uf')}%0A` +
+                    `📂 *B.O:* ${v('bo')}%0A` +
+                    `📝 *OBS:* ${v('obs')}%0A%0A` +
+                    `📍 *MAPA:* http://maps.google.com/maps?q=${v('gps')}`;
+
+        const url = tipo === 'WA' ? 
+            `https://api.whatsapp.com/send?text=${msg}` : 
+            `https://t.me/share/url?url=${msg}`;
+        window.location.href = url;
+    }
+
+    // 5. SALVAR
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
-        
         const dados = {};
         document.querySelectorAll('input, select, textarea').forEach(i => {
             if(i.id) dados[i.id] = i.value.toUpperCase();
@@ -193,13 +211,6 @@
         alert("✅ DADOS SALVOS!");
         window.location.href = "index.html";
     };
-
-    function enviarApp(tipo) {
-        const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
-        const msg = `*CADASTRO:* ${v('nome')}\n*NAT:* ${v('natureza')}\n*DATA:* ${v('dataOcorrencia')}\n*COORD:* ${v('gps')}`;
-        const url = tipo === 'WA' ? `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}` : `https://t.me/share/url?url=${encodeURIComponent(msg)}`;
-        window.location.href = url;
-    }
 
     function excluirRegistro() {
         if(confirm("EXCLUIR REGISTRO?")) {

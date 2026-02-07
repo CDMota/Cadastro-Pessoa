@@ -18,29 +18,20 @@
     </style>
 </head>
 <body>
-
-<div class="topo">
-    <span>SISTEMA TÁTICO</span>
-    <a href="cadastro.html" class="btn-novo">+ NOVO</a>
-</div>
-
-<input type="text" id="busca" placeholder="PESQUISAR..." onkeyup="filtrar()">
-
-<div id="listaContainer"></div>
+    <div class="topo"><span>SISTEMA TÁTICO</span><a href="cadastro.html" class="btn-novo">+ NOVO</a></div>
+    <input type="text" id="busca" placeholder="PESQUISAR..." onkeyup="filtrar()">
+    <div id="listaContainer"></div>
 
 <script>
     const DB_NAME = 'SISTEMA_TATICO_ESTAVEL';
-
     function carregar() {
         const container = document.getElementById('listaContainer');
         const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         container.innerHTML = "";
-        
         if (lista.length === 0) {
             container.innerHTML = '<div style="text-align:center;color:#666;padding:20px;">NENHUM REGISTRO.</div>';
             return;
         }
-
         lista.forEach((p, index) => {
             const item = document.createElement('div');
             item.className = 'cartao';
@@ -55,13 +46,10 @@
             container.appendChild(item);
         });
     }
-
     function filtrar() {
         const termo = document.getElementById('busca').value.toUpperCase();
         const cards = document.getElementsByClassName('cartao');
-        for (let c of cards) {
-            c.style.display = c.innerText.toUpperCase().includes(termo) ? "flex" : "none";
-        }
+        for (let c of cards) { c.style.display = c.innerText.toUpperCase().includes(termo) ? "flex" : "none"; }
     }
     window.onload = carregar;
 </script>

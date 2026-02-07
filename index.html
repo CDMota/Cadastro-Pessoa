@@ -3,57 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Operacional</title>
+    <title>SISTEMA TÁTICO - LISTA</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 15px; margin: 0; }
-        .topo { background: #0d47a1; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        #busca { width: 100%; padding: 12px; border: none; border-radius: 8px; margin-bottom: 15px; font-size: 16px; }
-        .cartao { background: #2c2c2c; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 6px solid #ffeb3b; }
-        .foto { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 2px solid #555; }
+        body { font-family: sans-serif; background: #0a0a0a; color: white; padding: 15px; margin: 0; }
+        .topo { background: #1a1a1a; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d32f2f; }
+        #busca { width: 100%; padding: 15px; border: none; border-radius: 8px; margin: 15px 0; font-size: 16px; background: #222; color: white; text-transform: uppercase; box-sizing: border-box; border: 1px solid #333; }
+        .cartao { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 5px solid #d32f2f; }
+        .foto-lista { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 15px; border: 1px solid #333; background: #333; }
         .info { flex-grow: 1; }
-        .info h4 { margin: 0; color: #ffeb3b; text-transform: uppercase; font-size: 14px; }
-        .info p { margin: 2px 0; font-size: 12px; color: #bbb; }
-        .status-tag { font-size: 10px; padding: 3px 8px; border-radius: 10px; background: #444; color: #fff; font-weight: bold; }
-        .btn-ver { background: #ffeb3b; color: #000; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        .info h4 { margin: 0; color: #fff; text-transform: uppercase; font-size: 14px; }
+        .info p { margin: 2px 0; font-size: 11px; color: #aaa; text-transform: uppercase; }
+        .btn-ver { background: #d32f2f; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
     </style>
 </head>
 <body>
     <div class="topo">
         <h3 style="margin:0">SISTEMA TÁTICO</h3>
-        <a href="cadastro.html" style="background:#4caf50; color:white; padding:8px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
+        <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
-    <input type="text" id="busca" placeholder="🔍 Buscar por Nome, Vulgo ou CPF..." onkeyup="filtrar()">
+    <input type="text" id="busca" placeholder="🔍 BUSCAR NOME OU CPF..." oninput="filtrar()">
     <div id="listaContainer"></div>
 
     <script>
+        const CHAVE = 'banco_final';
         function carregar() {
-            const lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
             const container = document.getElementById('listaContainer');
-            container.innerHTML = "";
-
+            const lista = JSON.parse(localStorage.getItem(CHAVE) || '[]');
+            container.innerHTML = lista.length === 0 ? '<p style="text-align:center;color:#444;">NENHUM REGISTRO</p>' : "";
             lista.forEach((p, index) => {
                 const item = document.createElement('div');
                 item.className = 'cartao';
-                // Cor do alerta baseada na periculosidade
-                if(p.perigo === 'Alta') item.style.borderLeftColor = '#f44336';
-                
                 item.innerHTML = `
-                    <img src="${p.foto || 'https://via.placeholder.com/100'}" class="foto">
+                    <img src="${p.foto || ''}" class="foto-lista">
                     <div class="info">
-                        <h4>${p.nome} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
-                        <p><b>Status:</b> <span class="status-tag">${p.status}</span></p>
-                        <p><b>BO:</b> ${p.bo || 'N/A'}</p>
+                        <h4>${p.nome}</h4>
+                        <p>CPF: ${p.cpf || '---'} | CIDADE: ${p.cidade || '---'}</p>
                     </div>
-                    <a href="cadastro.html?edit=${index}" class="btn-ver">DETALHES</a>
+                    <a href="cadastro.html?edit=${index}" class="btn-ver">ABRIR</a>
                 `;
                 container.appendChild(item);
             });
         }
         function filtrar() {
-            let termo = document.getElementById('busca').value.toLowerCase();
-            let cartoes = document.getElementsByClassName('cartao');
-            for (let c of cartoes) {
-                c.style.display = c.innerText.toLowerCase().includes(termo) ? "flex" : "none";
+            const t = document.getElementById('busca').value.toUpperCase();
+            for (let c of document.getElementsByClassName('cartao')) {
+                c.style.display = c.innerText.toUpperCase().includes(t) ? "flex" : "none";
             }
         }
         window.onload = carregar;

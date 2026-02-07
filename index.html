@@ -31,7 +31,7 @@
         function carregar() {
             const container = document.getElementById('listaContainer');
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
-            container.innerHTML = lista.length === 0 ? '<div style="text-align:center;color:#666;margin-top:50px;">VAZIO</div>' : "";
+            container.innerHTML = lista.length === 0 ? '<div style="text-align:center;color:#666;margin-top:50px;">NENHUM REGISTRO</div>' : "";
 
             lista.forEach((p, index) => {
                 const item = document.createElement('div');

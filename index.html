@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA TÁTICO - LISTA</title>
+    <title>SISTEMA TÁTICO</title>
     <style>
         body { font-family: sans-serif; background: #0a0a0a; color: white; padding: 15px; margin: 0; }
         .topo { background: #1a1a1a; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d32f2f; }
-        #busca { width: 100%; padding: 15px; border: none; border-radius: 8px; margin: 15px 0; font-size: 16px; background: #222; color: white; text-transform: uppercase; box-sizing: border-box; border: 1px solid #333; }
+        #busca { width: 100%; padding: 15px; border: none; border-radius: 8px; margin: 15px 0; font-size: 16px; background: #222; color: white; border: 1px solid #333; }
         .cartao { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 5px solid #d32f2f; text-decoration: none; color: white; }
-        .foto-lista { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 15px; border: 1px solid #333; }
-        .info { flex-grow: 1; }
+        .foto-lista { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 15px; background: #333; }
+        .info { flex-grow: 1; text-transform: uppercase; }
         .info h4 { margin: 0; font-size: 14px; }
         .info p { margin: 2px 0; font-size: 11px; color: #aaa; }
-        .btn-abrir { background: #d32f2f; color: white; padding: 8px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; text-decoration: none; }
+        .btn-abrir { background: #d32f2f; color: white; padding: 8px 12px; border-radius: 5px; font-weight: bold; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -22,7 +22,7 @@
         <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
     
-    <input type="text" id="busca" placeholder="🔍 BUSCAR POR NOME OU VULGO..." oninput="filtrar()">
+    <input type="text" id="busca" placeholder="🔍 BUSCAR..." oninput="filtrar()">
     <div id="listaContainer"></div>
 
     <script>
@@ -41,8 +41,7 @@
                     <img src="${p.foto || 'https://via.placeholder.com/60'}" class="foto-lista">
                     <div class="info">
                         <h4>${p.nome || '---'}</h4>
-                        <p>VULGO: ${p.vulgo || 'N/I'} | DOC: ${p.cpf || '---'}</p>
-                        <p>STATUS: ${p.status || '---'}</p>
+                        <p>VULGO: ${p.vulgo || 'N/I'} | STATUS: ${p.status || '---'}</p>
                     </div>
                     <span class="btn-abrir">ABRIR</span>
                 `;

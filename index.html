@@ -3,84 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista - CDMota</title>
+    <title>Lista de Cadastros - CDMota</title>
     <style>
-        :root { --cor-primaria: #007bff; }
-        .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; }
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; text-transform: uppercase; }
+        /* ASSINATURA DISCRETA */
+        .assinatura { 
+            position: absolute; 
+            top: 5px; 
+            left: 10px; 
+            font-size: 9px; 
+            color: #bbb; 
+            font-family: sans-serif;
+            text-transform: none;
+        }
+
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; text-transform: uppercase; position: relative; }
+        
         .topo { max-width: 600px; margin: 20px auto 15px auto; }
+        
+        /* BUSCA E CORES PADRONIZADAS */
         .busca-container { display: flex; gap: 10px; margin-top: 10px; }
-        input#busca { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid var(--cor-primaria); text-transform: uppercase; }
-        .btn-novo { background: var(--cor-primaria); color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; }
-        .tabela-container { background: white; border-radius: 15px; overflow: hidden; max-width: 600px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input#busca { 
+            flex: 1; 
+            padding: 12px; 
+            border-radius: 8px; 
+            border: 2px solid #007bff; 
+            outline: none; 
+            font-size: 16px; 
+            text-transform: uppercase;
+        }
+
+        .btn-novo { 
+            background: #007bff; 
+            color: white; 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        /* TABELA ESTILIZADA */
+        .tabela-container { 
+            background: white; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            max-width: 600px; 
+            margin: auto; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
+        
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 12px; border-top: 1px solid #eee; vertical-align: middle; }
-        .foto-mini { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; background: #eee; margin-right: 12px; border: 2px solid var(--cor-primaria); display: block; }
+        th { background: #f8f9fa; padding: 12px; text-align: left; font-size: 12px; color: #666; border-bottom: 2px solid #eee; }
+        td { padding: 12px; border-top: 1px solid #eee; font-size: 14px; vertical-align: middle; }
+        
+        .foto-mini { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            background: #eee; 
+            margin-right: 12px; 
+            border: 2px solid #007bff; 
+        }
+        
         .info-nome { display: flex; align-items: center; }
-        .info-nome strong { color: #333; font-size: 14px; display: block; }
-        .info-nome small { color: #888; font-size: 11px; }
-        .btn-ver { background: #28a745; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; }
+        .info-nome strong { color: #333; font-size: 15px; }
+        .info-nome small { color: #888; display: block; margin-top: 2px; }
+
+        .btn-ver { 
+            background: #28a745; 
+            color: white; 
+            padding: 10px 18px; 
+            border-radius: 6px; 
+            text-decoration: none; 
+            font-size: 12px; 
+            font-weight: bold; 
+            display: inline-block;
+        }
+
+        .sem-dados { padding: 40px; text-align: center; color: #999; font-size: 14px; }
     </style>
 </head>
 <body>
+
 <div class="assinatura">by CDMota</div>
+
 <div class="topo">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="margin:0; color:var(--cor-primaria);">CADASTROS</h2>
+        <h2 style="margin:0; color:#007bff; font-size: 18px;">MEUS CADASTROS</h2>
         <a href="cadastro.html" class="btn-novo">+ NOVO</a>
     </div>
     <div class="busca-container">
-        <input type="text" id="busca" placeholder="PESQUISAR..." onkeyup="filtrar()">
+        <input type="text" id="busca" placeholder="PESQUISAR POR NOME OU APELIDO..." onkeyup="filtrar()">
     </div>
 </div>
+
 <div class="tabela-container">
-    <table><tbody id="corpoTabela"></tbody></table>
+    <table>
+        <thead>
+            <tr>
+                <th>DADOS DO CADASTRO</th>
+                <th style="text-align: right;">AÇÃO</th>
+            </tr>
+        </thead>
+        <tbody id="corpoTabela">
+            </tbody>
+    </table>
+    <div id="mensagemVazia" class="sem-dados" style="display: none;">
+        NENHUM REGISTRO ENCONTRADO.
+    </div>
 </div>
+
 <script>
     function carregar() {
         const corpo = document.getElementById('corpoTabela');
+        const msgVazia = document.getElementById('mensagemVazia');
         const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+        
         corpo.innerHTML = "";
+
+        if (lista.length === 0) {
+            msgVazia.style.display = "block";
+            return;
+        }
+
+        msgVazia.style.display = "none";
+
         lista.forEach((item, index) => {
             const tr = document.createElement('tr');
+            // Formatação do endereço para a lista (Rua + Número)
+            const enderecoCurto = (item.rua || '') + (item.numero ? ', ' + item.numero : '');
+            
             tr.innerHTML = `
                 <td class="info-nome">
-                    <img src="${item.foto || 'https://via.placeholder.com/65'}" class="foto-mini">
+                    <img src="${item.foto || 'https://via.placeholder.com/50'}" class="foto-mini">
                     <div>
                         <strong>${item.nome}</strong>
-                        <small>${item.cpf}</small>
+                        <small>${item.apelido ? '("' + item.apelido + '")' : ''}</small>
+                        <small style="color: #007bff; font-size: 10px;">${enderecoCurto}</small>
                     </div>
                 </td>
-                <td style="text-align: right;"><a href="cadastro.html?edit=${index}" class="btn-ver">VER</a></td>
+                <td style="text-align: right;">
+                    <a href="cadastro.html?edit=${index}" class="btn-ver">VER</a>
+                </td>
             `;
             corpo.appendChild(tr);
         });
     }
+
     function filtrar() {
-        const val = document.getElementById('busca').value.toUpperCase();
-        const linhas = document.querySelectorAll('#corpoTabela tr');
-        linhas.forEach(tr => { tr.style.display = tr.innerText.toUpperCase().includes(val) ? "" : "none"; });
-    }
-    window.onload = carregar;
-</script>
-</body>
-</html>                    <img src="${p.foto || ''}" class="foto-lista">
-                    <div class="info">
-                        <h4>${p.nome}</h4>
-                        <p>${p.vulgo || 'S/V'} - ${p.status}</p>
-                    </div>
-                    <a href="cadastro.html?edit=${index}" class="btn-ver">ABRIR</a>
-                `;
-                container.appendChild(item);
-            });
-        }
-        function filtrar() {
-            const t = document.getElementById('busca').value.toUpperCase();
-            for (let c of document.getElementsByClassName('cartao')) {
-                c.style.display = c.innerText.toUpperCase().includes(t) ? "flex" : "none";
+        const input = document.getElementById('busca').value.toUpperCase();
+        const linhas = document.getElementById('corpoTabela').getElementsByTagName('tr');
+        let encontrou = false;
+
+        for (let i = 0; i < linhas.length; i++) {
+            let textoLinha = linhas[i].innerText.toUpperCase();
+            if (textoLinha.includes(input)) {
+                linhas[i].style.display = "";
+                encontrou = true;
+            } else {
+                linhas[i].style.display = "none";
             }
         }
-        window.onload = carregar;
-    </script>
+        
+        document.getElementById('mensagemVazia').style.display = encontrou ? "none" : "block";
+    }
+
+    // Carrega a lista sempre que a página abre
+    window.onload = carregar;
+</script>
 </body>
 </html>

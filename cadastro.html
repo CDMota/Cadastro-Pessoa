@@ -17,7 +17,7 @@
         .btn-salvar { background: #2e7d32; font-size: 15px; }
         .btn-whats { background: #25d366; color: black; }
         .btn-tele { background: #0088cc; }
-        .btn-gps { background: #6a1b9a; width: 50px; }
+        .btn-gps { background: #6a1b9a; width: 50px; font-size: 20px; }
         .btn-del { background: #b71c1c; margin-top: 30px; font-size: 12px; }
     </style>
 </head>
@@ -73,9 +73,9 @@
             <div><label>Nº DO B.O.</label><input type="text" id="bo"></div>
         </div>
 
-        <label>GPS / MAPA</label>
+        <label>MAPA (LINK GOOGLE MAPS)</label>
         <div style="display:flex; gap:5px;">
-            <input type="text" id="gps" readonly>
+            <input type="text" id="gps" placeholder="Clique no ícone ao lado" readonly>
             <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
         </div>
 
@@ -85,8 +85,8 @@
         <button type="submit" class="btn btn-salvar">💾 SALVAR REGISTRO</button>
         
         <div id="areaApps" style="display:none; margin-top:20px; border-top: 1px dashed #444; padding-top: 10px;">
-            <button type="button" class="btn btn-whats" onclick="enviarApp('WA')">🟢 WHATSAPP</button>
-            <button type="button" class="btn btn-tele" onclick="enviarApp('TG')">🔵 TELEGRAM</button>
+            <button type="button" class="btn btn-whats" onclick="enviarApp('WA')">🟢 COMPARTILHAR WHATSAPP</button>
+            <button type="button" class="btn btn-tele" onclick="enviarApp('TG')">🔵 COMPARTILHAR TELEGRAM</button>
             <button type="button" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR REGISTRO</button>
         </div>
         
@@ -100,14 +100,14 @@
     const idEdicao = params.get('edit');
     let fotoBase64 = "";
 
-    // 1. CARREGAR DADOS COM GARANTIA DE RETORNO
+    // 1. CARREGAR DADOS COM SEGURANÇA
     window.onload = function() {
         if (idEdicao !== null && idEdicao !== "") {
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             const p = lista[parseInt(idEdicao)];
             
             if (p) {
-                // Preenchimento forçado de cada campo pelo ID
+                // IDs exatos dos campos para retorno infalível
                 const campos = ['nome', 'mae', 'vulgo', 'cpf', 'nasc', 'natureza', 'dataOcorrencia', 'status', 'end', 'cidade', 'bo', 'gps', 'obs'];
                 campos.forEach(id => {
                     const el = document.getElementById(id);
@@ -130,7 +130,7 @@
         }
     };
 
-    // 3. FOTO E GPS
+    // 3. FOTO E GPS (CORRIGIDO)
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -148,11 +148,16 @@
     };
 
     function pegarGPS() {
-        navigator.geolocation.getCurrentPosition(pos => {
-            const lat = pos.coords.latitude.toFixed(6);
-            const lon = pos.coords.longitude.toFixed(6);
-            document.getElementById('gps').value = `http://googleusercontent.com/maps.google.com/${lat},${lon}`;
-        }, () => alert("ATIVAR GPS"));
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                // Link oficial do Google Maps que abre em qualquer celular
+                document.getElementById('gps').value = `https://www.google.com/maps?q=${lat},${lon}`;
+            }, () => alert("ERRO: Ative a localização do celular."));
+        } else {
+            alert("Navegador sem suporte a GPS.");
+        }
     }
 
     // 4. SALVAR
@@ -163,6 +168,8 @@
         document.querySelectorAll('input, select, textarea').forEach(i => {
             if(i.id) dados[i.id] = i.value.toUpperCase();
         });
+        // Manter o link do mapa em minúsculas para não quebrar a URL
+        dados.gps = document.getElementById('gps').value;
         dados.foto = fotoBase64;
 
         if (idEdicao !== null && idEdicao !== "") {
@@ -172,14 +179,14 @@
         }
 
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        alert("DADOS SALVOS!");
+        alert("DADOS SALVOS COM SUCESSO!");
         window.location.href = "index.html";
     };
 
-    // 5. COMPARTILHAR (ÍCONES APENAS AQUI)
+    // 5. COMPARTILHAR (Ícones apenas no compartilhamento)
     function enviarApp(tipo) {
         const v = (id) => document.getElementById(id).value.toUpperCase() || "---";
-        const vLower = (id) => document.getElementById(id).value || "---";
+        const mapaUrl = document.getElementById('gps').value || "---";
         
         const texto = 
             `📌 *RELATÓRIO OPERACIONAL*%0A%0A` +
@@ -195,7 +202,7 @@
             `🏙️ *CIDADE:* ${v('cidade')}%0A` +
             `📂 *B.O:* ${v('bo')}%0A` +
             `📝 *OBS:* ${v('obs')}%0A%0A` +
-            `📍 *MAPA:* ${vLower('gps')}`;
+            `📍 *MAPA:* ${mapaUrl}`;
 
         const url = tipo === 'WA' ? 
             `https://api.whatsapp.com/send?text=${texto}` : 
@@ -205,7 +212,7 @@
     }
 
     function excluirRegistro() {
-        if(confirm("EXCLUIR?")) {
+        if(confirm("DESEJA REALMENTE EXCLUIR ESTE REGISTRO?")) {
             let lista = JSON.parse(localStorage.getItem(DB_NAME));
             lista.splice(parseInt(idEdicao), 1);
             localStorage.setItem(DB_NAME, JSON.stringify(lista));

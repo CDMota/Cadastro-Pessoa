@@ -21,23 +21,15 @@
         <h3 style="margin:0">SISTEMA TÁTICO</h3>
         <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
-    
-    <input type="text" id="busca" placeholder="🔍 BUSCAR NOME, VULGO OU DOC..." oninput="filtrar()">
+    <input type="text" id="busca" placeholder="🔍 BUSCAR..." oninput="filtrar()">
     <div id="listaContainer"></div>
 
     <script>
         const DB_NAME = 'SISTEMA_TATICO_ESTAVEL';
-
         function carregar() {
             const container = document.getElementById('listaContainer');
             const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
             container.innerHTML = "";
-            
-            if (lista.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#666; margin-top:50px;">NENHUM REGISTRO SALVO.</p>';
-                return;
-            }
-
             lista.forEach((p, index) => {
                 const item = document.createElement('a');
                 item.href = `cadastro.html?edit=${index}`;
@@ -47,20 +39,17 @@
                     <div class="info">
                         <h4>${p.nome || '---'}</h4>
                         <p>🎭 ${p.vulgo || 'N/I'} | 💳 ${p.cpf || '---'}</p>
-                        <p>⚖️ ${p.natureza || '---'} | 🛡️ ${p.status || '---'}</p>
+                        <p>🛡️ ${p.status || '---'}</p>
                     </div>
                     <span class="btn-abrir">ABRIR</span>
                 `;
                 container.appendChild(item);
             });
         }
-
         function filtrar() {
             const termo = document.getElementById('busca').value.toUpperCase();
             const cards = document.getElementsByClassName('cartao');
-            for (let c of cards) {
-                c.style.display = c.innerText.toUpperCase().includes(termo) ? "flex" : "none";
-            }
+            for (let c of cards) { c.style.display = c.innerText.toUpperCase().includes(termo) ? "flex" : "none"; }
         }
         window.onload = carregar;
     </script>

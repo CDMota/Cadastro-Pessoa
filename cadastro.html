@@ -7,81 +7,84 @@
     <style>
         :root { --cor-primaria: #007bff; --cor-sucesso: #25d366; --cor-telegram: #0088cc; --cor-alerta: #f39c12; --cor-perigo: #dc3545; }
         .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; text-transform: none; }
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; text-transform: uppercase; }
+        
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; position: relative; text-transform: uppercase; }
         .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
-        /* FOTO QUADRADA AJUSTADA */
-        #preview { 
-            width: 180px; height: 180px; border-radius: 15px; 
-            object-fit: cover; display: block; margin: 10px auto; 
-            border: 4px solid var(--cor-primaria); background: #eee; 
-        }
-
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 11px; color: #666; }
-        input, textarea, select { width: 100%; padding: 12px 8px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; margin-top: 5px; text-transform: uppercase; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; margin-top: 5px; text-transform: uppercase; }
         
-        .linha-cpf-data { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 10px; }
-        .data-tripla { display: grid; grid-template-columns: 1fr 1.1fr 1.4fr; gap: 4px; }
-        .data-tripla select { padding: 12px 2px; font-size: 13px; text-align: center; }
+        .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tres-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+        .data-tripla { display: grid; grid-template-columns: 1fr 1.2fr 1.5fr; gap: 5px; }
         
-        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; color: white; text-align: center; text-decoration: none; display: block; }
+        #preview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid var(--cor-primaria); background: #eee; }
+        
+        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 14px; text-align: center; text-decoration: none; display: block; color: white; }
         .btn-salvar { background: var(--cor-primaria); }
-        .btn-foto { background: var(--cor-alerta); }
-        .btn-whats { background: var(--cor-sucesso); }
-        .btn-tele { background: var(--cor-telegram); }
-        .btn-del { background: var(--cor-perigo); margin-top: 30px; }
+        .btn-foto { background: var(--cor-alerta); display: none; }
+        .btn-whats { background: var(--cor-sucesso); display: none; }
+        .btn-tele { background: var(--cor-telegram); display: none; }
+        .btn-del { background: var(--cor-perigo); display: none; margin-top: 30px; }
         .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; font-size: 12px; }
+        .secao-compartilhar { margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc; }
     </style>
 </head>
 <body>
+
 <div class="assinatura">by CDMota</div>
+
 <div class="caixa">
     <h3 style="text-align:center; color:var(--cor-primaria); margin-top:0">FICHA DE DADOS</h3>
-    <img id="preview" src="https://via.placeholder.com/180?text=FOTO">
+    <img id="preview" src="https://via.placeholder.com/120">
+    
     <form id="formFinal">
         <label>FOTO (TIRAR OU GALERIA)</label>
         <input type="file" id="foto" accept="image/*" capture="environment">
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="duas-col">
             <div><label>NOME COMPLETO</label><input type="text" id="nome" required oninput="this.value = this.value.toUpperCase()"></div>
             <div><label>APELIDO</label><input type="text" id="apelido" oninput="this.value = this.value.toUpperCase()"></div>
         </div>
         
-        <div class="linha-cpf-data">
+        <div class="duas-col">
             <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
             <div>
                 <label>NASCIMENTO</label>
                 <div class="data-tripla">
-                    <select id="dia"></select>
+                    <select id="dia"><option value="">DIA</option></select>
                     <select id="mes">
-                        <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                        <option value="">MÊS</option>
+                        <option value="01">JAN</option><option value="02">FEV</option><option value="03">MAR</option><option value="04">ABR</option><option value="05">MAI</option><option value="06">JUN</option><option value="07">JUL</option><option value="08">AGO</option><option value="09">SET</option><option value="10">OUT</option><option value="11">NOV</option><option value="12">DEZ</option>
                     </select>
-                    <select id="ano"></select>
+                    <select id="ano"><option value="">ANO</option></select>
                 </div>
             </div>
         </div>
 
-        <label>ENDEREÇO (RUA, Nº, UF)</label>
-        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px;">
+        <label>ENDEREÇO</label>
+        <div class="tres-col">
             <input type="text" id="rua" placeholder="RUA" oninput="this.value = this.value.toUpperCase()">
             <input type="text" id="numero" placeholder="Nº">
             <select id="uf">
-                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                <option value="">UF</option><option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option><option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option><option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
             </select>
         </div>
+        <input type="text" id="cidade" placeholder="CIDADE" style="margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
         
         <label>OBSERVAÇÕES</label>
         <textarea id="obs" rows="2" oninput="this.value = this.value.toUpperCase()"></textarea>
 
-        <button type="submit" class="btn btn-salvar">💾 SALVAR NO SISTEMA</button>
+        <button type="submit" id="btnAcao" class="btn btn-salvar">💾 SALVAR NO SISTEMA</button>
         
-        <div id="areaApps" style="display: none; margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 15px;">
+        <div class="secao-compartilhar">
             <button type="button" id="btnFoto" class="btn btn-foto" onclick="baixarFoto()">1º 📸 SALVAR FOTO</button>
-            <button type="button" class="btn btn-tele" onclick="compartilharApp('telegram')">2º 🔵 ENVIAR (TELEGRAM)</button>
-            <button type="button" class="btn btn-whats" onclick="compartilharApp('whatsapp')">2º 🟢 ENVIAR (WHATSAPP)</button>
-            <button type="button" class="btn btn-del" onclick="excluir()">🗑️ APAGAR REGISTRO</button>
+            <button type="button" id="btnTele" class="btn btn-tele" onclick="compartilharApp('telegram')">2º 🔵 ENVIAR (TELEGRAM)</button>
+            <button type="button" id="btnWhats" class="btn btn-whats" onclick="compartilharApp('whatsapp')">2º 🟢 ENVIAR (WHATSAPP)</button>
         </div>
-        <a href="index.html" class="btn-voltar">⬅️ VOLTAR PARA LISTA</a>
+        
+        <button type="button" id="btnDel" class="btn btn-del" onclick="excluir()">🗑️ APAGAR</button>
+        <a href="index.html" class="btn-voltar">⬅️ VOLTAR</a>
     </form>
 </div>
 
@@ -90,14 +93,22 @@
     const id = urlParams.get('edit');
     let fotoBase64 = "";
 
-    // GERAR DIAS E ANOS
-    const dSel = document.getElementById('dia');
-    for(let i=1;i<=31;i++) dSel.options.add(new Option(i.toString().padStart(2,'0'), i.toString().padStart(2,'0')));
-    const aSel = document.getElementById('ano');
-    const anoH = new Date().getFullYear();
-    for(let i=anoH;i>=1920;i--) aSel.options.add(new Option(i, i));
+    // GERAÇÃO AUTOMÁTICA DE DIAS E ANOS (ATUALIZÁVEL)
+    const selDia = document.getElementById('dia');
+    for(let i=1; i<=31; i++) {
+        let opt = document.createElement('option');
+        opt.value = i.toString().padStart(2,'0'); opt.text = opt.value;
+        selDia.add(opt);
+    }
 
-    // MÁSCARA CPF
+    const selAno = document.getElementById('ano');
+    const anoAtual = new Date().getFullYear(); // PEGA O ANO DO CELULAR AUTOMATICAMENTE
+    for(let i = anoAtual; i >= 1920; i--) {
+        let opt = document.createElement('option');
+        opt.value = i; opt.text = i;
+        selAno.add(opt);
+    }
+
     document.getElementById('cpf').oninput = e => {
         let v = e.target.value.replace(/\D/g, '');
         v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -109,22 +120,56 @@
             const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
             const d = lista[id];
             if (d) {
-                document.getElementById('nome').value = d.nome;
+                document.getElementById('btnFoto').style.display = "block";
+                document.getElementById('btnTele').style.display = "block";
+                document.getElementById('btnWhats').style.display = "block";
+                document.getElementById('btnDel').style.display = "block";
+                document.getElementById('nome').value = d.nome || '';
                 document.getElementById('apelido').value = d.apelido || '';
-                document.getElementById('cpf').value = d.cpf;
-                if(d.data) {
-                    const p = d.data.split('/');
-                    document.getElementById('dia').value = p[0]; document.getElementById('mes').value = p[1]; document.getElementById('ano').value = p[2];
-                }
+                document.getElementById('cpf').value = d.cpf || '';
                 document.getElementById('rua').value = d.rua || '';
                 document.getElementById('numero').value = d.numero || '';
+                document.getElementById('cidade').value = d.cidade || '';
                 document.getElementById('uf').value = d.uf || '';
                 document.getElementById('obs').value = d.obs || '';
+                if(d.data && d.data.includes('/')) {
+                    const partes = d.data.split('/');
+                    document.getElementById('dia').value = partes[0];
+                    document.getElementById('mes').value = partes[1];
+                    document.getElementById('ano').value = partes[2];
+                }
                 if(d.foto) { document.getElementById('preview').src = d.foto; fotoBase64 = d.foto; }
-                document.getElementById('areaApps').style.display = 'block';
             }
         }
     };
+
+    function baixarFoto() {
+        if (!fotoBase64) return;
+        const link = document.createElement('a');
+        link.href = fotoBase64;
+        link.download = `FOTO_${document.getElementById('nome').value}.jpg`;
+        link.click();
+    }
+
+    function compartilharApp(plataforma) {
+        const n = document.getElementById('nome').value;
+        const ape = document.getElementById('apelido').value || '---';
+        const d = document.getElementById('dia').value;
+        const m = document.getElementById('mes').value;
+        const a = document.getElementById('ano').value;
+        const dataF = (d && m && a) ? `${d}/${m}/${a}` : '---';
+
+        const texto = `*FICHA DE CADASTRO*%0A%0A` +
+                      `*NOME:* ${n}%0A` +
+                      `*APELIDO:* ${ape}%0A` +
+                      `*CPF:* ${document.getElementById('cpf').value}%0A` +
+                      `*NASC:* ${dataF}%0A` +
+                      `*END:* ${document.getElementById('rua').value}, ${document.getElementById('numero').value}%0A` +
+                      `*CIDADE:* ${document.getElementById('cidade').value}-${document.getElementById('uf').value}%0A` +
+                      `*OBS:* ${document.getElementById('obs').value}`;
+
+        window.location.href = plataforma === 'whatsapp' ? `whatsapp://send?text=${texto}` : `tg://msg?text=${texto}`;
+    }
 
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
@@ -133,10 +178,8 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 600; cv.height = 600;
-                const ctx = cv.getContext('2d');
-                const min = Math.min(img.width, img.height);
-                ctx.drawImage(img, (img.width-min)/2, (img.height-min)/2, min, min, 0, 0, 600, 600);
+                cv.width = 500; cv.height = 500;
+                cv.getContext('2d').drawImage(img, 0, 0, 500, 500);
                 fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
                 document.getElementById('preview').src = fotoBase64;
             };
@@ -147,159 +190,30 @@
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
         let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-        const dataF = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
+        const dataFinal = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
         const dados = {
-            nome: document.getElementById('nome').value, apelido: document.getElementById('apelido').value,
-            cpf: document.getElementById('cpf').value, data: dataF,
-            rua: document.getElementById('rua').value, numero: document.getElementById('numero').value,
-            uf: document.getElementById('uf').value, obs: document.getElementById('obs').value, foto: fotoBase64
-        };
-        if (id !== null) lista[id] = dados; else lista.push(dados);
-        localStorage.setItem('banco_final', JSON.stringify(lista));
-        alert("DADOS SALVOS!"); window.location.href = "index.html";
-    };
-
-    function baixarFoto() { if(!fotoBase64) return; const a = document.createElement('a'); a.href = fotoBase64; a.download = `foto_${document.getElementById('nome').value}.jpg`; a.click(); }
-    
-    function compartilharApp(plataforma) {
-        const n = document.getElementById('nome').value;
-        const dataF = document.getElementById('dia').value + '/' + document.getElementById('mes').value + '/' + document.getElementById('ano').value;
-        const texto = `*CADASTRO CDMota*%0A*NOME:* ${n}%0A*CPF:* ${document.getElementById('cpf').value}%0A*NASC:* ${dataF}%0A*OBS:* ${document.getElementById('obs').value}`;
-        window.location.href = plataforma === 'whatsapp' ? `whatsapp://send?text=${texto}` : `tg://msg?text=${texto}`;
-    }
-
-    function excluir() { if(confirm("DESEJA REALMENTE EXCLUIR?")) { let l = JSON.parse(localStorage.getItem('banco_final')); l.splice(id, 1); localStorage.setItem('banco_final', JSON.stringify(l)); window.location.href = "index.html"; } }
-</script>
-</body>
-</html>            <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
-            <div><label>Data Nasc.</label><input type="tel" id="data" maxlength="10" required></div>
-        </div>
-        <div class="duas-col">
-            <div><label>Cidade</label><input type="text" id="cidade"></div>
-            <div><label>UF</label><input type="text" id="uf" maxlength="2"></div>
-        </div>
-        <label>Observações</label>
-        <textarea id="obs" rows="3"></textarea>
-
-        <button type="submit" id="btnAcao" class="btn btn-salvar">💾 SALVAR DADOS</button>
-        <button type="button" id="btnPDF" class="btn btn-print" onclick="gerarFichaParaCompartilhar()">📄 GERAR FICHA (PDF/ZAP)</button>
-        <button type="button" id="btnDel" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR CADASTRO</button>
-        <a href="index.html" class="btn-voltar">VOLTAR PARA LISTA</a>
-    </form>
-</div>
-
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const idEdicao = urlParams.get('edit');
-    let fotoBase64 = "";
-
-    // MÁSCARAS
-    document.getElementById('cpf').oninput = e => {
-        let v = e.target.value.replace(/\D/g, '');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        e.target.value = v;
-    };
-    document.getElementById('data').oninput = e => {
-        let v = e.target.value.replace(/\D/g, '');
-        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
-        e.target.value = v;
-    };
-
-    window.onload = () => {
-        if (idEdicao !== null) {
-            const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-            const d = lista[idEdicao];
-            if (d) {
-                document.getElementById('btnPDF').style.display = "block";
-                document.getElementById('btnDel').style.display = "block";
-                document.getElementById('nome').value = d.nome;
-                document.getElementById('cpf').value = d.cpf;
-                document.getElementById('data').value = d.data;
-                document.getElementById('cidade').value = d.cidade;
-                document.getElementById('uf').value = d.uf;
-                document.getElementById('obs').value = d.obs;
-                if(d.foto) { document.getElementById('preview').src = d.foto; fotoBase64 = d.foto; }
-            }
-        }
-    };
-
-    // NOVA LÓGICA: CRIA UMA FICHA LIMPA PARA COMPARTILHAR
-    function gerarFichaParaCompartilhar() {
-        const nome = document.getElementById('nome').value;
-        const cpf = document.getElementById('cpf').value;
-        const data = document.getElementById('data').value;
-        const cidade = document.getElementById('cidade').value;
-        const uf = document.getElementById('uf').value;
-        const obs = document.getElementById('obs').value;
-        const foto = document.getElementById('preview').src;
-
-        // Cria o conteúdo da ficha
-        const conteudoFicha = `
-            <html>
-            <head><title>Ficha_${nome}</title></head>
-            <body style="font-family:sans-serif; text-align:center; padding:20px;">
-                <div style="border:2px solid #007bff; border-radius:15px; padding:20px; max-width:400px; margin:auto;">
-                    <h2 style="color:#007bff;">FICHA INDIVIDUAL</h2>
-                    <img src="${foto}" style="width:120px; height:120px; border-radius:50%; border:3px solid #007bff; object-fit:cover;">
-                    <div style="text-align:left; margin-top:20px; font-size:16px;">
-                        <p><b>Nome:</b> ${nome}</p>
-                        <p><b>CPF:</b> ${cpf}</p>
-                        <p><b>Nascimento:</b> ${data}</p>
-                        <p><b>Cidade:</b> ${cidade} - ${uf}</p>
-                        <p><b>Observações:</b> ${obs}</p>
-                    </div>
-                    <p style="font-size:10px; color:#999; margin-top:30px;">Gerado pelo Sistema de Cadastro</p>
-                </div>
-                <p style="margin-top:20px; color:#666;">Use o menu do navegador para <b>Compartilhar</b> ou <b>Imprimir como PDF</b>.</p>
-            </body>
-            </html>
-        `;
-
-        // Abre em uma nova aba para o sistema não bloquear o download
-        const novaAba = window.open('', '_blank');
-        novaAba.document.write(conteudoFicha);
-        novaAba.document.close();
-    }
-
-    document.getElementById('foto').onchange = e => {
-        const reader = new FileReader();
-        reader.onload = ev => {
-            const img = new Image();
-            img.src = ev.target.result;
-            img.onload = () => {
-                const cv = document.createElement('canvas');
-                cv.width = 250; cv.height = 250;
-                cv.getContext('2d').drawImage(img, 0, 0, 250, 250);
-                fotoBase64 = cv.toDataURL('image/jpeg', 0.7);
-                document.getElementById('preview').src = fotoBase64;
-            };
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    document.getElementById('formFinal').onsubmit = e => {
-        e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-        const reg = {
             nome: document.getElementById('nome').value,
+            apelido: document.getElementById('apelido').value,
             cpf: document.getElementById('cpf').value,
-            data: document.getElementById('data').value,
+            data: dataFinal,
+            rua: document.getElementById('rua').value,
+            numero: document.getElementById('numero').value,
             cidade: document.getElementById('cidade').value,
             uf: document.getElementById('uf').value,
             obs: document.getElementById('obs').value,
             foto: fotoBase64
         };
-        if (idEdicao !== null) lista[idEdicao] = reg;
-        else lista.push(reg);
+        if (id !== null) lista[id] = dados;
+        else lista.push(dados);
         localStorage.setItem('banco_final', JSON.stringify(lista));
-        alert("Salvo!");
+        alert("CADASTRO SALVO!");
         window.location.href = "index.html";
     };
 
-    function excluirRegistro() {
-        if(confirm("Excluir?")) {
+    function excluir() {
+        if(confirm("EXCLUIR REGISTRO?")) {
             let lista = JSON.parse(localStorage.getItem('banco_final'));
-            lista.splice(idEdicao, 1);
+            lista.splice(id, 1);
             localStorage.setItem('banco_final', JSON.stringify(lista));
             window.location.href = "index.html";
         }

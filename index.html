@@ -3,65 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista - CDMota</title>
+    <title>SISTEMA TÁTICO - LISTA</title>
     <style>
-        :root { --cor-primaria: #007bff; }
-        .assinatura { position: absolute; top: 5px; left: 10px; font-size: 9px; color: #bbb; font-family: sans-serif; }
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; text-transform: uppercase; }
-        .topo { max-width: 600px; margin: 20px auto 15px auto; }
-        .busca-container { display: flex; gap: 10px; margin-top: 10px; }
-        input#busca { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid var(--cor-primaria); text-transform: uppercase; }
-        .btn-novo { background: var(--cor-primaria); color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; }
-        .tabela-container { background: white; border-radius: 15px; overflow: hidden; max-width: 600px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 12px; border-top: 1px solid #eee; vertical-align: middle; }
-        .foto-mini { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; background: #eee; margin-right: 12px; border: 2px solid var(--cor-primaria); display: block; }
-        .info-nome { display: flex; align-items: center; }
-        .info-nome strong { color: #333; font-size: 14px; display: block; }
-        .info-nome small { color: #888; font-size: 11px; }
-        .btn-ver { background: #28a745; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold; }
+        body { font-family: sans-serif; background: #0a0a0a; color: white; padding: 15px; margin: 0; }
+        .topo { background: #1a1a1a; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #d32f2f; }
+        #busca { width: 100%; padding: 15px; border: none; border-radius: 8px; margin: 15px 0; font-size: 16px; background: #222; color: white; text-transform: uppercase; box-sizing: border-box; border: 1px solid #333; }
+        .cartao { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 5px solid #d32f2f; }
+        .foto-lista { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 15px; border: 1px solid #333; background: #333; }
+        .info { flex-grow: 1; }
+        .info h4 { margin: 0; color: #fff; text-transform: uppercase; font-size: 14px; }
+        .info p { margin: 2px 0; font-size: 11px; color: #aaa; text-transform: uppercase; }
+        .btn-ver { background: #d32f2f; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        .vazio { text-align: center; color: #666; margin-top: 50px; text-transform: uppercase; font-size: 12px; }
     </style>
 </head>
 <body>
-<div class="assinatura">by CDMota</div>
-<div class="topo">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="margin:0; color:var(--cor-primaria);">CADASTROS</h2>
-        <a href="cadastro.html" class="btn-novo">+ NOVO</a>
+    <div class="topo">
+        <h3 style="margin:0">SISTEMA TÁTICO</h3>
+        <a href="cadastro.html" style="background:#2e7d32; color:white; padding:10px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
     </div>
-    <div class="busca-container">
-        <input type="text" id="busca" placeholder="PESQUISAR..." onkeyup="filtrar()">
-    </div>
-</div>
-<div class="tabela-container">
-    <table><tbody id="corpoTabela"></tbody></table>
-</div>
-<script>
-    function carregar() {
-        const corpo = document.getElementById('corpoTabela');
-        const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-        corpo.innerHTML = "";
-        lista.forEach((item, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="info-nome">
-                    <img src="${item.foto || 'https://via.placeholder.com/65'}" class="foto-mini">
-                    <div>
-                        <strong>${item.nome}</strong>
-                        <small>${item.cpf}</small>
+    
+    <input type="text" id="busca" placeholder="🔍 BUSCAR NOME OU VULGO..." oninput="filtrar()">
+    <div id="listaContainer"></div>
+
+    <script>
+        const DB_NAME = 'SISTEMA_TATICO_ESTAVEL';
+
+        function carregar() {
+            const container = document.getElementById('listaContainer');
+            const lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
+            
+            container.innerHTML = "";
+            
+            if (lista.length === 0) {
+                container.innerHTML = '<div class="vazio">NENHUM REGISTRO SALVO.</div>';
+                return;
+            }
+
+            lista.forEach((p, index) => {
+                const item = document.createElement('div');
+                item.className = 'cartao';
+                item.innerHTML = `
+                    <img src="${p.foto || ''}" class="foto-lista">
+                    <div class="info">
+                        <h4>${p.nome || 'SEM NOME'}</h4>
+                        <p>VULGO: ${p.vulgo || 'N/I'} | STATUS: ${p.status || 'N/I'}</p>
                     </div>
-                </td>
-                <td style="text-align: right;"><a href="cadastro.html?edit=${index}" class="btn-ver">VER</a></td>
-            `;
-            corpo.appendChild(tr);
-        });
-    }
-    function filtrar() {
-        const val = document.getElementById('busca').value.toUpperCase();
-        const linhas = document.querySelectorAll('#corpoTabela tr');
-        linhas.forEach(tr => { tr.style.display = tr.innerText.toUpperCase().includes(val) ? "" : "none"; });
-    }
-    window.onload = carregar;
-</script>
+                    <a href="cadastro.html?edit=${index}" class=\"btn-ver\">ABRIR</a>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function filtrar() {
+            const termo = document.getElementById('busca').value.toUpperCase();
+            const cards = document.getElementsByClassName('cartao');
+            for (let c of cards) {
+                c.style.display = c.innerText.toUpperCase().includes(termo) ? "flex" : "none";
+            }
+        }
+
+        window.onload = carregar;
+    </script>
 </body>
 </html>

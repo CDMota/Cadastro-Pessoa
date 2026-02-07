@@ -3,60 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Operacional</title>
+    <title>Cadastro</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 15px; margin: 0; }
-        .topo { background: #0d47a1; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        #busca { width: 100%; padding: 12px; border: none; border-radius: 8px; margin-bottom: 15px; font-size: 16px; }
-        .cartao { background: #2c2c2c; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; border-left: 6px solid #ffeb3b; }
-        .foto { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 2px solid #555; }
-        .info { flex-grow: 1; }
-        .info h4 { margin: 0; color: #ffeb3b; text-transform: uppercase; font-size: 14px; }
-        .info p { margin: 2px 0; font-size: 12px; color: #bbb; }
-        .status-tag { font-size: 10px; padding: 3px 8px; border-radius: 10px; background: #444; color: #fff; font-weight: bold; }
-        .btn-ver { background: #ffeb3b; color: #000; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 12px; }
+        /* SEU FRONT-END MANTIDO */
+        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
+        .caixa { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        label { display: block; margin-top: 10px; font-weight: bold; font-size: 12px; color: #666; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 5px; }
+        .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; border: 3px solid #007bff; background: #eee; }
+        .btn { border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 15px; text-align: center; text-decoration: none; display: block; }
+        .btn-salvar { background: #007bff; color: white; }
+        .btn-print { background: #28a745; color: white; display: none; }
+        .btn-del { background: #dc3545; color: white; display: none; }
+        .btn-voltar { text-align: center; margin-top: 15px; color: #666; text-decoration: none; display: block; }
+
+        /* Estilo da Ficha de Impressão (fica escondida até clicar no botão) */
+        #ficha-impressao { display: none; background: white; padding: 20px; }
     </style>
 </head>
 <body>
-    <div class="topo">
-        <h3 style="margin:0">SISTEMA TÁTICO</h3>
-        <a href="cadastro.html" style="background:#4caf50; color:white; padding:8px 15px; border-radius:5px; text-decoration:none; font-weight:bold;">+ NOVO</a>
-    </div>
-    <input type="text" id="busca" placeholder="🔍 Buscar por Nome, Vulgo ou CPF..." onkeyup="filtrar()">
-    <div id="listaContainer"></div>
 
-    <script>
-        function carregar() {
-            const lista = JSON.parse(localStorage.getItem('banco_operacional') || '[]');
-            const container = document.getElementById('listaContainer');
-            container.innerHTML = "";
+<div id="tela-principal" class="caixa">
+    <h3 id="txtTitulo" style="text-align:center; color:#007bff; margin-top:0">FICHA DE DADOS</h3>
+    <img id="preview" src="https://via.placeholder.com/100">
+    
+    <form id="formFinal">
+        <label>Foto de Identificação</label>
+        <input type="file" id="foto" accept="image/*">
+        <label>Nome Completo</label>
+        <input type="text" id="nome" required>
+        <div class="duas-col">
+            <div><label>CPF</label><input type="tel" id="cpf" maxlength="14" required></div>
+            <div><label>Data Nasc.</label><input type="tel" id="data" maxlength="10" required></div>
+        </div>
+        <div class="duas-col">
+            <div><label>Cidade</label><input type="text" id="cidade"></div>
+            <div><label>UF</label><input type="text" id="uf" maxlength="2"></div>
+        </div>
+        <label>Observações</label>
+        <textarea id="obs" rows="3"></textarea>
 
-            lista.forEach((p, index) => {
-                const item = document.createElement('div');
-                item.className = 'cartao';
-                // Cor do alerta baseada na periculosidade
-                if(p.perigo === 'Alta') item.style.borderLeftColor = '#f44336';
-                
-                item.innerHTML = `
-                    <img src="${p.foto || 'https://via.placeholder.com/100'}" class="foto">
-                    <div class="info">
-                        <h4>${p.nome} ${p.vulgo ? `(${p.vulgo})` : ''}</h4>
-                        <p><b>Status:</b> <span class="status-tag">${p.status}</span></p>
-                        <p><b>BO:</b> ${p.bo || 'N/A'}</p>
-                    </div>
-                    <a href="cadastro.html?edit=${index}" class="btn-ver">DETALHES</a>
-                `;
-                container.appendChild(item);
-            });
-        }
-        function filtrar() {
-            let termo = document.getElementById('busca').value.toLowerCase();
-            let cartoes = document.getElementsByClassName('cartao');
-            for (let c of cartoes) {
-                c.style.display = c.innerText.toLowerCase().includes(termo) ? "flex" : "none";
+        <button type="submit" id="btnAcao" class="btn btn-salvar">💾 SALVAR DADOS</button>
+        <button type="button" id="btnPDF" class="btn btn-print" onclick="gerarFichaParaCompartilhar()">📄 GERAR FICHA (PDF/ZAP)</button>
+        <button type="button" id="btnDel" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR CADASTRO</button>
+        <a href="index.html" class="btn-voltar">VOLTAR PARA LISTA</a>
+    </form>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const idEdicao = urlParams.get('edit');
+    let fotoBase64 = "";
+
+    // MÁSCARAS
+    document.getElementById('cpf').oninput = e => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        e.target.value = v;
+    };
+    document.getElementById('data').oninput = e => {
+        let v = e.target.value.replace(/\D/g, '');
+        v = v.replace(/(\d{2})(\d)/, '$1/$2').replace(/(\d{2})(\d)/, '$1/$2');
+        e.target.value = v;
+    };
+
+    window.onload = () => {
+        if (idEdicao !== null) {
+            const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+            const d = lista[idEdicao];
+            if (d) {
+                document.getElementById('btnPDF').style.display = "block";
+                document.getElementById('btnDel').style.display = "block";
+                document.getElementById('nome').value = d.nome;
+                document.getElementById('cpf').value = d.cpf;
+                document.getElementById('data').value = d.data;
+                document.getElementById('cidade').value = d.cidade;
+                document.getElementById('uf').value = d.uf;
+                document.getElementById('obs').value = d.obs;
+                if(d.foto) { document.getElementById('preview').src = d.foto; fotoBase64 = d.foto; }
             }
         }
-        window.onload = carregar;
-    </script>
+    };
+
+    // NOVA LÓGICA: CRIA UMA FICHA LIMPA PARA COMPARTILHAR
+    function gerarFichaParaCompartilhar() {
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        const data = document.getElementById('data').value;
+        const cidade = document.getElementById('cidade').value;
+        const uf = document.getElementById('uf').value;
+        const obs = document.getElementById('obs').value;
+        const foto = document.getElementById('preview').src;
+
+        // Cria o conteúdo da ficha
+        const conteudoFicha = `
+            <html>
+            <head><title>Ficha_${nome}</title></head>
+            <body style="font-family:sans-serif; text-align:center; padding:20px;">
+                <div style="border:2px solid #007bff; border-radius:15px; padding:20px; max-width:400px; margin:auto;">
+                    <h2 style="color:#007bff;">FICHA INDIVIDUAL</h2>
+                    <img src="${foto}" style="width:120px; height:120px; border-radius:50%; border:3px solid #007bff; object-fit:cover;">
+                    <div style="text-align:left; margin-top:20px; font-size:16px;">
+                        <p><b>Nome:</b> ${nome}</p>
+                        <p><b>CPF:</b> ${cpf}</p>
+                        <p><b>Nascimento:</b> ${data}</p>
+                        <p><b>Cidade:</b> ${cidade} - ${uf}</p>
+                        <p><b>Observações:</b> ${obs}</p>
+                    </div>
+                    <p style="font-size:10px; color:#999; margin-top:30px;">Gerado pelo Sistema de Cadastro</p>
+                </div>
+                <p style="margin-top:20px; color:#666;">Use o menu do navegador para <b>Compartilhar</b> ou <b>Imprimir como PDF</b>.</p>
+            </body>
+            </html>
+        `;
+
+        // Abre em uma nova aba para o sistema não bloquear o download
+        const novaAba = window.open('', '_blank');
+        novaAba.document.write(conteudoFicha);
+        novaAba.document.close();
+    }
+
+    document.getElementById('foto').onchange = e => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const img = new Image();
+            img.src = ev.target.result;
+            img.onload = () => {
+                const cv = document.createElement('canvas');
+                cv.width = 250; cv.height = 250;
+                cv.getContext('2d').drawImage(img, 0, 0, 250, 250);
+                fotoBase64 = cv.toDataURL('image/jpeg', 0.7);
+                document.getElementById('preview').src = fotoBase64;
+            };
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    document.getElementById('formFinal').onsubmit = e => {
+        e.preventDefault();
+        let lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+        const reg = {
+            nome: document.getElementById('nome').value,
+            cpf: document.getElementById('cpf').value,
+            data: document.getElementById('data').value,
+            cidade: document.getElementById('cidade').value,
+            uf: document.getElementById('uf').value,
+            obs: document.getElementById('obs').value,
+            foto: fotoBase64
+        };
+        if (idEdicao !== null) lista[idEdicao] = reg;
+        else lista.push(reg);
+        localStorage.setItem('banco_final', JSON.stringify(lista));
+        alert("Salvo!");
+        window.location.href = "index.html";
+    };
+
+    function excluirRegistro() {
+        if(confirm("Excluir?")) {
+            let lista = JSON.parse(localStorage.getItem('banco_final'));
+            lista.splice(idEdicao, 1);
+            localStorage.setItem('banco_final', JSON.stringify(lista));
+            window.location.href = "index.html";
+        }
+    }
+</script>
 </body>
 </html>

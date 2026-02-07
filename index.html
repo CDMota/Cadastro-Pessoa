@@ -5,76 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Cadastros</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
-        .topo { max-width: 600px; margin: auto; margin-bottom: 15px; }
-        .busca-container { display: flex; gap: 10px; margin-top: 10px; }
-        input#busca { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
-        .btn-novo { background: #007bff; color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; display: flex; align-items: center; }
-        
-        .tabela-container { background: white; border-radius: 15px; overflow: hidden; max-width: 600px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #eee; padding: 12px; text-align: left; font-size: 14px; color: #666; }
-        td { padding: 12px; border-top: 1px solid #eee; font-size: 15px; }
-        
-        .foto-mini { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #ddd; vertical-align: middle; margin-right: 10px; }
-        .btn-ver { background: #28a745; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 13px; font-weight: bold; }
+        body { font-family: sans-serif; background: #f4f7f6; padding: 15px; margin: 0; }
+        .topo { background: #007bff; color: white; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .btn-add { background: #28a745; color: white; padding: 10px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        #busca { width: 100%; padding: 12px; border: 2px solid #007bff; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; font-size: 16px; }
+        .cartao { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid #007bff; }
+        .foto { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 15px; background: #eee; }
+        .info { flex-grow: 1; }
+        .info h4 { margin: 0; font-size: 16px; text-transform: uppercase; }
+        .info p { margin: 2px 0; font-size: 13px; color: #555; }
+        .btn-ver { background: #ffc107; color: black; border: none; padding: 10px; border-radius: 5px; text-decoration: none; font-size: 13px; font-weight: bold; }
     </style>
 </head>
 <body>
-
-<div class="topo">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="margin:0; color:#333;">Meus Cadastros</h2>
-        <a href="cadastro.html" class="btn-novo">+ NOVO</a>
+    <div class="topo">
+        <h2 style="margin:0">SISTEMA</h2>
+        <a href="cadastro.html" class="btn-add">+ NOVO</a>
     </div>
-    <div class="busca-container">
-        <input type="text" id="busca" placeholder="Pesquisar por nome..." onkeyup="filtrar()">
-    </div>
-</div>
+    <input type="text" id="busca" placeholder="🔍 Buscar Nome ou CPF..." onkeyup="filtrar()">
+    <div id="listaContainer"></div>
 
-<div class="tabela-container">
-    <table>
-        <thead>
-            <tr>
-                <th>Cadastro</th>
-                <th style="text-align: right;">Ação</th>
-            </tr>
-        </thead>
-        <tbody id="corpoTabela"></tbody>
-    </table>
-</div>
+    <script>
+        function carregar() {
+            const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
+            const container = document.getElementById('listaContainer');
+            container.innerHTML = lista.length === 0 ? '<p style="text-align:center; color:#999; margin-top:50px;">Nenhum dado salvo.</p>' : "";
 
-<script>
-    function carregar() {
-        const corpo = document.getElementById('corpoTabela');
-        const lista = JSON.parse(localStorage.getItem('banco_final') || '[]');
-        corpo.innerHTML = "";
-
-        lista.forEach((item, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>
-                    <img src="${item.foto || 'https://via.placeholder.com/40'}" class="foto-mini">
-                    <strong>${item.nome}</strong>
-                </td>
-                <td style="text-align: right;">
+            lista.forEach((p, index) => {
+                const item = document.createElement('div');
+                item.className = 'cartao';
+                item.innerHTML = `
+                    <img src="${p.foto || 'https://via.placeholder.com/60'}" class="foto">
+                    <div class="info">
+                        <h4>${p.nome}</h4>
+                        <p><b>CPF:</b> ${p.cpf}</p>
+                    </div>
                     <a href="cadastro.html?edit=${index}" class="btn-ver">VER</a>
-                </td>
-            `;
-            corpo.appendChild(tr);
-        });
-    }
-
-    function filtrar() {
-        const input = document.getElementById('busca').value.toLowerCase();
-        const linhas = document.getElementById('corpoTabela').getElementsByTagName('tr');
-        for (let i = 0; i < linhas.length; i++) {
-            let nome = linhas[i].getElementsByTagName('td')[0].innerText;
-            linhas[i].style.display = nome.toLowerCase().includes(input) ? "" : "none";
+                `;
+                container.appendChild(item);
+            });
         }
-    }
-
-    window.onload = carregar;
-</script>
+        function filtrar() {
+            let termo = document.getElementById('busca').value.toLowerCase();
+            let cartoes = document.getElementsByClassName('cartao');
+            for (let c of cartoes) {
+                c.style.display = c.innerText.toLowerCase().includes(termo) ? "flex" : "none";
+            }
+        }
+        window.onload = carregar;
+    </script>
 </body>
 </html>

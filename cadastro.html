@@ -23,14 +23,15 @@
     </style>
 </head>
 <body>
-	
+
+
+// por padrão cria um botão para escolher um arquivo
 <div class="caixa">
     <img id="preview" src="https://via.placeholder.com/140?text=FOTO">
     <input type="file" id="foto" accept="image/*" style="font-size: 9px; margin-bottom: 10px;">
 
-   
-
     <form id="formFinal">
+
         <label>NOME COMPLETO</label>
         <input type="text" id="nome" required>
 
@@ -80,7 +81,7 @@
 		    <option value="AL">AL</option>
  		    <option value="AM">AM</option>
 		    <option value="AP">AP</option>		    
-	        <option value="BA">BA</option>
+	            <option value="BA">BA</option>
 		    <option value="CE">CE</option>
 		    <option value="DF">DF</option>
 		    <option value="ES">ES</option>
@@ -100,15 +101,16 @@
 		    <option value="RS">RS</option>
 		    <option value="SC">SC</option>
 		    <option value="SE">SE</option>		    
-            <option value="SP">SP</option>
-            <option value="TO">TO</option>
-		   		
+                    <option value="SP">SP</option>
+                    <option value="TO">TO</option>
+		   
+		
                 </select>
             </div>
             <div><label>Nº B.O.</label><input type="text" id="bo"></div>
         </div>
 
-<label>MAPA (LINK GOOGLE MAPS)</label>
+        <label>MAPA (LINK GOOGLE MAPS)</label>
         <div style="display:flex; gap:5px;">
             <input type="text" id="gps" placeholder="GERAR LINK NO ÍCONE" readonly>
             <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
@@ -161,7 +163,7 @@
     };
 
     document.getElementById('foto').onchange = e => {
-		const reader = new FileReader();
+        const reader = new FileReader();
         reader.onload = ev => {
             const img = new Image();
             img.src = ev.target.result;
@@ -175,9 +177,7 @@
         };
         if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
     };
-	
 
-    // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
     function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {

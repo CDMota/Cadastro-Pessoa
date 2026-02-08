@@ -24,16 +24,19 @@
 </head>
 <body>
 	
-<div class="caixa">
+<div class="caixa text-center">
     <img id="preview" src="https://via.placeholder.com/140?text=FOTO">
     
-    <input type="file" id="foto" accept="image/*" style="display: none;">
-	<input type="file" id="foto" accept="image/*" capture="environment" style="font-size: 9px; margin-bottom: 10px;">
-
-    
-    <label for="foto" style="display: block; background: #333; color: white; padding: 12px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 13px; cursor: pointer; border: 1px solid #444; margin-bottom: 15px;">
-        📷 CÂMERA / GALERIA
+    <input type="file" id="inputCamera" accept="image/*" capture="environment" style="display: none;">
+    <label for="inputCamera" style="display: block; background: #d32f2f; color: white; padding: 12px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 13px; cursor: pointer; margin-bottom: 8px;">
+        📸 ABRIR CÂMERA AGORA
     </label>
+
+    <input type="file" id="inputGaleria" accept="image/*" style="display: none;">
+    <label for="inputGaleria" style="display: block; background: #333; color: white; padding: 12px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 13px; cursor: pointer; border: 1px solid #444; margin-bottom: 15px;">
+        📁 ESCOLHER DA GALERIA
+    </label>
+</div>
 	
 	
     <form id="formFinal">

@@ -24,10 +24,25 @@
 </head>
 <body>
 
+//<div class="caixa">
+    //<img id="preview" src="https://via.placeholder.com/140?text=FOTO">
+    //<input type="file" id="foto" accept="image/*" style="font-size: 9px; margin-bottom: 10px;">
+  //  <input type="file" id="foto" accept="image/*" capture="environment" style="font-size: 9px; margin-bottom: 10px;">
+
+	// por padrão cria um botão para escolher um arquivo
 <div class="caixa">
     <img id="preview" src="https://via.placeholder.com/140?text=FOTO">
     <input type="file" id="foto" accept="image/*" style="font-size: 9px; margin-bottom: 10px;">
+
+//cria botão para abrir a câmera
+    <input type="file" id="foto" accept="image/*" style="display: none;">
+    <label for="foto" style="display: block; background: #333; color: white; padding: 12px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 13px; cursor: pointer; border: 1px solid #444; margin-bottom: 15px;">
+        📷 CÂMERA / GALERIA
+    </label>
     <input type="file" id="foto" accept="image/*" capture="environment" style="font-size: 9px; margin-bottom: 10px;">
+
+
+	
     <form id="formFinal">
         <label>NOME COMPLETO</label>
         <input type="text" id="nome" required>
@@ -78,7 +93,7 @@
 		    <option value="AL">AL</option>
  		    <option value="AM">AM</option>
 		    <option value="AP">AP</option>		    
-	            <option value="BA">BA</option>
+	        <option value="BA">BA</option>
 		    <option value="CE">CE</option>
 		    <option value="DF">DF</option>
 		    <option value="ES">ES</option>
@@ -98,10 +113,9 @@
 		    <option value="RS">RS</option>
 		    <option value="SC">SC</option>
 		    <option value="SE">SE</option>		    
-                    <option value="SP">SP</option>
-                    <option value="TO">TO</option>
-		   
-		
+            <option value="SP">SP</option>
+            <option value="TO">TO</option>
+		   		
                 </select>
             </div>
             <div><label>Nº B.O.</label><input type="text" id="bo"></div>

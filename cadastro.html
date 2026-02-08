@@ -169,7 +169,8 @@
         }
     };
 
-    document.getElementById('foto').onchange = e => {
+    document.getElementById('inputCamera').onchange = e => {
+		document.getElementById('inputGaleria').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
             const img = new Image();
@@ -184,6 +185,7 @@
         };
         if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
     };
+	};
 
     // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
     function pegarGPS() {

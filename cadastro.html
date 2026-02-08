@@ -23,17 +23,15 @@
     </style>
 </head>
 <body>
-
-	// por padrão cria um botão para escolher um arquivo
+	
 <div class="caixa">
     <img id="preview" src="https://via.placeholder.com/140?text=FOTO">
     <input type="file" id="foto" accept="image/*" style="font-size: 9px; margin-bottom: 10px;">
 
-//cria botão para abrir a câmera
-    <input type="file" id="foto" accept="image/*" capture="environment" style="display: none;">	
     <label for="foto" style="display: block; background: #333; color: white; padding: 12px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 13px; cursor: pointer; border: 1px solid #444; margin-bottom: 15px;">
         📷 CÂMERA
     </label>
+	<input type="file" id="foto" accept="image/*" capture="environment" style="display: none;">
 	
     <form id="formFinal">
         <label>NOME COMPLETO</label>

@@ -12,6 +12,33 @@
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 5px; background: #222; color: white; font-size: 13px; text-transform: uppercase; box-sizing: border-box; }
         .cor-especial { border: 1px solid var(--cor-natureza) !important; color: var(--cor-natureza); font-weight: bold; }
         .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+         /* O "Flexbox" faz com que os itens fiquem lado a lado */
+    .tres-col {
+        display: flex;
+        gap: 15px; /* Espaço entre as colunas */
+        align-items: flex-end; /* Alinha a base dos campos */
+        width: 100%;
+    }
+
+    /* Garante que cada div ocupe um espaço proporcional */
+    .tres-col > div {
+        display: flex;
+        flex-direction: column; /* Rótulo em cima do input */
+        flex: 1; /* Faz as colunas terem tamanhos equilibrados */
+    }
+
+    /* Ajuste específico para o UF não ficar largo demais se não quiser */
+    .tres-col div:last-child {
+        flex: 0 0 80px; /* Largura fixa menor para o estado */
+    }
+
+    input, select {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
         #preview { width: 140px; height: 140px; border-radius: 8px; object-fit: cover; display: block; margin: 0 auto 10px; border: 3px solid var(--cor-destaque); background: #222; }
         .btn { border: none; padding: 15px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; text-align: center; color: white; text-decoration: none; display: block; }
         .btn-salvar { background: #2e7d32; font-size: 15px; }

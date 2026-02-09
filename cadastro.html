@@ -106,6 +106,14 @@
         <label>OBSERVAÇÕES</label>
         <textarea id="obs" rows="2"></textarea>
 
+
+<label>MAPA (LINK GOOGLE MAPS)</label>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="gps" placeholder="GERAR LINK NO ÍCONE" readonly>
+            <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
+        </div>
+
+        
         <button type="submit" class="btn btn-salvar">💾 SALVAR REGISTRO</button>
         
         <div id="areaApps" style="display:none; margin-top:20px; border-top: 1px dashed #444; padding-top: 10px;">
@@ -114,14 +122,7 @@
             <button type="button" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR REGISTRO</button>
         </div>
         
-        <label>MAPA (LINK GOOGLE MAPS)</label>
-        <div style="display:flex; gap:5px;">
-            <input type="text" id="gps" placeholder="GERAR LINK NO ÍCONE" readonly>
-            <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
-        </div>
-
-        
-        
+               
         <a href="index.html" class="btn" style="background:#333;">⬅️ VOLTAR PARA LISTA</a>
     </form>
 </div>

@@ -212,6 +212,9 @@ document.getElementById('nasc').addEventListener('input', function (e) {
 });
 
 
+
+
+
     // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
     function pegarGPS() {
         if (navigator.geolocation) {
@@ -240,19 +243,39 @@ document.getElementById('nasc').addEventListener('input', function (e) {
                 dados[i.id] = i.value.toUpperCase();
             }
         });
-        dados.foto = fotoBase64;
 
+           dados.foto = fotoBase64;
+
+        // DOWNLOAD DA FOTO: Nomeada para ficar no topo da galeria
+        if (fotoBase64) {
+            const link = document.createElement('a');
+            const timestamp = new Date().getTime(); 
+            link.href = fotoBase64;
+            // Nomeia o ficheiro com Nome_Vulgo_Tempo para ser fácil de achar
+            link.download = `${dados.nome}_${dados.vulgo}_${timestamp}.jpg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Lógica para salvar ou atualizar na lista
         if (idEdicao !== null && idEdicao !== "") {
             lista[parseInt(idEdicao)] = dados;
         } else {
             lista.push(dados);
+            idEdicao = (lista.length - 1).toString(); // Mantém o ID para o cadastro continuar aberto
         }
 
         localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        alert("REGISTRO SALVO!");
-        window.location.href = "index.html";
+        
+        // Mostra os botões de partilha (WhatsApp/Telegram)
+        document.getElementById('areaApps').style.display = 'block';
+        
+        alert("REGISTRO SALVO! A foto foi descarregada para a sua galeria.");
     };
 
+
+        
     function enviarApp(tipo) {
         const v = (id) => document.getElementById(id).value || "---";
         

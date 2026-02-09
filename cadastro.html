@@ -64,19 +64,44 @@
             </div>
         </div>
 
-        <label>ENDEREÇO E NÚMERO</label>
-        <input type="text" id="end" placeholder="RUA, Nº">
-
-        <div class="duas-col">
-            <div><label>CIDADE - UF</label><input type="text" id="cidade" placeholder="CIDADE - UF"></div>
-            <div><label>Nº DO B.O.</label><input type="text" id="bo"></div>
+        <div class="tres-col">
+            <div><label>ENDEREÇO </label><input type="text" id="end" placeholder="RUA"></div>
+            <div><label>CIDADE </label><input type="text" id="cidade" placeholder="CIDADE"></div>
+            <div><label>UF</label>
+                <select id="uf">
+            <option value="PR">PR</option>
+		    <option value="AC">AC</option>
+		    <option value="AL">AL</option>
+ 		    <option value="AM">AM</option>
+		    <option value="AP">AP</option>		    
+	        <option value="BA">BA</option>
+		    <option value="CE">CE</option>
+		    <option value="DF">DF</option>
+		    <option value="ES">ES</option>
+		    <option value="GO">GO</option>
+		    <option value="MA">MA</option>
+		    <option value="MG">MG</option>
+		    <option value="MS">MS</option>
+		    <option value="MT">MT</option>
+		    <option value="PA">PA</option>
+		    <option value="PB">PB</option>
+		    <option value="PE">PE</option>
+		    <option value="PI">PI</option>
+		    <option value="RJ">RJ</option>
+		    <option value="RN">RN</option>
+		    <option value="RO">RO</option>
+		    <option value="RR">RR</option>
+		    <option value="RS">RS</option>
+		    <option value="SC">SC</option>
+		    <option value="SE">SE</option>		    
+            <option value="SP">SP</option>
+            <option value="TO">TO</option>
+		   	
+                </select>
+            </div>
         </div>
 
-        <label>MAPA (LINK GOOGLE MAPS)</label>
-        <div style="display:flex; gap:5px;">
-            <input type="text" id="gps" placeholder="GERAR LINK NO ÍCONE" readonly>
-            <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
-        </div>
+        <label>Nº DO B.O.</label><input type="text" id="bo" placeholder="nº BO - DOCUMENTO">
 
         <label>OBSERVAÇÕES</label>
         <textarea id="obs" rows="2"></textarea>
@@ -88,6 +113,14 @@
             <button type="button" class="btn btn-tele" onclick="enviarApp('TG')">🔵 COMPARTILHAR TELEGRAM</button>
             <button type="button" class="btn btn-del" onclick="excluirRegistro()">🗑️ EXCLUIR REGISTRO</button>
         </div>
+        
+        <label>MAPA (LINK GOOGLE MAPS)</label>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="gps" placeholder="GERAR LINK NO ÍCONE" readonly>
+            <button type="button" class="btn-gps" onclick="pegarGPS()">📍</button>
+        </div>
+
+        
         
         <a href="index.html" class="btn" style="background:#333;">⬅️ VOLTAR PARA LISTA</a>
     </form>
@@ -105,7 +138,7 @@
             const p = lista[parseInt(idEdicao)];
             
             if (p) {
-                const campos = ['nome', 'mae', 'vulgo', 'cpf', 'nasc', 'natureza', 'dataOcorrencia', 'status', 'end', 'cidade', 'bo', 'gps', 'obs'];
+                const campos = ['nome', 'mae', 'vulgo', 'cpf', 'nasc', 'natureza', 'dataOcorrencia', 'status', 'end', 'cidade','uf', 'bo', 'gps', 'obs'];
                 campos.forEach(id => {
                     const el = document.getElementById(id);
                     if (el && p[id] !== undefined) el.value = p[id];
@@ -199,6 +232,7 @@
             `🛡️ *STATUS:* ${v('status').toUpperCase()}%0A%0A` +
             `🏠 *END:* ${v('end').toUpperCase()}%0A` +
             `🏙️ *CIDADE:* ${v('cidade').toUpperCase()}%0A` +
+            `🏛️ *UF:* ${v('uf').toUpperCase()}%0A` +
             `📂 *B.O:* ${v('bo').toUpperCase()}%0A` +
             `📝 *OBS:* ${v('obs').toUpperCase()}%0A%0A` +
             `📍 *MAPA:* ${v('gps')}`;

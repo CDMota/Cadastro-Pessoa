@@ -158,7 +158,7 @@
 <script>
     const DB_NAME = 'SISTEMA_TATICO_ESTAVEL';
     const params = new URLSearchParams(window.location.search);
-    const idEdicao = params.get('edit');
+    let idEdicao = params.get('edit'); // Removido 'const' para permitir atualização
     let fotoBase64 = "";
 
     window.onload = function() {
@@ -182,12 +182,20 @@
         }
     };
 
+    // Máscara para DATA (00/00/0000)
+    document.getElementById('nasc').addEventListener('input', function (e) {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,2})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : x[1] + '/' + x[2] + (x[3] ? '/' + x[3] : '');
+    });
+
+    // Gatilho para preencher Data/Hora ao selecionar Natureza
     document.getElementById('natureza').onchange = function() {
         if(this.value !== "") {
             document.getElementById('dataOcorrencia').value = new Date().toLocaleString('pt-BR').toUpperCase();
         }
     };
 
+    // Processamento da Foto
     document.getElementById('foto').onchange = e => {
         const reader = new FileReader();
         reader.onload = ev => {
@@ -195,8 +203,8 @@
             img.src = ev.target.result;
             img.onload = () => {
                 const cv = document.createElement('canvas');
-                cv.width = 450; cv.height = 450;
-                cv.getContext('2d').drawImage(img, 0, 0, 450, 450);
+                cv.width = 600; cv.height = 600; // Aumentado um pouco a qualidade
+                cv.getContext('2d').drawImage(img, 0, 0, 600, 600);
                 fotoBase64 = cv.toDataURL('image/jpeg', 0.8);
                 document.getElementById('preview').src = fotoBase64;
             };
@@ -204,87 +212,65 @@
         if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
     };
 
-
-// Máscara para DATA (00/00/0000)
-document.getElementById('nasc').addEventListener('input', function (e) {
-    let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,2})(\d{0,4})/);
-    e.target.value = !x[2] ? x[1] : x[1] + '/' + x[2] + (x[3] ? '/' + x[3] : '');
-});
-
-
-
-
-
-    // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
     function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-                // Formato de link direto para localização
-                const linkMapa = `https://www.google.com/maps?q=${lat},${lon}`;
+                const linkMapa = `http://googleusercontent.com/maps.google.com/${lat},${lon}`;
                 document.getElementById('gps').value = linkMapa;
-            }, () => alert("ERRO: Ative a localização/GPS do celular."));
-        } else {
-            alert("Seu navegador não suporta GPS.");
+            }, () => alert("ERRO: Ative o GPS."));
         }
     }
 
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
+        
+        // 1. Coleta os dados
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};
         
-        // Coleta todos os campos transformando em MAIÚSCULO, exceto o GPS
         document.querySelectorAll('input, select, textarea').forEach(i => {
             if(i.id === 'gps') {
-                dados[i.id] = i.value; // Mantém a URL do mapa intacta
+                dados[i.id] = i.value; 
             } else if(i.id) {
                 dados[i.id] = i.value.toUpperCase();
             }
         });
+        dados.foto = fotoBase64;
 
-           dados.foto = fotoBase64;
+        // 2. Salva na Lista (Local)
+        if (idEdicao !== null && idEdicao !== "") {
+            lista[parseInt(idEdicao)] = dados;
+        } else {
+            lista.push(dados);
+            idEdicao = (lista.length - 1).toString(); // Define o novo ID para manter aberto
+        }
 
-        // DOWNLOAD DA FOTO: Nomeada para ficar no topo da galeria
+        localStorage.setItem(DB_NAME, JSON.stringify(lista));
+
+        // 3. Download da Foto Nomeada
         if (fotoBase64) {
             const link = document.createElement('a');
             const timestamp = new Date().getTime(); 
+            const nomeArquivo = (dados.nome || 'SEM_NOME').replace(/\s+/g, '_');
             link.href = fotoBase64;
-            // Nomeia o ficheiro com Nome_Vulgo_Tempo para ser fácil de achar
-            link.download = `${dados.nome}_${dados.vulgo}_${timestamp}.jpg`;
+            link.download = `${nomeArquivo}_${timestamp}.jpg`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
-        // Lógica para salvar ou atualizar na lista
-        if (idEdicao !== null && idEdicao !== "") {
-            lista[parseInt(idEdicao)] = dados;
-        } else {
-            lista.push(dados);
-            idEdicao = (lista.length - 1).toString(); // Mantém o ID para o cadastro continuar aberto
-        }
-
-        localStorage.setItem(DB_NAME, JSON.stringify(lista));
-        
-        // Mostra os botões de partilha (WhatsApp/Telegram)
         document.getElementById('areaApps').style.display = 'block';
-        
-        alert("REGISTRO SALVO! A foto foi descarregada para a sua galeria.");
+        alert("REGISTRO SALVO COM SUCESSO!");
     };
 
-
-        
     function enviarApp(tipo) {
         const v = (id) => document.getElementById(id).value || "---";
-        
-        // Montagem do texto com ícones apenas para o envio
         const texto = 
             `📌 *RELATÓRIO OPERACIONAL*%0A%0A` +
             `👤 *NOME:* ${v('nome').toUpperCase()}%0A` +
             `🎭 *VULGO:* ${v('vulgo').toUpperCase()}%0A` +
-            `👩‍👦 *MÃE:* ${v('mae').toUpperCase()}%0A` +
             `💳 *DOC:* ${v('cpf').toUpperCase()}%0A` +
             `📅 *NASC:* ${v('nasc').toUpperCase()}%0A%0A` +
             `⚖️ *NATUREZA:* ${v('natureza').toUpperCase()}%0A` +
@@ -293,14 +279,10 @@ document.getElementById('nasc').addEventListener('input', function (e) {
             `🏠 *END:* ${v('end').toUpperCase()}%0A` +
             `🏙️ *CIDADE:* ${v('cidade').toUpperCase()}%0A` +
             `🏛️ *UF:* ${v('uf').toUpperCase()}%0A` +
-            `📂 *B.O:* ${v('bo').toUpperCase()}%0A` +
-            `📝 *OBS:* ${v('obs').toUpperCase()}%0A%0A` +
+            `📂 *B.O:* ${v('bo').toUpperCase()}%0A%0A` +
             `📍 *MAPA:* ${v('gps')}`;
 
-        const url = tipo === 'WA' ? 
-            `https://api.whatsapp.com/send?text=${texto}` : 
-            `https://t.me/share/url?url=${texto}`;
-        
+        const url = tipo === 'WA' ? `https://api.whatsapp.com/send?text=${texto}` : `https://t.me/share/url?url=${texto}`;
         window.location.href = url;
     }
 
@@ -313,5 +295,3 @@ document.getElementById('nasc').addEventListener('input', function (e) {
         }
     }
 </script>
-</body>
-</html>

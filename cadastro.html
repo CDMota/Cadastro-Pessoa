@@ -213,7 +213,7 @@
     };
 	
 
-     // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
+      // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
     function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
@@ -230,18 +230,19 @@
 
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
-        // 1. Coleta os dados
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};
         
+        // Coleta todos os campos transformando em MAIÚSCULO, exceto o GPS
         document.querySelectorAll('input, select, textarea').forEach(i => {
             if(i.id === 'gps') {
-                dados[i.id] = i.value; 
+                dados[i.id] = i.value; // Mantém a URL do mapa intacta
             } else if(i.id) {
                 dados[i.id] = i.value.toUpperCase();
             }
         });
-        dados.foto = fotoBase64;
+
+           dados.foto = fotoBase64;
 
         // 2. Salva na Lista (Local)
         if (idEdicao !== null && idEdicao !== "") {

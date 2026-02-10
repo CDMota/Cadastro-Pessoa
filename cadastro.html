@@ -211,6 +211,7 @@
         };
         if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
     };
+	
 
      // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
     function pegarGPS() {
@@ -229,8 +230,6 @@
 
     document.getElementById('formFinal').onsubmit = e => {
         e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
-        const dados = {};   
         // 1. Coleta os dados
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};

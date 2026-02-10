@@ -232,9 +232,7 @@
         let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};
 
-    document.getElementById('formFinal').onsubmit = e => {
-        e.preventDefault();        let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
-        const dados = {};
+    
         
         // Coleta todos os campos transformando em MAIÚSCULO, exceto o GPS
         document.querySelectorAll('input, select, textarea').forEach(i => {

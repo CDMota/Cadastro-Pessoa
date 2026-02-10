@@ -212,25 +212,19 @@
         if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
     };
 	
-
-      // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
-    function pegarGPS() {
+function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-                // Formato de link direto para localização
-                const linkMapa = https://www.google.com/maps?q=${lat},${lon};
+                const linkMapa = http://googleusercontent.com/maps.google.com/${lat},${lon};
                 document.getElementById('gps').value = linkMapa;
-            }, () => alert("ERRO: Ative a localização/GPS do celular."));
-        } else {
-            alert("Seu navegador não suporta GPS.");
+            }, () => alert("ERRO: Ative o GPS."));
         }
     }
 
     document.getElementById('formFinal').onsubmit = e => {
-        e.preventDefault();
-        let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
+        e.preventDefault();        let lista = JSON.parse(localStorage.getItem(DB_NAME) || '[]');
         const dados = {};
         
         // Coleta todos os campos transformando em MAIÚSCULO, exceto o GPS

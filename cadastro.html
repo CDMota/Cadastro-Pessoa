@@ -220,7 +220,7 @@
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
                 // Formato de link direto para localização conforme solicitado
-                const linkMapa = `http://google.com/maps.google.com/${lat},${lon}`;
+                const linkMapa = `https://google.com/maps?q=${lat},${lon}`;
                 document.getElementById('gps').value = linkMapa;
             }, () => alert("ERRO: Ative a localização/GPS do celular."));
         } else {

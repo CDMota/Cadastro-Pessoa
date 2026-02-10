@@ -213,13 +213,14 @@
     };
 	
 // FUNÇÃO DO MAPA CORRIGIDA PARA O SEU PADRÃO
-    function pegarGPS() {
+    
+  function pegarGPS() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(pos => {
                 const lat = pos.coords.latitude;
                 const lon = pos.coords.longitude;
-                // Formato de link direto para localização
-                const linkMapa = `https://www.google.com/maps?q=${lat},${lon}`;
+                // Formato de link direto para localização conforme solicitado
+                const linkMapa = `http://googleusercontent.com/maps.google.com/${lat},${lon}`;
                 document.getElementById('gps').value = linkMapa;
             }, () => alert("ERRO: Ative a localização/GPS do celular."));
         } else {
